@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Egresado</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Registro de Egresado - UniEmpleo</h1>
+    </header>
+
+    <form action="guardar_egresado.php" method="post" enctype="multipart/form-data" class="formulario">
+        <h3>Información Personal</h3>
+
+        <label for="nombre">Nombre completo:</label>
+        <input type="text" name="nombre" required>
+
+        <label for="email">Correo electrónico:</label>
+        <input type="email" name="email" required>
+
+        <label for="telefono">Número de teléfono:</label>
+        <input type="text" name="telefono" required>
+
+        <label for="programa">Programa de formación:</label>
+        <input type="text" name="programa" placeholder="Ej: Tecnología en Desarrollo de Software" required>
+
+        <label for="graduacion">Año de graduación:</label>
+        <input type="number" name="graduacion" min="2000" max="2025" required>
+
+        <label for="perfil">Perfil profesional:</label>
+        <textarea name="perfil" rows="4" placeholder="Describe brevemente tus habilidades y experiencia" required></textarea>
+
+        <h3>Sube tu Hoja de Vida</h3>
+
+        <label for="cv">CV en PDF:</label>
+        <input type="file" name="cv" accept=".pdf" required>
+
+        <input type="submit" value="Registrar Perfil">
+    </form>
+
+    <footer class="footer">
+        <p>&copy; 2025 UniEmpleo</p>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Login de Usuario - Uniempleo</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos para el modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-contenido {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 300px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+
+        .cerrar {
+            float: right;
+            font-size: 24px;
+            cursor: pointer;
+            color: #aaa;
+        }
+
+        .cerrar:hover {
+            color: #000;
+        }
+
+        .modal-botones a {
+            display: block;
+            margin: 10px 0;
+            background-color: #00acc1;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+
+        .modal-botones a:hover {
+            background-color: #007c91;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>Login de Usuario</h1>
+    </header>
+
+    <form action="datos1.php" method="post">
+        <div class="login-container">
+            <h3>Inicia sesión</h3>
+            <input type="email" name="em" id="em" placeholder="Correo electrónico" required>
+            <input type="password" name="pa" id="pa" placeholder="Contraseña" required>
+            <input type="submit" value="Ingresar">
+        </div>
+    </form>
+
+    <!-- Botón para abrir el modal -->
+    <div style="text-align:center; margin-top: 15px;">
+        <button onclick="mostrarModal()">Crear una cuenta</button>
+    </div>
+
+    <!-- Modal para seleccionar tipo de cuenta -->
+    <div id="modalRol" class="modal">
+        <div class="modal-contenido">
+            <span class="cerrar" onclick="cerrarModal()">&times;</span>
+            <h3>¿Qué tipo de cuenta deseas crear?</h3>
+            <div class="modal-botones">
+                <a href="registro_egresado.php">Egresado</a>
+                <a href="registro_empresa.php">Empresa</a>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>&copy; 2025 Uniempleo</p>
+    </footer>
+
+    <!-- Script para el modal -->
+    <script>
+        function mostrarModal() {
+            document.getElementById("modalRol").style.display = "block";
+        }
+
+        function cerrarModal() {
+            document.getElementById("modalRol").style.display = "none";
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("modalRol");
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+    </script>
+</body>
+</html>
