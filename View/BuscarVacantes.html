@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Buscar Vacantes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="header">
+        <h1>Buscar Vacantes</h1>
+    </header>
+
+    <form action="Vacantes.php" method="get" class="formulario">
+        <input type="text" name="palabra_clave" placeholder="Palabra clave o cargo">
+        <input type="text" name="ubicacion" placeholder="Ubicación">
+        <select name="area">
+            <option value="">-- Área --</option>
+            <option value="Tecnología">Tecnología</option>
+            <option value="Administración">Administración</option>
+            <option value="Educación">Educación</option>
+            <!-- puedes agregar más -->
+        </select>
+        <select name="experiencia">
+            <option value="">-- Nivel de experiencia --</option>
+            <option value="Sin experiencia">Sin experiencia</option>
+            <option value="1-2 años">1-2 años</option>
+            <option value="3-5 años">3-5 años</option>
+            <option value="Más de 5 años">Más de 5 años</option>
+        </select>
+        <input type="submit" value="Buscar">
+    </form>
+</body>
+</html>

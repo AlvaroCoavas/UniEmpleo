@@ -1,0 +1,416 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #f5f7fa, #e0f2f1);
+    color: #333;
+    min-height: 100vh;
+}
+
+/* HEADER superior */
+#main-header {
+    background-color: #0077b6;
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-title {
+    font-size: 1.8rem;
+}
+
+.header-buttons .btn-modal {
+    margin-left: 10px;
+}
+
+/* Contenido principal */
+#main-content {
+    display: flex;
+    justify-content: space-between;
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    gap: 20px;
+}
+
+/* Tarjetas (intro, info) */
+.card {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    flex: 1;
+    transition: transform 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: scale(1.01);
+}
+
+.card-title {
+    color: #023e8a;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.card-text {
+    color: #555;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Estilos para los botones */
+.btn-modal {
+    padding: 12px 30px;
+    background-color: #00acc1;  /* Color atractivo y moderno */
+    color: white;
+    border: none;
+    border-radius: 25px;  /* Bordes más redondeados */
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;  /* Transiciones suaves */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Sombra para dar profundidad */
+}
+
+.btn-modal:hover {
+    background-color: #007c91;  /* Cambio a un color más oscuro cuando pasa el cursor */
+    transform: translateY(-3px);  /* Efecto de elevación */
+}
+
+.btn-modal:active {
+    transform: translateY(1px);  /* Efecto cuando el botón es presionado */
+}
+
+/* Agregar estilo para el foco, cuando el botón es seleccionado */
+.btn-modal:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.5);  /* Sombra para el enfoque */
+}
+
+.icono-btn {
+    width: 24px;
+    height: 24px;
+    margin-right: 10px;
+    vertical-align: middle;
+}
+
+/* MODALES (Login y Registro) */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    overflow: auto;
+}
+
+.modal-contenido {
+    background-color: #fff;
+    margin: 5% auto;
+    padding: 30px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    position: relative;
+    text-align: center;
+}
+
+.cerrar {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #aaa;
+}
+
+.cerrar:hover {
+    color: #000;
+}
+
+.modal input[type="email"],
+.modal input[type="password"],
+.modal input[type="text"],
+.modal input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+.modal input[type="submit"] {
+    background-color: #0077b6;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.modal input[type="submit"]:hover {
+    background-color: #00b4d8;
+}
+
+.navbar {
+    background-color: #0077b6;
+    padding: 10px 20px;
+    text-align: right;
+}
+
+.navbar a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    margin: 0 10px;
+    font-size: 16px;
+}
+
+.navbar a:hover {
+    background-color: #00b4d8;
+    border-radius: 5px;
+}
+
+/* Contenido principal de la introducción */
+.content {
+    max-width: 900px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.content h1 {
+    text-align: center;
+    color: #023e8a;
+}
+
+.content p {
+    text-align: justify;
+    color: #333;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+    background-color: #0077b6;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    width: 100%;
+}
+
+.footer-text {
+    font-size: 0.9rem;
+}
+/* === Estilos adicionales para resultados iniciales y tarjetas dinámicas === */
+
+/* Tarjetas de resultado */
+.result-card {
+    background-color: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+    transition: transform 0.2s ease-in-out;
+}
+
+.result-card:hover {
+    transform: scale(1.02);
+}
+
+.result-title {
+    font-size: 1.2rem;
+    color: #023e8a;
+    margin-bottom: 8px;
+}
+
+.result-description {
+    font-size: 14px;
+    color: #444;
+}
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(to right, #f5f7fa, #e0f2f1);
+    color: #333;
+    min-height: 100vh;
+}
+
+/* HEADER superior */
+.header {
+    background-color: #0077b6;
+    color: white;
+    padding: 20px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.8rem;
+}
+
+.nav a {
+    color: white;
+    text-decoration: none;
+    padding: 10px 20px;
+    margin-left: 10px;
+    font-size: 16px;
+}
+
+.nav a:hover {
+    background-color: #00b4d8;
+    border-radius: 5px;
+}
+
+/* Contenedor principal */
+.main-container {
+    display: flex;
+    height: calc(100vh - 80px);
+}
+
+/* Sidebar izquierdo */
+.sidebar {
+    background-color: #023e8a;
+    padding-top: 20px;
+    width: 200px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+}
+
+.sidebar-btn {
+    width: 100%;
+    background-color: transparent;
+    color: white;
+    border: none;
+    padding: 15px 20px;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    opacity: 0.5;
+}
+
+.sidebar-btn:hover {
+    background-color: #0077b6;
+    border-radius: 5px;
+    opacity: 1;
+}
+
+/* Panel principal */
+.main-content {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+    background-color: #ffffffa0;
+    border-radius: 10px;
+    margin: 20px;
+}
+
+/* Panel derecho */
+.right-panel {
+    width: 250px;
+    background-color: #e0f2f1;
+    padding: 20px;
+    border-left: 1px solid #ccc;
+}
+
+.right-panel h3 {
+    color: #0077b6;
+    margin-bottom: 10px;
+}
+
+.right-panel ul {
+    list-style-type: disc;
+    padding-left: 20px;
+}
+
+.right-panel li {
+    margin-bottom: 10px;
+}
+
+/* RESPONSIVIDAD */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .sidebar-btn {
+        flex: 1;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .right-panel {
+        display: none;
+    }
+}
+
+/* Panel lateral derecho contenido adicional */
+.right-panel .info-box {
+    background-color: #ffffff;
+    border-left: 4px solid #00b4d8;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.right-panel .info-box h4 {
+    margin-bottom: 5px;
+    color: #0077b6;
+    font-size: 16px;
+}
+
+.right-panel .info-box p {
+    font-size: 14px;
+    color: #333;
+}
+
+/* RESPONSIVIDAD */
+@media (max-width: 768px) {
+    #main-content {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .card {
+        width: 80%;
+        margin-bottom: 20px;
+    }
+
+    .modal-contenido {
+        width: 80%;
+    }
+
+    #main-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .header-buttons {
+        margin-top: 10px;
+    }
+
+    
+}
