@@ -1,6 +1,6 @@
 <?php
 // Conexión a la base de datos
-$conn = new mysqli("localhost", "root", "", "uniempleo");
+$conn = new mysqli("localhost", "root", "root", "bd_pa_uniempleo");
 
 if ($conn->connect_error) {
     die("Error de conexión: " . $conn->connect_error);
@@ -12,30 +12,30 @@ $pass = $_POST['pa'];
 
 session_start();
 
-// Verificar si es persona natural
-$sql_persona = "SELECT * FROM persona_natural WHERE correo = '$correo' AND contraseña = '$pass'";
-$result_persona = $conn->query($sql_persona);
+// Buscar usuario por correo
+$sql = "SELECT * FROM usuarios WHERE correo = '$correo'";
+$result = $conn->query($sql);
 
-if ($result_persona->num_rows > 0) {
-    $_SESSION['correo'] = $correo;
-    $_SESSION['tipo'] = 'persona';
-    header("Location: panelPersona.php");
-    exit();
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+
+    // Verificar la contraseña cifrada
+    if (password_verify($pass, $row['contrasena'])) {
+        $_SESSION['correo'] = $correo;
+        $_SESSION['tipo'] = $row['tipo_usuario'];
+
+        if ($row['tipo_usuario'] === 'persona') {
+            header("Location: PrincipalPersonanatural.html");
+        } else if ($row['tipo_usuario'] === 'empresa') {
+            header("Location: PrincipalPersonanatural.html");
+        }
+        exit();
+    } else {
+        echo "<script>alert('Contraseña incorrecta'); window.location='index.html';</script>";
+    }
+} else {
+    echo "<script>alert('Correo no registrado'); window.location='index.html';</script>";
 }
-
-// Verificar si es empresa
-$sql_empresa = "SELECT * FROM empresa WHERE correo = '$correo' AND contraseña = '$pass'";
-$result_empresa = $conn->query($sql_empresa);
-
-if ($result_empresa->num_rows > 0) {
-    $_SESSION['correo'] = $correo;
-    $_SESSION['tipo'] = 'empresa';
-    header("Location: panelEmpresa.php");
-    exit();
-}
-
-// Si no es ninguna
-echo "<script>alert('Correo o contraseña incorrectos'); window.location='login.php';</script>";
 
 $conn->close();
 ?>

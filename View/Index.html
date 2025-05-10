@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Introducción - Uniempleo</title>
+    <title >Introducción - Uniempleo</title>
     <link rel="stylesheet" href="../Css/style.css">
     
 </head>
@@ -36,12 +36,12 @@
         <h3>¿Qué tipo de cuenta deseas crear?</h3>
         <br>
         <div>
-            <button onclick="seleccionarTipo('persona')">
+            <button onclick="seleccionarTipo('persona')"style="margin: 10px;">
                 <img src="../Media/cuenta.png" alt="Usuario" class="icono-btn">
                 Persona Natural
             </button>
-            <button onclick="seleccionarTipo('empresa')">
-                <img src="../Media/edificios.png" alt="Empresa" class="icono-btn">
+            <button onclick="seleccionarTipo('empresa')"style="margin: 10px;" >
+                <img src="../Media/edificios.png" alt="Empresa" class="icono-btn" style="height: 22px;">
                 Empresa
             </button>
         </div>
@@ -54,7 +54,8 @@
             <input type="text" name="telefono" placeholder="Número de teléfono" required>
             <label for="fecha_nacimiento">Fecha de nacimiento:</label>
             <input type="date" name="fecha_nacimiento" id="fecha_nacimiento" required>
-            <br>
+            <br/>
+            <br/>
             <label>
                 <input type="checkbox" name="terminos" required> Acepto los <a href="terminos_y_condiciones.html" target="_blank">términos y condiciones</a>
             </label>
@@ -65,8 +66,8 @@
         <!-- Formulario para Empresa -->
         <form id="formEmpresa" action="Registro_empresa.php" method="POST" style="display: none; margin-top: 15px;">
             <input type="hidden" name="tipo_usuario" value="empresa">
-            <input type="text" name="nombre" placeholder="Nombre de la empresa" required>
-            <input type="email" name="correo" placeholder="Correo corporativo" required>
+            <input type="text" name="nombre_empresa" placeholder="Nombre de la empresa" required>
+            <input type="email" name="email_empresa" placeholder="Correo corporativo" required>
             <input type="password" name="contraseña" placeholder="Contraseña" required>
             <input type="submit" value="Registrarse">
         </form>
@@ -77,13 +78,15 @@
     <!-- Contenido principal -->
     <div class="content">
         <h1>Bienvenido a Uniempleo</h1>
+        <br/>
         <p>Uniempleo es una plataforma en línea diseñada para conectar a egresados de la Universidad Unicolombo con diversas oportunidades laborales. Si eres un egresado en busca de trabajo o una empresa que necesita talento, aquí podrás encontrar el lugar adecuado para tu desarrollo profesional.</p>
 
         <p>Ya sea que desees postularte a vacantes, crear un perfil profesional, o si eres una empresa que quiere publicar ofertas de empleo, Uniempleo te ofrece todas las herramientas necesarias para hacer conexiones efectivas y facilitar tu acceso al mercado laboral.</p>
 
         <p>Haz clic en los botones de arriba para <strong>iniciar sesión</strong> o <strong>registrarte</strong> y empezar a disfrutar de nuestros servicios.</p>
+        <br/>
     </div>
-
+    
     <!-- Footer -->
     <footer class="footer">
         <p class="footer-text">&copy; 2025 Uniempleo | Todos los derechos reservados</p>
