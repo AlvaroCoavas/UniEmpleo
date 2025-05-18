@@ -83,7 +83,29 @@
     </div>
 </div>
 <body>
+    <!-- Carrusel de imagenes -->
+         <div class="sliderbox">
 
+        <ul>
+            <li>
+                <img src="../Media/imagen1.png" alt="">
+                
+            </li>
+            <li>
+                <img src="../Media/imagen2.png" alt="">
+
+            </li>
+            <li>
+                <img src="../Media/imagen3.png" alt="">
+                
+            </li>
+            </li>
+            <li>
+                <img src="../Media/imagen4.png" alt="">
+                
+            </li>
+        </ul>
+    </div>
     <!-- Contenido principal -->
     <div class="content">
         <h1>Bienvenido a Uniempleo</h1>
