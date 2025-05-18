@@ -1,117 +1,119 @@
 <?php
-require_once '../models/Usuario.php';
-require_once '../controllers/PersonaController.php';
-require_once '../controllers/EmpresaController.php';
+require_once '../dao/UsuarioDAO.php';
+require_once '../dao/PersonaDAO.php';
+require_once '../dao/EmpresaDAO.php';
+require_once '../utils/Utils.php';
+require_once '../utils/SessionManager.php';
+
 
 class UsuarioController {
+    private $usuarioDAO;
+    private $personaDAO;
+    private $empresaDAO;
+
+    public function __construct() {
+        $this->usuarioDAO = new UsuarioDAO();
+        $this->personaDAO = new PersonaDAO();
+        $this->empresaDAO = new EmpresaDAO();
+    }
+
+    
     public function register() {
-        $correo = $_POST['correo'];
-        $contrasena = $_POST['contrasena'];
-        $tipo_usuario = $_POST['tipo_usuario'];
-
-
-   
-
-        // Crear el usuario
-        $usuario = new Usuario([
-            'correo' => $correo,
-            'contrasena' => password_hash($contrasena, PASSWORD_DEFAULT),
-            'tipo_usuario' => $tipo_usuario
-        ]);
-
-        if ($usuario->save()) {
-            echo "Usuario guardado correctamente";
-
-            // Delegar el registro adicional a PersonaController o EmpresaController
+        $correo = Utils::sanitizarEntrada($_POST['correo']);
+        $contrasena = Utils::sanitizarEntrada($_POST['contrasena']);
+        $tipo_usuario = Utils::sanitizarEntrada($_POST['tipo_usuario']);
+    
+        // Verificar si el correo ya existe
+        if ($this->usuarioDAO->verificarCorreo($correo)) {
+            SessionManager::set('mensaje', "El correo ya tiene una cuenta. Por favor, inicie sesión.");
+            header("Location: ../View/register.php");
+            exit();
+        }
+    
+        // Hashear la contraseña
+        $hash_contrasena = password_hash($contrasena, PASSWORD_DEFAULT);
+    
+        // Guardar el usuario
+        if ($this->usuarioDAO->guardarUsuario($correo, $hash_contrasena, $tipo_usuario)) {
+            $usuario_id = $this->usuarioDAO->obtenerUltimoId();
+            
+            // Registrar datos adicionales según el tipo de usuario
             if ($tipo_usuario === 'persona') {
-                $personaController = new PersonaController();
-                $data = [
-                    'id_usuario' => $usuario->id,
-                    'nombre' => $_POST['nombre'],
-                    'apellido' => $_POST['apellido'],
-                    'fecha_nacimiento' => $_POST['fecha_nacimiento']
-                ];
-                $result = $personaController->register($data);
-
-                if ($result === true) {
-                    echo "<script>alert('Persona registrada exitosamente.'); window.location='../View/login.php';</script>";
-                } else {
-                    echo "Error al guardar los datos de la persona: ";
-                    print_r($result);
-                }
+                $this->registrarPersona($usuario_id);
+            } elseif ($tipo_usuario === 'empresa') {
+                $this->registrarEmpresa($usuario_id);
             }
-
-            if ($tipo_usuario === 'empresa') {
-                $empresaController = new EmpresaController();
-                $data = [
-                    'id_usuario' => $usuario->id,
-                    'nombre_empresa' => $_POST['nombre'],
-                    'lugar_operacion' => $_POST['lugar_operacion'],
-                ];
-                $result = $empresaController->register($data);
-
-                if ($result === true) {
-                    echo "<script>alert('Empresa registrada exitosamente.');</script>";
-                } else {
-                    echo "Error al guardar los datos de la empresa: ";
-                    print_r($result);
-                }
-            }
+    
+            exit();
         } else {
-            echo "Error al guardar el usuario: ";
-            print_r($usuario->errors->full_messages());
+            // Si ocurre un error al guardar el usuario
+            SessionManager::set('mensaje', "Error al guardar el usuario.");
+            header("Location: ../View/register.php");
+            exit();
         }
     }
 
-    public static function verificarCorreo($correo) {
-        $usuario = Usuario::find('first', ['conditions' => ['correo = ?', $correo]]);
-        if ($usuario) {
-            echo "Usuario encontrado: " . $usuario->correo . "<br>";
+    private function registrarPersona($usuario_id) {
+        $nombre = Utils::sanitizarEntrada($_POST['nombre']);
+        $apellido = Utils::sanitizarEntrada($_POST['apellido']);
+        $fecha_nacimiento = Utils::sanitizarEntrada($_POST['fecha_nacimiento']);
+
+        if ($this->personaDAO->guardarPersona($usuario_id, $nombre, $apellido, $fecha_nacimiento)) {
+            Utils::redirigirConMensaje("../View/Usuarios/persona_dashboard.php?usuario_id=$usuario_id");
         } else {
-            echo "No se encontró un usuario con el correo: " . $correo . "<br>";
+            echo "Error al guardar los datos de la persona.";
         }
-        return $usuario;
+    }
+
+    private function registrarEmpresa($usuario_id) {
+        $nombre_empresa = Utils::sanitizarEntrada($_POST['nombre_empresa']);
+        $lugar_operacion = Utils::sanitizarEntrada($_POST['lugar_operacion']);
+
+        if ($this->empresaDAO->guardarEmpresa($usuario_id, $nombre_empresa, $lugar_operacion)) {
+            Utils::redirigirConMensaje('../View/login.php');
+        } else {
+            echo "Error al guardar los datos de la empresa.";
+        }
     }
 
     public function login() {
-        $correo = $_POST['correo'];
-        $contrasena = $_POST['contrasena'];
-    
+        // Sanitizar entradas
+        $correo = Utils::sanitizarEntrada($_POST['correo']);
+        $contrasena = Utils::sanitizarEntrada($_POST['contrasena']);
+
         // Verificar si el usuario existe
-        $usuario = Usuario::verificarCorreo($correo);
-    
-        if ($usuario && password_verify($contrasena, $usuario->contrasena)) {
+        $usuario = $this->usuarioDAO->obtenerUsuarioPorCorreo($correo);
+
+        if ($usuario && password_verify($contrasena, $usuario['contrasena'])) {
             // Iniciar sesión
             session_start();
-            $_SESSION['usuario_id'] = $usuario->id;
-            $_SESSION['tipo_usuario'] = $usuario->tipo_usuario;
-    
+            $_SESSION['usuario_id'] = $usuario['id_usuario'];
+            $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
+
             // Redirigir según el tipo de usuario
-            if ($usuario->tipo_usuario === 'persona') {
-                echo "<script>alert('Inicio de sesión exitoso.'); window.location='../view/Usuarios/persona_dashboard.php';</script>";
-            } elseif ($usuario->tipo_usuario === 'empresa') {
-                echo "<script>alert('Inicio de sesión exitoso.'); window.location='../View/empresa_dashboard.php';</script>";
+            if ($usuario['tipo_usuario'] === 'persona') {
+                Utils::redirigirConMensaje('../View/Usuarios/persona_dashboard.php');
+            } elseif ($usuario['tipo_usuario'] === 'empresa') {
+                Utils::redirigirConMensaje('../View/empresa_dashboard.php');
             } else {
-                echo "<script>alert('Tipo de usuario no reconocido.'); window.location='../View/login.php';</script>";
+                Utils::redirigirConMensaje('../View/login.php');
             }
         } else {
-            echo "<script>alert('Correo o contraseña incorrectos.');</script>";
+            Utils::redirigirConMensaje('../View/login.php');
         }
     }
 
-public function logout() {
-    session_start();
-    session_destroy();
-    echo "<script>alert('Sesión cerrada.'); window.location='../View/login.php';</script>";
+    public function logout() {
+        session_start();
+        session_destroy();
+        Utils::redirigirConMensaje('../view/Usuarios/index.php');
+    }
 }
-}
+
 // Manejar la acción desde la URL
 if (isset($_GET['action'])) {
     $controller = new UsuarioController();
     $action = $_GET['action'];
-
-    // Depurar el valor de $action
-    echo "Acción solicitada: " . $action . "<br>";
 
     // Verificar si el método existe en el controlador
     if (method_exists($controller, $action)) {
@@ -119,6 +121,6 @@ if (isset($_GET['action'])) {
     } else {
         echo "Acción no válida.";
     }
-}
 
+}
 ?>

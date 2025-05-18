@@ -1,3 +1,23 @@
+<?php
+require_once '../../dao/UsuarioDAO.php';
+// Obtener el ID del usuario desde la URL
+$usuario_id = isset($_GET['usuario_id']) ? intval($_GET['usuario_id']) : null;
+
+// Verificar si el ID del usuario es válido
+$mostrarBienvenida = false;
+$nombre_usuario = 'Usuario';
+
+if ($usuario_id) {
+    $usuarioDAO = new UsuarioDAO();
+    $usuario = $usuarioDAO->obtenerUsuarioPorId($usuario_id);
+
+    if ($usuario) {
+        $mostrarBienvenida = true;
+        $nombre_usuario = $usuario['nombre']; // Asegúrate de que el campo 'nombre' exista en la tabla
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -11,7 +31,7 @@
     <h1 class="logo">Uniempleo</h1>
     <nav class="nav">
       <a href="../View/perfilPersona.html">Mi perfil</a>
-      <a href="../Controller/logout.php">Cerrar sesión</a>
+      <a href="../../controllers/UsuarioController.php?action=logout">Cerrar sesión</a>
     </nav>
   </header>
 
@@ -49,6 +69,11 @@
   </div>
   <?php endif; ?>
 
+  <script>
+    function redirigirCompletarPerfil() {
+      window.location.href = "../View/perfilPersona.html"; // Cambia la URL según corresponda
+    }
+  </script>
   <script src="../Js/main.js"></script>
 </body>
-</html> 
+</html>

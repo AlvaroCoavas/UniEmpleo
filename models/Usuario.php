@@ -1,34 +1,48 @@
 <?php
-require_once '../libs/configbd.php';
-class Usuario extends ActiveRecord\Model {
-    // Especificar el nombre de la tabla
-    static $table_name = 'usuarios';
+class Usuario {
+    private $id_usuario;
+    private $correo;
+    private $contrasena;
+    private $tipo_usuario;
 
-    // Validaciones
-    static $validates_presence_of = [
-        ['correo', 'message' => 'El correo es obligatorio'],
-        ['contrasena', 'message' => 'La contraseña es obligatoria']
-    ];
-
-    // Relaciones
-    static $has_one = [
-        ['persona', 'class_name' => 'Persona', 'foreign_key' => 'id_usuario'],
-        ['empresa', 'class_name' => 'Empresa', 'foreign_key' => 'id_usuario']
-    ];
-
-    // Métodos personalizados
-    public static function verificarCorreo($correo) {
-        return self::find('first', ['conditions' => ['correo = ?', $correo]]);
+    // Constructor
+    public function __construct($id_usuario = null, $correo = null, $contrasena = null, $tipo_usuario = null) {
+        $this->id_usuario = $id_usuario;
+        $this->correo = $correo;
+        $this->contrasena = $contrasena;
+        $this->tipo_usuario = $tipo_usuario;
     }
 
-    public static function autenticar($correo, $contrasena) {
-        $usuario = self::verificarCorreo($correo);
-        if ($usuario && password_verify($contrasena, $usuario->contrasena)) {
-            return $usuario;
-        }
-        return null;
+    // Getters y Setters
+    public function getIdUsuario() {
+        return $this->id_usuario;
     }
 
+    public function getCorreo() {
+        return $this->correo;
+    }
+
+    public function setCorreo($correo) {
+        $this->correo = $correo;
+    }
+
+    public function getContrasena() {
+        return $this->contrasena;
+    }
+
+    public function setContrasena($contrasena) {
+        $this->contrasena = $contrasena;
+    }
+
+    public function getTipoUsuario() {
+        return $this->tipo_usuario;
+    }
+
+    public function setTipoUsuario($tipo_usuario) {
+        $this->tipo_usuario = $tipo_usuario;
+    }
+
+    // Métodos de utilidad
     public function esPersona() {
         return $this->tipo_usuario === 'persona';
     }

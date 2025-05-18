@@ -1,12 +1,20 @@
 <?php
-$host = "localhost";
-$user = "root";
-$password = "";
-$database = "bd_pa_uniempleo";
+class Database {
+    private static $host = "localhost";
+    private static $user = "root";
+    private static $password = "";
+    private static $database = "bd_pa_uniempleo";
+    private static $conn;
 
-$conn = new mysqli($host, $user, $password, $database);
+    public static function getConnection() {
+        if (self::$conn == null) {
+            self::$conn = new mysqli(self::$host, self::$user, self::$password, self::$database);
 
-if ($conn->connect_error) {
-    die("Error de conexión: " . $conn->connect_error);
+            if (self::$conn->connect_error) {
+                die("Error de conexión: " . self::$conn->connect_error);
+            }
+        }
+        return self::$conn;
+    }
 }
 ?>
