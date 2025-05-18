@@ -1,6 +1,6 @@
 <?php
 // Conexión a la base de datos
-$conexion = mysqli_connect("localhost", "root", "", "uniempleo");
+$conexion = mysqli_connect("localhost", "root", "", "bd_pa_uniempleo");
 if (!$conexion) {
     die("Error de conexión: " . mysqli_connect_error());
 }

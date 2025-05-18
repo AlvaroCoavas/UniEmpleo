@@ -90,7 +90,7 @@ class UsuarioController {
             if ($usuario->tipo_usuario === 'persona') {
                 echo "<script>alert('Inicio de sesión exitoso.'); window.location='../view/Usuarios/persona_dashboard.php';</script>";
             } elseif ($usuario->tipo_usuario === 'empresa') {
-                echo "<script>alert('Inicio de sesión exitoso.'); window.location='../View/empresa_dashboard.php';</script>";
+                echo "<script>alert('Inicio de sesión exitoso.'); window.location='../View/Usuarios/Empresa_dashboard.php';</script>";
             } else {
                 echo "<script>alert('Tipo de usuario no reconocido.'); window.location='../View/login.php';</script>";
             }

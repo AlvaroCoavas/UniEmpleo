@@ -405,6 +405,75 @@ body {
     color: #333;
   }
   
+  /* Estilos para carrusel de imágenes */
+
+.sliderbox{
+    width: 1360px;
+    height: 500px;
+    margin: 0px auto 0px;
+    overflow: hidden;
+}
+    
+.sliderbox ul{
+    display: flex;
+    padding: 0px;
+    width: 400%;
+    animation: slide 20s infinite alternate ease-in-out;
+}
+
+.sliderbox li{
+    width: 100%;
+    list-style: none;
+    position: relative;
+}
+.textimg h2{
+    font-size: 45px;
+    margin-bottom: 35px;
+
+}
+
+.sliderbox img{
+    width: 100%;
+
+}
+
+@keyframes slide {
+    0% { margin-left: 0; }
+    20% { margin-left: 0; }
+    25% { margin-left: -100%; }
+    45% { margin-left: -100%; }
+    50% { margin-left: -200%; }
+    70% { margin-left: -200%; }
+    75% { margin-left: -300%; }
+    100% { margin-left: -300%; }
+}
+
+@media (max-width: 991px) {
+    body {
+        padding: 30px;
+    }
+
+    .slider-box {
+        width: 100%;
+    }
+
+    .texto {
+        top: 50px;
+        padding: 0 25px;
+    }
+
+    .texto h2 {
+        font-size: 35px;
+        margin-bottom: 15px;
+    }
+
+    .texto p {
+        font-size: 15px;
+    }
+}
+
+
+
   /* Contenedor principal */
   .container {
     max-width: 1000px;
@@ -488,7 +557,67 @@ body {
     font-weight: bold;
     color: #007BFF;
   }
+  .form-group {
+  margin-bottom: 1.2rem;
+}
 
+label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+input[type="text"],
+textarea,
+select {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border 0.2s;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+  border-color: #0d6efd;
+  outline: none;
+}
+
+/* Submit Button */
+.btn-submit {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  padding: 0.8rem 1.2rem;
+  font-size: 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+}
+
+.btn-submit:hover {
+  background-color: #084cd6;
+}
+/* Botón crear vacante */
+.btn-crear-vacante {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 16px;
+  padding: 8px 16px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+.btn-crear-vacante:hover {
+  background: #0056b3;
+}
   /* Modal */
 .modal {
     display: none; /* Oculto por defecto */

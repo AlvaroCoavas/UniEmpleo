@@ -10,8 +10,8 @@
   <header class="header">
     <h1 class="logo">Uniempleo</h1>
     <nav class="nav">
-      <a href="../View/perfilPersona.html">Mi perfil</a>
-      <a href="../Controller/logout.php">Cerrar sesión</a>
+      <a href="../perfilPersona.php">Mi perfil</a>
+      <a href="../Usuarios/index.php">Cerrar sesión</a>
     </nav>
   </header>
 

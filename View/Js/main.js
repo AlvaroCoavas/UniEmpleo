@@ -28,6 +28,7 @@ function mostrarContenido(seccion) {
       main.innerHTML = `
         <h2>Vacantes Disponibles</h2>
         <p>Lista de vacantes cargadas automáticamente...</p>
+
       `;
     } else if (seccion === 'servicios') {
       main.innerHTML = `
@@ -46,6 +47,38 @@ function mostrarContenido(seccion) {
       `;
     }
   }
+
+  function mostrarContenidoE(seccion) {
+    const main = document.getElementById('mainContent');
+    if (seccion === 'vacantes') {
+  main.innerHTML = `
+    <div style="position: relative;">
+      <h2>Vacantes Creadas</h2>
+      <a href="../CrearVacante.html" class="btn-crear-vacante">Crear vacante</a>
+      <p>Lista de vacantes cargadas automáticamente...</p>
+    </div>
+  `;
+    } else if (seccion === 'servicios') {
+      main.innerHTML = `
+        <h2>Servicios Disponibles</h2>
+        <p>Personas ofreciendo servicios.</p>
+      `;
+    } else if (seccion === 'personas') {
+      main.innerHTML = `
+        <h2>Perfiles de Personas</h2>
+        <p>Personas registradas en la plataforma.</p>
+      `;
+    } else if (seccion === 'empresas') {
+      main.innerHTML = `
+        <h2>Empresas Registradas</h2>
+        <p>Empresas que solicitan servicios o publican vacantes.</p>
+      `;
+    }
+   
+  }
+  window.mostrarContenidoE = mostrarContenidoE;
+
+
 // Mostrar el modal si está presente
 document.addEventListener("DOMContentLoaded", () => {
   const modal = document.getElementById("modalBienvenida");
