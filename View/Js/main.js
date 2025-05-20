@@ -23,30 +23,68 @@ function seleccionarTipo(tipo) {
 }
 
 function mostrarContenido(seccion) {
-    const main = document.getElementById('mainContent');
-    if (seccion === 'vacantes') {
-      main.innerHTML = `
-        <h2>Vacantes Disponibles</h2>
-        <p>Lista de vacantes cargadas automáticamente...</p>
+  const main = document.getElementById('mainContent');
 
-      `;
-    } else if (seccion === 'servicios') {
-      main.innerHTML = `
-        <h2>Servicios Disponibles</h2>
-        <p>Personas ofreciendo servicios.</p>
-      `;
-    } else if (seccion === 'personas') {
-      main.innerHTML = `
-        <h2>Perfiles de Personas</h2>
-        <p>Personas registradas en la plataforma.</p>
-      `;
-    } else if (seccion === 'empresas') {
-      main.innerHTML = `
-        <h2>Empresas Registradas</h2>
-        <p>Empresas que solicitan servicios o publican vacantes.</p>
-      `;
-    }
+  if (seccion === 'vacantes') {
+    // Primero mostramos el título y contenedor vacío
+    main.innerHTML = `
+      <h2>Vacantes Disponibles</h2>
+      <div id="contenedorVacantes" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;"></div>
+    `;
+
+    // Luego hacemos la petición AJAX a tu PHP
+    fetch('../../../controllers/VacanteController.php?action=listar') // Cambia esta ruta si es diferente
+      .then(response => {
+        if (!response.ok) throw new Error("Error al obtener las vacantes");
+        return response.json();
+      })
+      .then(data => {
+        const contenedor = document.getElementById('contenedorVacantes');
+        contenedor.innerHTML = '';
+
+        data.forEach(vacante => {
+          const div = document.createElement('div');
+          div.classList.add('vacante-cuadro');
+          div.style.border = '2px solid black';
+          div.style.padding = '15px';
+          div.style.width = '180px';
+          div.style.height = '130px';
+          div.style.borderRadius = '10px';
+          div.style.backgroundColor = '#f9f9f9';
+          div.style.textAlign = 'left';
+
+          div.innerHTML = `
+            <h4>${vacante.titulo}</h4>
+            <p>${vacante.salario}</p>
+            <p>${vacante.tipo}</p>
+          `;
+
+          contenedor.appendChild(div);
+        });
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        main.innerHTML += `<p style="color: red;">No se pudieron cargar las vacantes.</p>`;
+      });
+
+  } else if (seccion === 'servicios') {
+    main.innerHTML = `
+      <h2>Servicios Disponibles</h2>
+      <p>Personas ofreciendo servicios.</p>
+    `;
+  } else if (seccion === 'personas') {
+    main.innerHTML = `
+      <h2>Perfiles de Personas</h2>
+      <p>Personas registradas en la plataforma.</p>
+    `;
+  } else if (seccion === 'empresas') {
+    main.innerHTML = `
+      <h2>Empresas Registradas</h2>
+      <p>Empresas que solicitan servicios o publican vacantes.</p>
+    `;
   }
+}
+window.mostrarContenido = mostrarContenido;
 
   function mostrarContenidoE(seccion) {
     const main = document.getElementById('mainContent');
@@ -54,7 +92,7 @@ function mostrarContenido(seccion) {
   main.innerHTML = `
     <div style="position: relative;">
       <h2>Vacantes Creadas</h2>
-      <a href="../EmpresaView/CrearVacante.php" class="btn-crear-vacante">Crear vacante</a>
+      <a href="../Empresaview/CrearVacante.php" class="btn-crear-vacante">Crear vacante</a>
       <p>Lista de vacantes cargadas automáticamente...</p>
     </div>
   `;

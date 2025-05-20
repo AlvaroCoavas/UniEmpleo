@@ -61,20 +61,33 @@ class VacanteController {
     // Método para listar vacantes
     public function listar() {
         try {
-            // Obtener todas las vacantes
             $vacantes = $this->vacanteDAO->obtenerTodasLasVacantes();
-            
-            // Incluir la vista
-            include '../views/vacante/listar.php';
+    
+            // Convertir a array plano
+            $vacantesArray = array_map(function($vacante) {
+                return [
+                    'id_vacante' => $vacante->getIdVacante(),
+                    'id_usuario_empresa' => $vacante->getIdUsuarioEmpresa(),
+                    'titulo' => $vacante->getTitulo(),
+                    'descripcion' => $vacante->getDescripcion(),
+                    'salario' => $vacante->getSalario(),
+                    'estado' => $vacante->getEstado(),
+                    'fecha_publicacion' => $vacante->getFechaPublicacion(),
+                    'ciudad' => $vacante->getCiudad(),
+                    'tipo' => $vacante->getTipo(),
+                    'perfil' => $vacante->getPerfil(),
+                ];
+            }, $vacantes);
+    
+            header('Content-Type: application/json');
+            echo json_encode($vacantesArray);
         } catch (Exception $e) {
-            $_SESSION['mensaje'] = "Error al listar vacantes: " . $e->getMessage();
-            $_SESSION['tipo_mensaje'] = "danger";
-            header('Location: index.php');
+            http_response_code(500);
+            echo json_encode(['error' => $e->getMessage()]);
             exit;
         }
     }
-
-}
+}    
 
 if (isset($_GET['action'])) {
     $action = $_GET['action'];

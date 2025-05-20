@@ -60,6 +60,7 @@ class UsuarioController {
 
                         
                     ]);
+                    
                 } elseif ($tipo_usuario === 'empresa') {
                     $empresaController = new EmpresaController();
                     $empresaController->register([
@@ -74,6 +75,14 @@ class UsuarioController {
                     ]);
                 }
                 
+                 // Redirigir según el tipo de usuario
+            if ($usuario->getTipoUsuario() === 'persona') {
+                Utils::redirigirConMensaje('../View/Usuarios/PersonaView/persona_dashboard.php');
+            } elseif ($usuario->getTipoUsuario() === 'empresa') {
+                Utils::redirigirConMensaje('../View/Usuarios/EmpresaView/empresa_dashboard.php');
+            } else {
+                Utils::redirigirConMensaje('../View/login.php');
+            }
                 exit();
             } else {
                 echo "Error al guardar el usuario.";

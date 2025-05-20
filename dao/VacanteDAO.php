@@ -22,7 +22,7 @@ class VacanteDAO {
         $tipo = $vacante->getTipo();
         $perfil = $vacante->getPerfil();
 
-    var_dump($id_usuario_empresa, $titulo, $descripcion, $salario, $estado, $fechaPublicacion, $ciudad, $tipo, $perfil);
+   
         // Preparar la consulta SQL
         $sql = "INSERT INTO vacantes (id_usuario_empresa, titulo, descripcion, salario, estado, fecha_publicacion, ciudad, tipo, perfil) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";

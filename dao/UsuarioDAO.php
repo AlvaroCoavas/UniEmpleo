@@ -25,7 +25,6 @@ class UsuarioDAO {
         $contrasena = $usuario->getContrasena();
         $tipo_usuario = $usuario->getTipoUsuario();
         
-        var_dump($correo, $contrasena, $tipo_usuario);
 
         $stmt->bind_param('sss', $correo, $contrasena, $tipo_usuario);
 
