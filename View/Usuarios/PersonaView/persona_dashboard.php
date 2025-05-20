@@ -1,5 +1,5 @@
 <?php
-require_once '../../dao/UsuarioDAO.php';
+require_once '../../../dao/UsuarioDAO.php';
 // Obtener el ID del usuario desde la URL
 $usuario_id = isset($_GET['usuario_id']) ? intval($_GET['usuario_id']) : null;
 
@@ -9,7 +9,7 @@ $nombre_usuario = 'Usuario';
 
 if ($usuario_id) {
     $usuarioDAO = new UsuarioDAO();
-    $usuario = $usuarioDAO->obtenerUsuarioPorId($usuario_id);
+    $usuario = $usuarioDAO->obtenerUsuarioPersonaPorId($usuario_id);
 
     if ($usuario) {
         $mostrarBienvenida = true;
@@ -24,14 +24,14 @@ if ($usuario_id) {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Uniempleo - Página Principal</title>
-  <link rel="stylesheet" href="../Css/style.css">
+  <link rel="stylesheet" href="../../Css/style.css">
 </head>
 <body>
   <header class="header">
     <h1 class="logo">Uniempleo</h1>
     <nav class="nav">
-      <a href="../View/perfilPersona.html">Mi perfil</a>
-      <a href="../../controllers/UsuarioController.php?action=logout">Cerrar sesión</a>
+      <a href="../PersonaView/perfilPersona.php">Mi perfil</a>
+      <a href="../../../controllers/UsuarioController.php?action=logout">Cerrar sesión</a>
     </nav>
   </header>
 
@@ -71,9 +71,9 @@ if ($usuario_id) {
 
   <script>
     function redirigirCompletarPerfil() {
-      window.location.href = "../View/perfilPersona.html"; // Cambia la URL según corresponda
+      window.location.href = "../Usuarios/perfilPersona.php"; // Cambia la URL según corresponda
     }
   </script>
-  <script src="../Js/main.js"></script>
+  <script src="../../Js/main.js"></script>
 </body>
 </html>

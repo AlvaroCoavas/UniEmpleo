@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>Publicar Vacante</title>
-    <link rel="stylesheet" href="Css/style.css">
+    <link rel="stylesheet" href="../../Css/style.css">
 </head>
 <body>
     <header class="header">
     <h1 class="logo">Uniempleo</h1>
     <nav class="nav">
-      <a href="../View/Usuarios/Empresa_dashboard.php">Volver</a>
+      <a href="../View/Usuarios/EmpresaView/Empresa_dashboard.php">Volver</a>
     </nav>
   </header>
 
     <main class="main-content">
     <section class="form-section">
-      <form action="../View/GuargarVacante.php" method="post" class="formulario">
+      <form action="../../../controllers/VacanteController.php?action=crearVacante" method="post" class="formulario">
         <h2 class="form-title">Crear Nueva Vacante</h2>
        <br> 
         <div class="form-group">
@@ -26,6 +26,11 @@
         <div class="form-group">
           <label for="descripcion">Descripción del Puesto</label>
           <textarea id="descripcion" name="descripcion" rows="5" required></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="salario">Salario</label>
+          <input type="text" id="salario" name="salario" required>
         </div>
 
         <div class="form-group">
@@ -44,7 +49,7 @@
         </div>
 
         <div class="form-group">
-          <label for="perfil">Perfil del Egresado</label>
+          <label for="perfil">Perfil del Empleado</label>
           <input type="text" id="perfil" name="perfil" placeholder="Ej. Ingeniero de sistemas, Administración..." required>
         </div>
 

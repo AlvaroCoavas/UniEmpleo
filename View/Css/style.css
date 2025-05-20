@@ -69,10 +69,10 @@ body {
 /* Estilos para los botones */
 .btn-modal {
     padding: 12px 30px;
-    background-color: #00acc1;  /* Color atractivo y moderno */
+    background-color: #00acc1; 
     color: white;
     border: none;
-    border-radius: 25px;  /* Bordes más redondeados */
+    border-radius: 25px;  
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;

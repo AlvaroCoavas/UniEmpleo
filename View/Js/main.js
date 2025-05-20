@@ -54,7 +54,7 @@ function mostrarContenido(seccion) {
   main.innerHTML = `
     <div style="position: relative;">
       <h2>Vacantes Creadas</h2>
-      <a href="../CrearVacante.html" class="btn-crear-vacante">Crear vacante</a>
+      <a href="../EmpresaView/CrearVacante.php" class="btn-crear-vacante">Crear vacante</a>
       <p>Lista de vacantes cargadas automáticamente...</p>
     </div>
   `;
@@ -93,30 +93,28 @@ function redirigirCompletarPerfil() {
 }
 
 // Verificar si estamos en la página de perfil
-if (window.location.pathname.includes("perfilPersona.html")) {
-  // Hacer una solicitud AJAX para obtener los datos del perfil
-  fetch('../Controller/Obtenerperfil.php')
-    .then(response => {
+document.addEventListener("DOMContentLoaded", function () {
+  fetch("../../../controllers/Obtenerperfil.php")
+    .then((response) => {
       if (!response.ok) {
         throw new Error("Error al obtener los datos del perfil");
       }
       return response.json();
     })
-    .then(data => {
-      // Mostrar los datos en el perfil
-      document.getElementById('nombre').textContent = data.nombre || "No especificado";
-      document.getElementById('correo').textContent = `Correo: ${data.correo || "No especificado"}`;
-      document.getElementById('tipo_usuario').textContent = `Tipo de usuario: ${data.tipo_usuario || "No especificado"}`;
-      document.getElementById('profesion_u_oficio').textContent = `Profesión u Oficio: ${data.profesion_u_oficio || "No especificado"}`;
-      document.getElementById('ubicacion').textContent = data.lugar_residencia || "No especificada";
-      document.getElementById('fecha_registro').textContent = new Date(data.fecha_registro).toLocaleDateString('es-ES', { year: 'numeric', month: 'long' });
-      document.getElementById('servicios_completados').textContent = data.servicios_completados || 0;
+    .then((data) => {
+      // Actualizar los elementos del DOM con los datos del perfil
+      document.getElementById("nombre").textContent = data.nombre || "No disponible";
+      document.getElementById("correo").textContent = `Correo: ${data.correo || "No disponible"}`;
+      document.getElementById("tipo_usuario").textContent = `Profesión u Oficio: ${data.profesion_u_oficio || "No disponible"}`;
+      document.getElementById("ubicacion").textContent = data.lugar_residencia || "No disponible";
+      document.getElementById("fecha_registro").textContent = data.fecha_registro || "No disponible";
+      document.getElementById("servicios_completados").textContent = data.servicios_completados || "No disponible";
+      document.getElementById("calificacion_promedio").textContent = data.calificacion_promedio || "No disponible";
     })
-    .catch(error => {
-      console.error("Error capturado:", error);
-      alert("Hubo un error al cargar los datos del perfil.");
+    .catch((error) => {
+      console.error("Error:", error);
     });
-}
+});
 
   document.addEventListener("DOMContentLoaded", () => {
     const formEmpresa = document.getElementById("formEmpresa"); // Seleccionar el formulario de empresa

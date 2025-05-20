@@ -1,44 +1,164 @@
 <?php
-require_once '../config/database.php';
+require_once __DIR__ . '/../config/database.php';
+require_once __DIR__ . '/../models/Empresa.php';
 
 class EmpresaDAO {
     private $conn;
 
     public function __construct() {
-        $this->conn = Database::getConnection();
+        $this->conn = Database::getConnection(); // Obtener la conexión a la base de datos
     }
 
-    // Crear una nueva empresa
-    public function guardarEmpresa($id_usuario, $nombre_empresa, $lugar_operacion) {
-        $sql = "INSERT INTO empresas (id_usuario, nombre_empresa, lugar_operacion) 
-                VALUES (:id_usuario, :nombre_empresa, :lugar_operacion)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id_usuario', $id_usuario);
-        $stmt->bindParam(':nombre_empresa', $nombre_empresa);
-        $stmt->bindParam(':lugar_operacion', $lugar_operacion);
-        return $stmt->execute();
+    // Guardar una nueva empresa
+    public function guardarEmpresa(Empresa $empresa) {
+
+        // Obtener los datos de la empresa
+        $id_usuario = $empresa->getIdUsuario();
+        $nombre_empresa = $empresa->getNombreEmpresa();
+        $lugar_operacion = $empresa->getLugarOperacion();
+        $ruc = $empresa->getRuc();
+        $sector = $empresa->getSector();
+        $descripcion = $empresa->getDescripcion();
+
+        // Luego guardar los datos específicos de la empresa
+        $sqlEmpresa = "INSERT INTO empresas (id_usuario, nombre_empresa, lugar_operacion, ruc, sector, descripcion) 
+                       VALUES (?, ?, ?, ?, ?, ?)";
+        $stmtEmpresa = $this->conn->prepare($sqlEmpresa);
+
+        if ($stmtEmpresa === false) {
+            throw new Exception("Error al preparar la consulta de empresas: " . $this->conn->error);
+        }
+
+        $stmtEmpresa->bind_param(
+            'isssss',
+            $id_usuario,
+            $nombre_empresa,
+            $lugar_operacion,
+            $ruc,
+            $sector,
+            $descripcion
+            
+            );
+
+        if (!$stmtEmpresa->execute()) {
+            throw new Exception("Error al ejecutar la consulta de empresas: " . $stmtEmpresa->error);
+        }
+
+        return true; // Inserción exitosa
     }
 
     // Obtener datos de una empresa por ID de usuario
-    public function obtenerEmpresaPorUsuarioId($id_usuario) {
-        $sql = "SELECT * FROM empresas WHERE id_usuario = :id_usuario";
+    public function obtenerEmpresaPorId($id_usuario) {
+        $sql = "SELECT u.id_usuario, u.correo, u.contrasena, e.nombre_empresa, e.lugar_operacion, e.ruc, e.sector, e.descripcion 
+                FROM usuarios u
+                JOIN empresas e ON u.id_usuario = e.id_usuario
+                WHERE u.id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id_usuario', $id_usuario);
+
+        if ($stmt === false) {
+            throw new Exception("Error al preparar la consulta: " . $this->conn->error);
+        }
+
+        $stmt->bind_param('i', $id_usuario);
         $stmt->execute();
-        return $stmt->fetch(PDO::FETCH_ASSOC);
+        $result = $stmt->get_result();
+
+        $data = $result->fetch_assoc();
+        if ($data) {
+            return new Empresa(
+                $data['id_usuario'],
+                $data['correo'],
+                $data['contrasena'],
+                $data['nombre_empresa'],
+                $data['lugar_operacion'],
+                $data['ruc'],
+                $data['sector'],
+                $data['descripcion']
+            );
+        }
+
+        return null; // Si no se encuentra la empresa
     }
 
     // Actualizar datos de una empresa
-    public function actualizarEmpresa($id_usuario, $nombre_empresa, $lugar_operacion) {
-        $sql = "UPDATE empresas 
-                SET nombre_empresa = :nombre_empresa, lugar_operacion = :lugar_operacion 
-                WHERE id_usuario = :id_usuario";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(':id_usuario', $id_usuario);
-        $stmt->bindParam(':nombre_empresa', $nombre_empresa);
-        $stmt->bindParam(':lugar_operacion', $lugar_operacion);
-        return $stmt->execute();
+    public function actualizarEmpresa(Empresa $empresa) {
+        // Actualizar los datos en la tabla usuarios
+        $sqlUsuario = "UPDATE usuarios SET correo = ?, contrasena = ? WHERE id_usuario = ?";
+        $stmtUsuario = $this->conn->prepare($sqlUsuario);
+
+        if ($stmtUsuario === false) {
+            throw new Exception("Error al preparar la consulta de usuarios: " . $this->conn->error);
+        }
+
+        $stmtUsuario->bind_param(
+            'ssi',
+            $empresa->getCorreo(),
+            $empresa->getContrasena(),
+            $empresa->getIdUsuario()
+        );
+
+        if (!$stmtUsuario->execute()) {
+            throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
+        }
+
+        // Actualizar los datos específicos de la empresa
+        $sqlEmpresa = "UPDATE empresas 
+                       SET nombre_empresa = ?, lugar_operacion = ?, ruc = ?, sector = ?, descripcion = ? 
+                       WHERE id_usuario = ?";
+        $stmtEmpresa = $this->conn->prepare($sqlEmpresa);
+
+        if ($stmtEmpresa === false) {
+            throw new Exception("Error al preparar la consulta de empresas: " . $this->conn->error);
+        }
+
+        $stmtEmpresa->bind_param(
+            'sssssi',
+            $empresa->getNombreEmpresa(),
+            $empresa->getLugarOperacion(),
+            $empresa->getRuc(),
+            $empresa->getSector(),
+            $empresa->getDescripcion(),
+            $empresa->getIdUsuario()
+        );
+
+        if (!$stmtEmpresa->execute()) {
+            throw new Exception("Error al ejecutar la consulta de empresas: " . $stmtEmpresa->error);
+        }
+
+        return true; // Actualización exitosa
     }
 
+    // Eliminar una empresa por ID de usuario
+    public function eliminarEmpresa($id_usuario) {
+        // Eliminar primero de la tabla empresas
+        $sqlEmpresa = "DELETE FROM empresas WHERE id_usuario = ?";
+        $stmtEmpresa = $this->conn->prepare($sqlEmpresa);
+
+        if ($stmtEmpresa === false) {
+            throw new Exception("Error al preparar la consulta de empresas: " . $this->conn->error);
+        }
+
+        $stmtEmpresa->bind_param('i', $id_usuario);
+
+        if (!$stmtEmpresa->execute()) {
+            throw new Exception("Error al ejecutar la consulta de empresas: " . $stmtEmpresa->error);
+        }
+
+        // Luego eliminar de la tabla usuarios
+        $sqlUsuario = "DELETE FROM usuarios WHERE id_usuario = ?";
+        $stmtUsuario = $this->conn->prepare($sqlUsuario);
+
+        if ($stmtUsuario === false) {
+            throw new Exception("Error al preparar la consulta de usuarios: " . $this->conn->error);
+        }
+
+        $stmtUsuario->bind_param('i', $id_usuario);
+
+        if (!$stmtUsuario->execute()) {
+            throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
+        }
+
+        return true; // Eliminación exitosa
+    }
 }
 ?>

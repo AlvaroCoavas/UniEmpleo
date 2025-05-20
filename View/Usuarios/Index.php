@@ -65,7 +65,8 @@
         <!-- Formulario para Empresa -->
         <form id="formEmpresa" action="../../controllers/UsuarioController.php?action=register" method="POST" style="display: none; margin-top: 15px;">
             <input type="hidden" name="tipo_usuario" value="empresa">
-            <input type="text" name="nombre" placeholder="Nombre de la empresa" required>
+            <input type="text" name="nombre_empresa" placeholder="Nombre de la empresa" required>
+            <input type="text" name="ruc" placeholder="RUC de la empresa" required>
 
             <div style="display: flex; align-items: center; gap: 10px;" >
                 <input type="text" id="pais" placeholder="País" required style="width: 100px;">

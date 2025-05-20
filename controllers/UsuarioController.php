@@ -1,100 +1,105 @@
 <?php
 require_once '../dao/UsuarioDAO.php';
-require_once '../dao/PersonaDAO.php';
-require_once '../dao/EmpresaDAO.php';
+require_once '../controllers/PersonaController.php';
+require_once '../controllers/EmpresaController.php';
+require_once '../models/Usuario.php';
 require_once '../utils/Utils.php';
-require_once '../utils/SessionManager.php';
-
 
 class UsuarioController {
     private $usuarioDAO;
-    private $personaDAO;
-    private $empresaDAO;
 
     public function __construct() {
         $this->usuarioDAO = new UsuarioDAO();
-        $this->personaDAO = new PersonaDAO();
-        $this->empresaDAO = new EmpresaDAO();
     }
 
-    
-    public function register() {
-        $correo = Utils::sanitizarEntrada($_POST['correo']);
-        $contrasena = Utils::sanitizarEntrada($_POST['contrasena']);
-        $tipo_usuario = Utils::sanitizarEntrada($_POST['tipo_usuario']);
-    
-        // Verificar si el correo ya existe
-        if ($this->usuarioDAO->verificarCorreo($correo)) {
-            SessionManager::set('mensaje', "El correo ya tiene una cuenta. Por favor, inicie sesión.");
-            header("Location: ../View/register.php");
-            exit();
-        }
-    
-        // Hashear la contraseña
-        $hash_contrasena = password_hash($contrasena, PASSWORD_DEFAULT);
-    
-        // Guardar el usuario
-        if ($this->usuarioDAO->guardarUsuario($correo, $hash_contrasena, $tipo_usuario)) {
-            $usuario_id = $this->usuarioDAO->obtenerUltimoId();
+
+        public function register() {
+           
+            $correo = Utils::sanitizarEntrada($_POST['correo']);
+            $contrasena = Utils::sanitizarEntrada($_POST['contrasena']);
+            $tipo_usuario = Utils::sanitizarEntrada($_POST['tipo_usuario'] ?? null);
             
-            // Registrar datos adicionales según el tipo de usuario
-            if ($tipo_usuario === 'persona') {
-                $this->registrarPersona($usuario_id);
-            } elseif ($tipo_usuario === 'empresa') {
-                $this->registrarEmpresa($usuario_id);
+    
+            if (empty($tipo_usuario)) {
+                echo "El tipo de usuario es obligatorio.";
+                exit();
             }
     
-            exit();
-        } else {
-            // Si ocurre un error al guardar el usuario
-            SessionManager::set('mensaje', "Error al guardar el usuario.");
-            header("Location: ../View/register.php");
-            exit();
+            // Verificar si el correo ya existe
+            if ($this->usuarioDAO->verificarCorreo($correo)) {
+                echo "El correo ya está registrado.";
+                exit();
+            }
+    
+            // Hashear la contraseña
+            $hash_contrasena = password_hash($contrasena, PASSWORD_DEFAULT);
+    
+            // Crear una instancia del modelo Usuario
+            $usuario = new Usuario(null, $correo, $hash_contrasena, $tipo_usuario);
+    
+            // Guardar el usuario
+            if ($this->usuarioDAO->guardarUsuario($usuario)) {
+                $usuario_id = $this->usuarioDAO->obtenerUltimoId();
+   
+                // Delegar el registro adicional según el tipo de usuario
+                if ($tipo_usuario === 'persona') {
+                    $personaController = new PersonaController();
+                    $personaController->register([
+                        'id_usuario' => $usuario_id,
+                        'correo' => $correo,
+                        'contrasena' => $hash_contrasena,
+                        'nombre' => Utils::sanitizarEntrada($_POST['nombre'] ?? null),
+                        'apellido' => Utils::sanitizarEntrada($_POST['apellido'] ?? null),
+                        'cedula' => Utils::sanitizarEntrada($_POST['cedula'] ?? null),
+                        'telefono' => Utils::sanitizarEntrada($_POST['telefono'] ?? null),
+                        'fecha_nacimiento' => Utils::sanitizarEntrada($_POST['fecha_nacimiento'] ?? null),
+                        'lugar_residencia' => Utils::sanitizarEntrada($_POST['lugar_residencia'] ?? null),
+                        'profesion_u_oficio' => Utils::sanitizarEntrada($_POST['profesion_u_oficio'] ?? null),
+                        'resumen_profesional' => Utils::sanitizarEntrada($_POST['resumen_profesional'] ?? null),
+                        'servicios_completados' => Utils::sanitizarEntrada($_POST['servicios_completados'] ?? 0)
+
+                        
+                    ]);
+                } elseif ($tipo_usuario === 'empresa') {
+                    $empresaController = new EmpresaController();
+                    $empresaController->register([
+                        'id_usuario' => $usuario_id,
+                        'correo' => $correo,
+                        'contrasena' => $hash_contrasena,
+                        'nombre_empresa' => Utils::sanitizarEntrada($_POST['nombre_empresa'] ?? null),
+                        'lugar_operacion' => Utils::sanitizarEntrada($_POST['lugar_operacion'] ?? null),
+                        'ruc' => Utils::sanitizarEntrada($_POST['ruc'] ?? null),
+                        'sector' => Utils::sanitizarEntrada($_POST['sector'] ?? null),
+                        'descripcion' => Utils::sanitizarEntrada($_POST['descripcion'] ?? null)
+                    ]);
+                }
+                
+                exit();
+            } else {
+                echo "Error al guardar el usuario.";
+                exit();
+            }
         }
-    }
-
-    private function registrarPersona($usuario_id) {
-        $nombre = Utils::sanitizarEntrada($_POST['nombre']);
-        $apellido = Utils::sanitizarEntrada($_POST['apellido']);
-        $fecha_nacimiento = Utils::sanitizarEntrada($_POST['fecha_nacimiento']);
-
-        if ($this->personaDAO->guardarPersona($usuario_id, $nombre, $apellido, $fecha_nacimiento)) {
-            Utils::redirigirConMensaje("../View/Usuarios/persona_dashboard.php?usuario_id=$usuario_id");
-        } else {
-            echo "Error al guardar los datos de la persona.";
-        }
-    }
-
-    private function registrarEmpresa($usuario_id) {
-        $nombre_empresa = Utils::sanitizarEntrada($_POST['nombre_empresa']);
-        $lugar_operacion = Utils::sanitizarEntrada($_POST['lugar_operacion']);
-
-        if ($this->empresaDAO->guardarEmpresa($usuario_id, $nombre_empresa, $lugar_operacion)) {
-            Utils::redirigirConMensaje('../View/login.php');
-        } else {
-            echo "Error al guardar los datos de la empresa.";
-        }
-    }
+    
 
     public function login() {
-        // Sanitizar entradas
         $correo = Utils::sanitizarEntrada($_POST['correo']);
         $contrasena = Utils::sanitizarEntrada($_POST['contrasena']);
 
         // Verificar si el usuario existe
         $usuario = $this->usuarioDAO->obtenerUsuarioPorCorreo($correo);
 
-        if ($usuario && password_verify($contrasena, $usuario['contrasena'])) {
+        if ($usuario && password_verify($contrasena, $usuario->getContrasena())) {
             // Iniciar sesión
             session_start();
-            $_SESSION['usuario_id'] = $usuario['id_usuario'];
-            $_SESSION['tipo_usuario'] = $usuario['tipo_usuario'];
+            $_SESSION['usuario_id'] = $usuario->getIdUsuario();
+            $_SESSION['tipo_usuario'] = $usuario->getTipoUsuario();
 
             // Redirigir según el tipo de usuario
-            if ($usuario['tipo_usuario'] === 'persona') {
-                Utils::redirigirConMensaje('../View/Usuarios/persona_dashboard.php');
-            } elseif ($usuario['tipo_usuario'] === 'empresa') {
-                Utils::redirigirConMensaje('../View/empresa_dashboard.php');
+            if ($usuario->getTipoUsuario() === 'persona') {
+                Utils::redirigirConMensaje('../View/Usuarios/PersonaView/persona_dashboard.php');
+            } elseif ($usuario->getTipoUsuario() === 'empresa') {
+                Utils::redirigirConMensaje('../View/Usuarios/EmpresaView/empresa_dashboard.php');
             } else {
                 Utils::redirigirConMensaje('../View/login.php');
             }
@@ -108,19 +113,31 @@ class UsuarioController {
         session_destroy();
         Utils::redirigirConMensaje('../view/Usuarios/index.php');
     }
+
+
 }
 
-// Manejar la acción desde la URL
 if (isset($_GET['action'])) {
-    $controller = new UsuarioController();
     $action = $_GET['action'];
+    $controller = new UsuarioController();
 
-    // Verificar si el método existe en el controlador
-    if (method_exists($controller, $action)) {
-        $controller->$action(); // Llamar al método dinámicamente
-    } else {
-        echo "Acción no válida.";
+    try {
+        if ($action === 'register') {
+            $controller->register();
+        } elseif ($action === 'login') {
+            $controller->login();
+        } elseif ($action === 'logout') {
+            $controller->logout();
+        } else {
+            http_response_code(400); // Bad Request
+            echo json_encode(["error" => "Acción no válida"]);
+        }
+    } catch (Exception $e) {
+        http_response_code(500); // Internal Server Error
+        echo json_encode(["error" => $e->getMessage()]);
     }
-
+} else {
+    http_response_code(400); // Bad Request
+    echo json_encode(["error" => "Acción no especificada"]);    
 }
 ?>

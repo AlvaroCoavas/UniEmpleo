@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Perfil de Usuario</title>
-  <link rel="stylesheet" href="../Css/style.css">
+  <link rel="stylesheet" href="../../Css/style.css">
 </head>
 <body>
   <div class="container">
     <div class="profile-header">
-      <img src="https://via.placeholder.com/120" alt="Foto de perfil" />
+      <img src="" alt="Foto de perfil" />
       <div class="profile-info">
         <h1 id="nombre">Cargando...</h1>
         <p id="correo">Correo: Cargando...</p>
@@ -41,6 +41,6 @@
     </div>
   </div>
   
-  <script src="../Js/main.js"></script>
+  <script src="../../Js/main.js" defer></script>
 </body>
 </html>

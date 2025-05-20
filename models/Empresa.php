@@ -1,23 +1,29 @@
 <?php
-class Empresa {
-    private $id_usuario;
+require_once 'Usuario.php';
+
+class Empresa extends Usuario {
     private $nombre_empresa;
     private $lugar_operacion;
+    private $ruc;
+    private $sector;
+    private $descripcion;
 
-    // Constructor
-    public function __construct($id_usuario = null, $nombre_empresa = null, $lugar_operacion = null) {
-        $this->id_usuario = $id_usuario;
+    public function __construct(
+        $id_usuario = null,
+        $correo = null,
+        $contrasena = null,
+        $nombre_empresa = null,
+        $lugar_operacion = null,
+        $ruc = null,
+        $sector = null,
+        $descripcion = null
+    ) {
+        parent::__construct($id_usuario, $correo, $contrasena); // Llama al constructor de Usuario
         $this->nombre_empresa = $nombre_empresa;
         $this->lugar_operacion = $lugar_operacion;
-    }
-
-    // Getters y Setters
-    public function getIdUsuario() {
-        return $this->id_usuario;
-    }
-
-    public function setIdUsuario($id_usuario) {
-        $this->id_usuario = $id_usuario;
+        $this->ruc = $ruc;
+        $this->sector = $sector;
+        $this->descripcion = $descripcion;
     }
 
     public function getNombreEmpresa() {
@@ -34,6 +40,30 @@ class Empresa {
 
     public function setLugarOperacion($lugar_operacion) {
         $this->lugar_operacion = $lugar_operacion;
+    }
+
+    public function getRuc() {
+        return $this->ruc;
+    }
+
+    public function setRuc($ruc) {
+        $this->ruc = $ruc;
+    }
+
+    public function getSector() {
+        return $this->sector;
+    }
+
+    public function setSector($sector) {
+        $this->sector = $sector;
+    }
+
+    public function getDescripcion() {
+        return $this->descripcion;
+    }
+
+    public function setDescripcion($descripcion) {
+        $this->descripcion = $descripcion;
     }
 }
 ?>
