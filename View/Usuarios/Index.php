@@ -58,8 +58,12 @@
             <label>
                 <input type="checkbox" name="terminos" required> Acepto los <a href="terminos_y_condiciones.html" target="_blank">términos y condiciones</a>
             </label>
-        
+
+            <div id="error_contrasena_persona" style="color:red; font-size:13px; margin-bottom:8px; display:none;">
+                Tu contraseña debe ser mínimo de 8 dígitos.
+            </div>
             <input type="submit" value="Registrarse">
+            
         </form>
 
         <!-- Formulario para Empresa -->

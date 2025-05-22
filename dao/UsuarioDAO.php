@@ -119,57 +119,65 @@ class UsuarioDAO {
 
     // Actualizar un usuario
     public function actualizarUsuario(Usuario $usuario) {
-        $sql = "UPDATE usuarios SET correo = ?, contrasena = ?, tipo_usuario = ? WHERE id_usuario = ?";
-        $stmt = $this->conn->prepare($sql);
+    $sql = "UPDATE usuarios SET correo = ?, contrasena = ?, tipo_usuario = ? WHERE id_usuario = ?";
+    $stmt = $this->conn->prepare($sql);
 
-        if ($stmt === false) {
-            throw new Exception("Error al preparar la consulta: " . $this->conn->error);
-        }
-
-        $stmt->bind_param(
-            'sssi',
-            $usuario->getCorreo(),
-            $usuario->getContrasena(),
-            $usuario->getTipoUsuario(),
-            $usuario->getIdUsuario()
-        );
-
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
-        }
+    if ($stmt === false) {
+        throw new Exception("Error al preparar la consulta: " . $this->conn->error);
     }
+
+    $correo = $usuario->getCorreo();
+    $contrasena = $usuario->getContrasena();
+    $tipoUsuario = $usuario->getTipoUsuario();
+    $idUsuario = $usuario->getIdUsuario();
+
+    $stmt->bind_param(
+        'sssi',
+        $correo,
+        $contrasena,
+        $tipoUsuario,
+        $idUsuario
+    );
+
+    if ($stmt->execute()) {
+        return true;
+    } else {
+        throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+    }
+}
 
     // Eliminar un usuario
-    public function eliminarUsuario($id_usuario) {
-        // Verificar el tipo de usuario antes de eliminar
-        $usuario = $this->obtenerUsuarioPorId($id_usuario);
+    public function eliminarPersona($id_usuario) {
+    // Eliminar primero de la tabla personas
+    $sqlPersona = "DELETE FROM personas WHERE id_usuario = ?";
+    $stmtPersona = $this->conn->prepare($sqlPersona);
 
-        if ($usuario instanceof Persona) {
-            $personaDAO = new PersonaDAO();
-            $personaDAO->eliminarPersona($id_usuario);
-        } elseif ($usuario instanceof Empresa) {
-            $empresaDAO = new EmpresaDAO();
-            $empresaDAO->eliminarEmpresa($id_usuario);
-        }
-
-        // Eliminar de la tabla usuarios
-        $sql = "DELETE FROM usuarios WHERE id_usuario = ?";
-        $stmt = $this->conn->prepare($sql);
-
-        if ($stmt === false) {
-            throw new Exception("Error al preparar la consulta: " . $this->conn->error);
-        }
-
-        $stmt->bind_param('i', $id_usuario);
-
-        if ($stmt->execute()) {
-            return true;
-        } else {
-            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
-        }
+    if ($stmtPersona === false) {
+        throw new Exception("Error al preparar la consulta de personas: " . $this->conn->error);
     }
+
+    $stmtPersona->bind_param('i', $id_usuario);
+
+    if (!$stmtPersona->execute()) {
+        throw new Exception("Error al ejecutar la consulta de personas: " . $stmtPersona->error);
+    }
+
+    // Luego eliminar de la tabla usuarios
+    $sqlUsuario = "DELETE FROM usuarios WHERE id_usuario = ?";
+    $stmtUsuario = $this->conn->prepare($sqlUsuario);
+
+    if ($stmtUsuario === false) {
+        throw new Exception("Error al preparar la consulta de usuarios: " . $this->conn->error);
+    }
+
+    $stmtUsuario->bind_param('i', $id_usuario);
+
+    if (!$stmtUsuario->execute()) {
+        throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
+    }
+
+    return true; // Eliminación exitosa
+}
 
     // Verificar si un correo ya está registrado
     public function verificarCorreo($correo) {

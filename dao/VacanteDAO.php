@@ -64,11 +64,6 @@ class VacanteDAO {
             $stmt->close();
             
             return $idInsertado;
-        
-            // Cerrar el statement antes de propagar la excepción
-            $stmt->close();
-            throw $e;
-        
     }
 
     // Obtener todas las vacantes
@@ -142,17 +137,27 @@ class VacanteDAO {
             throw new Exception("Error al preparar la consulta: " . $this->conn->error);
         }
 
+        $titulo = $vacante->getTitulo();
+        $descripcion = $vacante->getDescripcion();
+        $salario = $vacante->getSalario();
+        $estado = $vacante->getEstado();
+        $fechaPublicacion = $vacante->getFechaPublicacion();
+        $ciudad = $vacante->getCiudad();
+        $tipo = $vacante->getTipo();
+        $perfil = $vacante->getPerfil();
+        $idVacante = $vacante->getIdVacante();
+
         $stmt->bind_param(
             'ssdsssssi',
-            $vacante->getTitulo(),
-            $vacante->getDescripcion(),
-            $vacante->getSalario(),
-            $vacante->getEstado(),
-            $vacante->getFechaPublicacion(),
-            $vacante->getCiudad(),
-            $vacante->getTipo(),
-            $vacante->getPerfil(),
-            $vacante->getIdVacante()
+            $titulo,
+            $descripcion,
+            $salario,
+            $estado,
+            $fechaPublicacion,
+            $ciudad,
+            $tipo,
+            $perfil,
+            $idVacante
         );
 
         if (!$stmt->execute()) {
