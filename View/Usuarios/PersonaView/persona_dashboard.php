@@ -1,9 +1,9 @@
 <?php
+session_start(); 
 require_once '../../../dao/UsuarioDAO.php';
-// Obtener el ID del usuario desde la URL
+
 $usuario_id = isset($_GET['usuario_id']) ? intval($_GET['usuario_id']) : null;
 
-// Verificar si el ID del usuario es válido
 $mostrarBienvenida = false;
 $nombre_usuario = 'Usuario';
 
@@ -13,7 +13,7 @@ if ($usuario_id) {
 
     if ($usuario) {
         $mostrarBienvenida = true;
-        $nombre_usuario = $usuario['nombre']; // Asegúrate de que el campo 'nombre' exista en la tabla
+        $nombre_usuario = $usuario['nombre'];
     }
 }
 ?>
@@ -25,6 +25,7 @@ if ($usuario_id) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Uniempleo - Página Principal</title>
   <link rel="stylesheet" href="../../Css/style.css">
+  
 </head>
 <body>
   <header class="header">
@@ -39,7 +40,7 @@ if ($usuario_id) {
     <aside class="sidebar">
       <button class="sidebar-btn" onclick="mostrarContenido('vacantes')">Vacantes</button>
       <button class="sidebar-btn" onclick="mostrarContenido('servicios')">Servicios</button>
-      <button class="sidebar-btn" onclick="mostrarContenido('personas')">Personas</button>
+      <button class="sidebar-btn" onclick="mostrarContenido('Mis Postulaciones')">Mis Postulaciones</button>
       <button class="sidebar-btn" onclick="mostrarContenido('empresas')">Empresas</button>
     </aside>
 
@@ -71,8 +72,11 @@ if ($usuario_id) {
 
   <script>
     function redirigirCompletarPerfil() {
-      window.location.href = "../Usuarios/perfilPersona.php"; // Cambia la URL según corresponda
+      window.location.href = "../Usuarios/perfilPersona.php"; 
     }
+  </script>
+  <script>
+    const usuarioActivo = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
   </script>
   <script src="../../Js/main.js"></script>
 </body>

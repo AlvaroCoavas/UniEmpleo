@@ -1,9 +1,8 @@
 <?php
 require_once '../../../dao/UsuarioDAO.php';
-// Obtener el ID del usuario desde la URL
+
 $usuario_id = isset($_GET['usuario_id']) ? intval($_GET['usuario_id']) : null;
 
-// Verificar si el ID del usuario es válido
 $mostrarBienvenida = false;
 $nombre_usuario = 'Usuario';
 

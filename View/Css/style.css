@@ -76,23 +76,23 @@ body {
     font-size: 16px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.3s ease;  /* Transiciones suaves */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  /* Sombra para dar profundidad */
+    transition: background-color 0.3s ease, transform 0.3s ease; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
 }
 
 .btn-modal:hover {
-    background-color: #007c91;  /* Cambio a un color más oscuro cuando pasa el cursor */
-    transform: translateY(-3px);  /* Efecto de elevación */
+    background-color: #007c91;  
+    transform: translateY(-3px); 
 }
 
 .btn-modal:active {
-    transform: translateY(1px);  /* Efecto cuando el botón es presionado */
+    transform: translateY(1px);  
 }
 
-/* Agregar estilo para el foco, cuando el botón es seleccionado */
+
 .btn-modal:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.5);  /* Sombra para el enfoque */
+    box-shadow: 0 0 0 3px rgba(0, 172, 193, 0.5);  
 }
 
 .icono-btn {
@@ -222,7 +222,7 @@ body {
 .footer-text {
     font-size: 0.9rem;
 }
-/* === Estilos adicionales para resultados iniciales y tarjetas dinámicas === */
+
 
 /* Tarjetas de resultado */
 .result-card {
@@ -618,6 +618,74 @@ select:focus {
 .btn-crear-vacante:hover {
   background: #0056b3;
 }
+
+
+.btn-solicitar-servicios,
+.btn-ver-solicitudes {
+  margin-left: 10px;
+  padding: 8px 16px;
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+
+.btn-solicitar-servicios:hover,
+.btn-ver-solicitudes:hover {
+  background: #0056b3;
+}
+
+.btn-accion-servicio {
+    position: absolute;
+    bottom: 15px;
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    text-align: center;
+    font-weight: bold;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .btn-derecha {
+    right: 15px;
+  }
+  
+  
+  .btn-accion-servicio:not(.btn-cancelar) {
+    background-color: rgb(40, 120, 167);
+    color: white;
+  }
+  
+  .btn-accion-servicio:not(.btn-cancelar):hover {
+    background-color: rgb(30, 100, 140);
+  }
+
+  .btn-cancelar {
+    background-color: rgb(200, 60, 60);
+    color: white;
+  }
+  
+  .btn-cancelar:hover {
+    background-color: rgb(170, 40, 40);
+  }
+  
+  .btn-izquierda {
+    left: 15px;
+  }
+
+.contenedor-botones {
+  display: flex;
+  justify-content: flex-end;
+  margin: 16px;
+}
+
   /* Modal */
 .modal {
     display: none; /* Oculto por defecto */

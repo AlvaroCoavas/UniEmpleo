@@ -25,23 +25,18 @@ class UsuarioController {
                 exit();
             }
     
-            // Verificar si el correo ya existe
             if ($this->usuarioDAO->verificarCorreo($correo)) {
                 echo "El correo ya está registrado.";
                 exit();
             }
     
-            // Hashear la contraseña
             $hash_contrasena = password_hash($contrasena, PASSWORD_DEFAULT);
     
-            // Crear una instancia del modelo Usuario
             $usuario = new Usuario(null, $correo, $hash_contrasena, $tipo_usuario);
     
-            // Guardar el usuario
             if ($this->usuarioDAO->guardarUsuario($usuario)) {
                 $usuario_id = $this->usuarioDAO->obtenerUltimoId();
    
-                // Delegar el registro adicional según el tipo de usuario
                 if ($tipo_usuario === 'persona') {
                     $personaController = new PersonaController();
                     $personaController->register([
@@ -75,7 +70,6 @@ class UsuarioController {
                     ]);
                 }
                 
-                 // Redirigir según el tipo de usuario
             if ($usuario->getTipoUsuario() === 'persona') {
                 Utils::redirigirConMensaje('../View/Usuarios/PersonaView/persona_dashboard.php');
             } elseif ($usuario->getTipoUsuario() === 'empresa') {
@@ -95,16 +89,14 @@ class UsuarioController {
         $correo = Utils::sanitizarEntrada($_POST['correo']);
         $contrasena = Utils::sanitizarEntrada($_POST['contrasena']);
 
-        // Verificar si el usuario existe
         $usuario = $this->usuarioDAO->obtenerUsuarioPorCorreo($correo);
 
         if ($usuario && password_verify($contrasena, $usuario->getContrasena())) {
-            // Iniciar sesión
+  
             session_start();
             $_SESSION['usuario_id'] = $usuario->getIdUsuario();
             $_SESSION['tipo_usuario'] = $usuario->getTipoUsuario();
 
-            // Redirigir según el tipo de usuario
             if ($usuario->getTipoUsuario() === 'persona') {
                 Utils::redirigirConMensaje('../View/Usuarios/PersonaView/persona_dashboard.php');
             } elseif ($usuario->getTipoUsuario() === 'empresa') {
@@ -138,15 +130,15 @@ if (isset($_GET['action'])) {
         } elseif ($action === 'logout') {
             $controller->logout();
         } else {
-            http_response_code(400); // Bad Request
+            http_response_code(400); 
             echo json_encode(["error" => "Acción no válida"]);
         }
     } catch (Exception $e) {
-        http_response_code(500); // Internal Server Error
+        http_response_code(500); 
         echo json_encode(["error" => $e->getMessage()]);
     }
 } else {
-    http_response_code(400); // Bad Request
+    http_response_code(400); 
     echo json_encode(["error" => "Acción no especificada"]);    
 }
 ?>

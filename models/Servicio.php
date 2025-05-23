@@ -1,24 +1,69 @@
 <?php
-require_once '../libs/configbd.php';
+class Servicio {
+    private $id_servicio;
+    private $id_usuario_solicita;
+    private $nombre_servicio;
+    private $descripcion;
+    private $fecha_solicitud;
+    private $estado;
 
-class Servicio extends ActiveRecord\Model {
-    static $table_name = 'servicios'; // Nombre de la tabla en la base de datos
+    public function __construct($id_servicio = null, $id_usuario_solicita = null, $nombre_servicio = null, $descripcion = null, $fecha_solicitud = null, $estado = null) {
+        $this->id_servicio = $id_servicio;
+        $this->id_usuario_solicita = $id_usuario_solicita;
+        $this->nombre_servicio = $nombre_servicio;
+        $this->descripcion = $descripcion;
+        $this->fecha_solicitud = $fecha_solicitud;
+        $this->estado = $estado;
+    }
 
-    // Relaciones
-    static $has_many = [
-        ['conflictos', 'class_name' => 'Conflicto', 'foreign_key' => 'id_servicio']
-    ];
+    public function getIdServicio() {
+        return $this->id_servicio;
+    }
 
-    static $belongs_to = [
-        ['usuario_solicita', 'class_name' => 'Usuario', 'foreign_key' => 'id_usuario_solicita'],
-        ['usuario_ofrece', 'class_name' => 'Usuario', 'foreign_key' => 'id_usuario_ofrece']
-    ];
+    public function setIdServicio($id_servicio) {
+        $this->id_servicio = $id_servicio;
+    }
 
-    // Validaciones
-    static $validates_presence_of = [
-        ['descripcion', 'message' => 'La descripción es obligatoria'],
-        ['id_usuario_solicita', 'message' => 'El usuario que solicita el servicio es obligatorio'],
-        ['id_usuario_ofrece', 'message' => 'El usuario que ofrece el servicio es obligatorio']
-    ];
+    public function getIdUsuarioSolicita() {
+        return $this->id_usuario_solicita;
+    }
+
+    public function setIdUsuarioSolicita($id_usuario_solicita) {
+        $this->id_usuario_solicita = $id_usuario_solicita;
+    }
+
+    public function getNombreServicio() {
+        return $this->nombre_servicio;
+    }
+
+    public function setNombreServicio($nombre_servicio) {
+        $this->nombre_servicio = $nombre_servicio;
+    }
+
+    public function getDescripcion() {
+        return $this->descripcion;
+    }
+
+    public function setDescripcion($descripcion) {
+        $this->descripcion = $descripcion;
+    }
+
+    public function getFechaSolicitud() {
+        return $this->fecha_solicitud;
+    }
+
+    public function setFechaSolicitud($fecha_solicitud) {
+        $this->fecha_solicitud = $fecha_solicitud;
+    }
+
+    public function getEstado() {
+        return $this->estado;
+    }
+
+    public function setEstado($estado) {
+        $this->estado = $estado;
+    }
+
+    
 }
 ?>

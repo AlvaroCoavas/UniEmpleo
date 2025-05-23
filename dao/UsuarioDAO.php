@@ -11,7 +11,6 @@ class UsuarioDAO {
         $this->conn = Database::getConnection(); // Obtener la conexión a la base de datos
     }
 
-    // Guardar un usuario en la base de datos
     public function guardarUsuario(Usuario $usuario) {
         $sql = "INSERT INTO usuarios (correo, contrasena, tipo_usuario) VALUES (?, ?, ?)";
         $stmt = $this->conn->prepare($sql);
@@ -20,7 +19,6 @@ class UsuarioDAO {
             throw new Exception("Error al preparar la consulta: " . $this->conn->error);
         }
 
-        // Asignar valores a variables antes de pasarlos como referencia
         $correo = $usuario->getCorreo();
         $contrasena = $usuario->getContrasena();
         $tipo_usuario = $usuario->getTipoUsuario();
@@ -35,7 +33,6 @@ class UsuarioDAO {
         }
     }
 
-    // Obtener todos los usuarios
     public function obtenerTodosLosUsuarios() {
         $sql = "SELECT * FROM usuarios";
         $result = $this->conn->query($sql);
@@ -57,7 +54,6 @@ class UsuarioDAO {
         return $usuarios;
     }
 
-    // Obtener un usuario por su ID y tipo
     public function obtenerUsuarioPorId($id_usuario) {
         $sql = "SELECT * FROM usuarios WHERE id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
@@ -88,7 +84,7 @@ class UsuarioDAO {
             }
         }
 
-        return null; // Si no se encuentra el usuario
+        return null; 
     }
 
     public function obtenerUltimoId() {
@@ -113,11 +109,9 @@ class UsuarioDAO {
                 $data['tipo_usuario']
             );
         }
-        return null; // Si no se encuentra el usuario
+        return null; 
     }
     
-
-    // Actualizar un usuario
     public function actualizarUsuario(Usuario $usuario) {
         $sql = "UPDATE usuarios SET correo = ?, contrasena = ?, tipo_usuario = ? WHERE id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
@@ -141,9 +135,7 @@ class UsuarioDAO {
         }
     }
 
-    // Eliminar un usuario
     public function eliminarUsuario($id_usuario) {
-        // Verificar el tipo de usuario antes de eliminar
         $usuario = $this->obtenerUsuarioPorId($id_usuario);
 
         if ($usuario instanceof Persona) {
@@ -154,7 +146,6 @@ class UsuarioDAO {
             $empresaDAO->eliminarEmpresa($id_usuario);
         }
 
-        // Eliminar de la tabla usuarios
         $sql = "DELETE FROM usuarios WHERE id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
 
@@ -171,7 +162,6 @@ class UsuarioDAO {
         }
     }
 
-    // Verificar si un correo ya está registrado
     public function verificarCorreo($correo) {
         $sql = "SELECT * FROM usuarios WHERE correo = ?";
         $stmt = $this->conn->prepare($sql);

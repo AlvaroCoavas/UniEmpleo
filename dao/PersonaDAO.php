@@ -6,14 +6,11 @@ class PersonaDAO {
     private $conn;
 
     public function __construct() {
-        $this->conn = Database::getConnection(); // Obtener la conexión a la base de datos
+        $this->conn = Database::getConnection();
     }
-
-    // Guardar una nueva persona
    
     public function guardarPersona(Persona $persona) {
         
-        // Obtener los datos de la persona
         $id_usuario = $persona->getIdUsuario();
         $nombre = $persona->getNombre();
         $apellido = $persona->getApellido();
@@ -25,10 +22,6 @@ class PersonaDAO {
         $resumen_profesional = $persona->getResumenProfesional();
         $servicios_completados = $persona->getServiciosCompletados();
     
-        // Depuración opcional (puedes eliminar esta línea en producción)
-       // var_dump($id_usuario, $nombre, $apellido, $fecha_nacimiento, $cedula, $telefono, $lugar_residencia, $profesion_u_oficio, $resumen_profesional, $servicios_completados);
-    
-        // Preparar la consulta SQL
         $sql = "INSERT INTO personas (
                     id_usuario, nombre, apellido, cedula, telefono, 
                     fecha_nacimiento, lugar_residencia, profesion_u_oficio, 
@@ -41,7 +34,6 @@ class PersonaDAO {
             throw new Exception("Error al preparar la consulta: " . $this->conn->error);
         }
     
-        // Asociar los parámetros a la consulta
         $stmt->bind_param(
             'issssssssi',
             $id_usuario,
@@ -56,15 +48,13 @@ class PersonaDAO {
             $servicios_completados
         );
     
-        // Ejecutar la consulta
         if (!$stmt->execute()) {
             throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
         }
     
-        return true; // Inserción exitosa
+        return true;
     }
-    
-    // Obtener datos de una persona por ID de usuario
+ 
     public function obtenerPersonaPorId($id_usuario) {
         $sql = "SELECT u.id_usuario, u.correo, u.contrasena, p.nombre, p.apellido, p.fecha_nacimiento, p.cedula, p.telefono, p.lugar_residencia, p.profesion_u_oficio, p.resumen_profesional, p.servicios_completados 
                 FROM usuarios u
@@ -98,12 +88,11 @@ class PersonaDAO {
             );
         }
 
-        return null; // Si no se encuentra la persona
+        return null; 
     }
 
-    // Actualizar datos de una persona
     public function actualizarPersona(Persona $persona) {
-        // Actualizar los datos en la tabla usuarios
+     
         $sqlUsuario = "UPDATE usuarios SET correo = ?, contrasena = ? WHERE id_usuario = ?";
         $stmtUsuario = $this->conn->prepare($sqlUsuario);
 
@@ -122,7 +111,6 @@ class PersonaDAO {
             throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
         }
 
-        // Actualizar los datos específicos de la persona
         $sqlPersona = "UPDATE personas 
                        SET nombre = ?, apellido = ?, fecha_nacimiento = ?, cedula = ?, telefono = ?, lugar_residencia = ?, profesion_u_oficio = ?, resumen_profesional = ?, servicios_completados = ? 
                        WHERE id_usuario = ?";
@@ -150,12 +138,11 @@ class PersonaDAO {
             throw new Exception("Error al ejecutar la consulta de personas: " . $stmtPersona->error);
         }
 
-        return true; // Actualización exitosa
+        return true; 
     }
 
-    // Eliminar una persona por ID de usuario
     public function eliminarPersona($id_usuario) {
-        // Eliminar primero de la tabla personas
+
         $sqlPersona = "DELETE FROM personas WHERE id_usuario = ?";
         $stmtPersona = $this->conn->prepare($sqlPersona);
 
@@ -169,7 +156,6 @@ class PersonaDAO {
             throw new Exception("Error al ejecutar la consulta de personas: " . $stmtPersona->error);
         }
 
-        // Luego eliminar de la tabla usuarios
         $sqlUsuario = "DELETE FROM usuarios WHERE id_usuario = ?";
         $stmtUsuario = $this->conn->prepare($sqlUsuario);
 
@@ -183,7 +169,7 @@ class PersonaDAO {
             throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
         }
 
-        return true; // Eliminación exitosa
+        return true; 
     }
 }
 ?>

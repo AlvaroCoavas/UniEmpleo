@@ -12,9 +12,7 @@ class PersonaController {
         $this->usuarioDAO = new UsuarioDAO();
     }
 
-    // Registrar una nueva persona
     public function register($data) {
-        // Validar los datos requeridos
         if (empty($data['id_usuario']) || empty($data['nombre']) || empty($data['apellido'])) {
             throw new Exception("Faltan datos obligatorios para registrar la persona.");
         }
@@ -34,9 +32,8 @@ class PersonaController {
             $data['servicios_completados'] ?? 0
         );
     
-        // Guardar los datos específicos de la persona
         if ($this->personaDAO->guardarPersona($persona)) {
-            return true; // Registro exitoso
+            return true; 
         } else {
             throw new Exception("Error al guardar los datos de la persona.");
         }
@@ -47,7 +44,7 @@ class PersonaController {
         $persona = $this->personaDAO->obtenerPersonaPorId($id_usuario);
 
         if ($persona) {
-            return $persona; // Devuelve la instancia del modelo Persona
+            return $persona; 
         } else {
             throw new Exception("Persona no encontrada.");
         }
@@ -55,12 +52,11 @@ class PersonaController {
 
     // Actualizar datos de una persona
     public function update($data) {
-        // Validar los datos requeridos
+        
         if (empty($data['id_usuario']) || empty($data['correo']) || empty($data['nombre']) || empty($data['apellido'])) {
             throw new Exception("Faltan datos obligatorios para actualizar la persona.");
         }
 
-        // Crear una instancia del modelo Persona
         $persona = new Persona(
             $data['id_usuario'],
             $data['correo'],
@@ -76,24 +72,20 @@ class PersonaController {
             $data['servicios_completados'] ?? 0
         );
 
-        // Actualizar los datos del usuario en la tabla usuarios
         $this->usuarioDAO->actualizarUsuario($persona);
 
-        // Actualizar los datos específicos de la persona
         if ($this->personaDAO->actualizarPersona($persona)) {
-            return true; // Actualización exitosa
+            return true; 
         } else {
             throw new Exception("Error al actualizar los datos de la persona.");
         }
     }
 
-    // Eliminar una persona por ID de usuario
     public function delete($id_usuario) {
-        // Eliminar los datos específicos de la persona
+       
         if ($this->personaDAO->eliminarPersona($id_usuario)) {
-            // Eliminar los datos del usuario en la tabla usuarios
             if ($this->usuarioDAO->eliminarUsuario($id_usuario)) {
-                return true; // Eliminación exitosa
+                return true; 
             } else {
                 throw new Exception("Error al eliminar los datos del usuario.");
             }

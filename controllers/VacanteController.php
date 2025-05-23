@@ -1,5 +1,5 @@
 <?php
-session_start(); // Iniciar sesión
+session_start(); 
 
 require_once '../models/Vacante.php';
 require_once '../models/Empresa.php';
@@ -16,7 +16,7 @@ class VacanteController {
         $this->vacanteDAO = new VacanteDAO();
         $this->empresaDAO = new EmpresaDAO();
     }
-    // Método para crear una nueva vacante
+  
     public function crearVacante() {
         
         $id_usuario_empresa = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : null;
@@ -30,9 +30,9 @@ class VacanteController {
         $perfil = Utils::sanitizarEntrada($_POST['perfil']);
         
     
-            // Crear y configurar el objeto Vacante con los datos del formulario
+        
             $vacante = new Vacante( 
-                null, // ID vacante (se generará automáticamente)
+                null, 
                 $id_usuario_empresa,
                 $titulo,
                 $descripcion,
@@ -46,7 +46,7 @@ class VacanteController {
             $idVacante = $this->vacanteDAO->guardarVacante($vacante);
             
             if ($idVacante) {
-                // Éxito: establecer mensaje y redirigir a lista de vacantes
+               
                 $_SESSION['mensaje'] = "Vacante creada exitosamente";
                 $_SESSION['tipo_mensaje'] = "success";
                 header('Location: index.php?controlador=vacante&accion=listar');
@@ -57,13 +57,12 @@ class VacanteController {
 
     }
     
-    
-    // Método para listar vacantes
+
     public function listar() {
         try {
             $vacantes = $this->vacanteDAO->obtenerTodasLasVacantes();
     
-            // Convertir a array plano
+     
             $vacantesArray = array_map(function($vacante) {
                 return [
                     'id_vacante' => $vacante->getIdVacante(),
@@ -87,6 +86,23 @@ class VacanteController {
             exit;
         }
     }
+
+    public function disponibles() {
+        $usuario_id = $_GET['usuario_id'] ?? null;
+
+        if ($usuario_id === null) {
+            echo json_encode([]);
+            exit;
+        }
+    
+        require_once '../dao/VacanteDAO.php';
+        $dao = new VacanteDAO();
+        $vacantes = $dao->obtenerVacantesNoPostuladasPorUsuario($usuario_id);
+    
+        header('Content-Type: application/json');
+       
+        echo json_encode($vacantes);
+    }
 }    
 
 if (isset($_GET['action'])) {
@@ -98,18 +114,19 @@ if (isset($_GET['action'])) {
             $controller->crearVacante();
         } elseif ($action === 'listar') {
             $controller->listar();
-        } elseif ($action === 'logout') {
-            $controller->logout();
+        } elseif ($action === 'disponibles') {
+            $controller->disponibles();
+        
         } else {
-            http_response_code(400); // Bad Request
+            http_response_code(400); 
             echo json_encode(["error" => "Acción no válida"]);
         }
     } catch (Exception $e) {
-        http_response_code(500); // Internal Server Error
+        http_response_code(500); 
         echo json_encode(["error" => $e->getMessage()]);
     }
 } else {
-    http_response_code(400); // Bad Request
+    http_response_code(400); 
     echo json_encode(["error" => "Acción no especificada"]);    
 }
 ?>

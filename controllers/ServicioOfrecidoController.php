@@ -2,7 +2,9 @@
 
 session_start();
 require_once '../dao/ServicioOfrecidoDAO.php';
+require_once '../dao/UsuarioDAO.php';
 require_once '../models/ServicioOfrecido.php';
+require_once '../utils/Utils.php';
 
 class ServicioOfrecidoController {
 
@@ -48,7 +50,8 @@ class ServicioOfrecidoController {
         $id_servicio = intval($_GET['id_servicio']);
 
         try {
-            $ofrecidos = $this->dao->obtenerPorServicio($id_servicio);
+            $ofrecidos = $this->dao->obtenerUsuariosPorServicio($id_servicio);
+            
             echo json_encode(['success' => true, 'datos' => $ofrecidos]);
         } catch (Exception $e) {
             http_response_code(500);
@@ -56,7 +59,6 @@ class ServicioOfrecidoController {
         }
     }
 }
-
 
 if (isset($_GET['action'])) {
     $action = $_GET['action'];

@@ -6,13 +6,11 @@ class EmpresaDAO {
     private $conn;
 
     public function __construct() {
-        $this->conn = Database::getConnection(); // Obtener la conexión a la base de datos
+        $this->conn = Database::getConnection(); 
     }
 
-    // Guardar una nueva empresa
     public function guardarEmpresa(Empresa $empresa) {
 
-        // Obtener los datos de la empresa
         $id_usuario = $empresa->getIdUsuario();
         $nombre_empresa = $empresa->getNombreEmpresa();
         $lugar_operacion = $empresa->getLugarOperacion();
@@ -20,7 +18,6 @@ class EmpresaDAO {
         $sector = $empresa->getSector();
         $descripcion = $empresa->getDescripcion();
 
-        // Luego guardar los datos específicos de la empresa
         $sqlEmpresa = "INSERT INTO empresas (id_usuario, nombre_empresa, lugar_operacion, ruc, sector, descripcion) 
                        VALUES (?, ?, ?, ?, ?, ?)";
         $stmtEmpresa = $this->conn->prepare($sqlEmpresa);
@@ -44,10 +41,9 @@ class EmpresaDAO {
             throw new Exception("Error al ejecutar la consulta de empresas: " . $stmtEmpresa->error);
         }
 
-        return true; // Inserción exitosa
+        return true;
     }
 
-    // Obtener datos de una empresa por ID de usuario
     public function obtenerEmpresaPorId($id_usuario) {
         $sql = "SELECT u.id_usuario, u.correo, u.contrasena, e.nombre_empresa, e.lugar_operacion, e.ruc, e.sector, e.descripcion 
                 FROM usuarios u
@@ -77,12 +73,11 @@ class EmpresaDAO {
             );
         }
 
-        return null; // Si no se encuentra la empresa
+        return null; 
     }
 
-    // Actualizar datos de una empresa
     public function actualizarEmpresa(Empresa $empresa) {
-        // Actualizar los datos en la tabla usuarios
+        
         $sqlUsuario = "UPDATE usuarios SET correo = ?, contrasena = ? WHERE id_usuario = ?";
         $stmtUsuario = $this->conn->prepare($sqlUsuario);
 
@@ -101,7 +96,6 @@ class EmpresaDAO {
             throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
         }
 
-        // Actualizar los datos específicos de la empresa
         $sqlEmpresa = "UPDATE empresas 
                        SET nombre_empresa = ?, lugar_operacion = ?, ruc = ?, sector = ?, descripcion = ? 
                        WHERE id_usuario = ?";
@@ -125,12 +119,10 @@ class EmpresaDAO {
             throw new Exception("Error al ejecutar la consulta de empresas: " . $stmtEmpresa->error);
         }
 
-        return true; // Actualización exitosa
+        return true; 
     }
 
-    // Eliminar una empresa por ID de usuario
     public function eliminarEmpresa($id_usuario) {
-        // Eliminar primero de la tabla empresas
         $sqlEmpresa = "DELETE FROM empresas WHERE id_usuario = ?";
         $stmtEmpresa = $this->conn->prepare($sqlEmpresa);
 
@@ -144,7 +136,6 @@ class EmpresaDAO {
             throw new Exception("Error al ejecutar la consulta de empresas: " . $stmtEmpresa->error);
         }
 
-        // Luego eliminar de la tabla usuarios
         $sqlUsuario = "DELETE FROM usuarios WHERE id_usuario = ?";
         $stmtUsuario = $this->conn->prepare($sqlUsuario);
 
@@ -158,7 +149,7 @@ class EmpresaDAO {
             throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
         }
 
-        return true; // Eliminación exitosa
+        return true; 
     }
 }
 ?>
