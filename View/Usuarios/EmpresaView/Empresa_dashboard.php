@@ -12,7 +12,7 @@ if ($usuario_id) {
 
     if ($usuario) {
         $mostrarBienvenida = true;
-        $nombre_usuario = $usuario->getNombreEmpresa();
+        $nombre_usuario =   $usuario['nombre'];
 }
 }
 ?>
@@ -38,8 +38,6 @@ if ($usuario_id) {
     <aside class="sidebar">
       <button class="sidebar-btn" onclick="mostrarContenidoE('vacantes')">Vacantes</button>
       <button class="sidebar-btn" onclick="mostrarContenidoE('servicios')">Servicios</button>
-      <button class="sidebar-btn" onclick="mostrarContenidoE('personas')">Personas</button>
-      <button class="sidebar-btn" onclick="mostrarContenidoE('empresas')">Empresas</button>
     </aside>
 
     <main class="main-content" id="mainContent">
@@ -68,7 +66,9 @@ if ($usuario_id) {
     </div>
   </div>
   <?php endif; ?>
-
+  <script>
+    const usuarioActivo = <?= isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 'null' ?>;
+  </script>
 
   <script src="../../Js/main.js"></script>
 </body>

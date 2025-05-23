@@ -8,7 +8,7 @@ class ServicioOfrecido {
     public function __construct($id_servicio, $id_usuario_ofrece, $fecha_ofrecimiento = null, $id = null) {
         $this->id = $id;
         $this->id_servicio = $id_servicio;
-        $this->id_usuario = $id_usuario;
+        $this->id_usuario_ofrece = $id_usuario_ofrece;
         $this->fecha_ofrecimiento = $fecha_ofrecimiento ?? date('Y-m-d H:i:s');
     }
 
@@ -25,11 +25,11 @@ class ServicioOfrecido {
     }
 
     public function setIdUsuarioOfrece($id_usuario_Ofrece) {
-        $this->id_usuario_Ofrece = $id_usuario_Ofrece;
+        $this->id_usuario_ofrece = $id_usuario_Ofrece;
     }
 
     public function getIdUsuarioOfrece() {
-        return $this->id_usuario_Ofrece;
+        return $this->id_usuario_ofrece;
     }
 
  

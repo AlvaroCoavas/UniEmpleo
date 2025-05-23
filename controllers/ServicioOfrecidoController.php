@@ -27,7 +27,7 @@ class ServicioOfrecidoController {
         $id_servicio = intval($input['id_servicio']);
         $id_usuario = intval($input['id_usuario']);
 
-        if ($this->dao->yaSeOfrecio($id_servicio, $id_usuario)) {
+        if ($this->dao->yaOfrecio($id_servicio, $id_usuario)) {
             echo json_encode(['success' => false, 'message' => 'Ya te has ofrecido para este servicio.']);
             return;
         }

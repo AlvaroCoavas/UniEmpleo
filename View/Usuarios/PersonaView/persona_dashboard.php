@@ -12,7 +12,7 @@ if ($usuario_id) {
     $usuario = $usuarioDAO->obtenerUsuarioPorId($usuario_id);
     if ($usuario) {
         $mostrarBienvenida = true;
-        $nombre_usuario = $usuario->getNombre();
+        $nombre_usuario = $usuario['nombre'];
     }
 }
 ?>
@@ -40,7 +40,6 @@ if ($usuario_id) {
       <button class="sidebar-btn" onclick="mostrarContenido('vacantes')">Vacantes</button>
       <button class="sidebar-btn" onclick="mostrarContenido('servicios')">Servicios</button>
       <button class="sidebar-btn" onclick="mostrarContenido('Mis Postulaciones')">Mis Postulaciones</button>
-      <button class="sidebar-btn" onclick="mostrarContenido('empresas')">Empresas</button>
     </aside>
 
     <main class="main-content" id="mainContent">

@@ -4,27 +4,30 @@
     require_once '../models/Servicio.php';
     require_once '../utils/Utils.php';
     require_once '../dao/UsuarioDAO.php';
- 
- class ServicioDAO {
 
-        private $conexion;
-    
-        public function __construct() {
+    class ServicioDAO
+    {
+
+        private $conn;
+
+        public function __construct()
+        {
             $this->conn = Database::getConnection();
         }
-        public function guardarServicio(Servicio $servicio) {
+        public function guardarServicio(Servicio $servicio)
+        {
             $sql = "INSERT INTO servicios (id_usuario_solicita, nombre_servicio, descripcion, fecha_solicitud, estado) VALUES (?, ?, ?, ?, ?)";
             $stmt = $this->conn->prepare($sql);
-            
+
             if ($stmt === false) {
-                throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
+                throw new Exception("Error al preparar la consulta: " . $this->conn->error);
             }
 
             $id_usuario_solicita = $servicio->getIdUsuarioSolicita();
             $nombre_servicio = $servicio->getNombreServicio();
             $descripcion = $servicio->getDescripcion();
-            $fecha_solicitud = date('Y-m-d H:i:s'); 
-            $estado = 'pendiente'; 
+            $fecha_solicitud = date('Y-m-d H:i:s');
+            $estado = 'pendiente';
             $stmt->bind_param('issss', $id_usuario_solicita, $nombre_servicio, $descripcion, $fecha_solicitud, $estado);
 
             if ($stmt->execute()) {
@@ -32,20 +35,20 @@
             } else {
                 throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
             }
-
         }
 
-        public function obtenerServiciosPorUsuario($id_usuario_solicita) {
+        public function obtenerServiciosPorUsuario($id_usuario_solicita)
+        {
             $servicios = [];
-        
+
             $sql = "SELECT * FROM servicios WHERE id_usuario_solicita = ?";
             $stmt = $this->conn->prepare($sql);
             $stmt->bind_param("i", $id_usuario_solicita);
             $stmt->execute();
             $result = $stmt->get_result();
-        
+
             while ($row = $result->fetch_assoc()) {
-                
+
                 $servicio = [
                     'id_servicio' => $row['id_servicio'],
                     'nombre_servicio' => $row['nombre_servicio'],
@@ -54,8 +57,8 @@
                     'estado' => $row['estado'],
                     'ofertantes' => []
                 ];
-        
-               
+
+
                 $sql2 = "SELECT u.id_usuario, p.nombre, p.apellido, u.correo 
                          FROM servicio_ofrecido so
                          JOIN usuarios u ON so.id_usuario_ofrece = u.id_usuario
@@ -65,7 +68,7 @@
                 $stmt2->bind_param("i", $row['id_servicio']);
                 $stmt2->execute();
                 $result2 = $stmt2->get_result();
-        
+
                 while ($ofertante = $result2->fetch_assoc()) {
                     $servicio['ofertantes'][] = [
                         'id_usuario' => $ofertante['id_usuario'],
@@ -73,16 +76,60 @@
                         'correo' => $ofertante['correo']
                     ];
                 }
-        
+
                 $servicios[] = $servicio;
             }
-        
+
             return $servicios;
         }
-        
-        public function obtenerSolicitudesConOfertas($usuarioId) {
-        
-        $sql = "SELECT 
+
+        public function obtenerServiciosPostuladosPorUsuario($id_usuario)
+        {
+            $sql = "SELECT s.* 
+            FROM servicios s
+            JOIN servicio_ofrecido so ON s.id_servicio = so.id_servicio
+            WHERE so.id_usuario_ofrece = ?";
+
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("i", $id_usuario);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $servicios = [];
+            while ($row = $result->fetch_assoc()) {
+                $servicios[] = [
+                    'id_servicio' => $row['id_servicio'],
+                    'nombre_servicio' => $row['nombre_servicio'],
+                    'descripcion' => $row['descripcion'],
+                    'fecha_solicitud' => $row['fecha_solicitud'],
+                    'estado' => $row['estado'],
+                ];
+            }
+
+            return $servicios;
+        }
+
+        public function obtenerServiciosNoOfrecidosPorUsuario($usuario_id)
+        {
+            $sql = "SELECT s.*
+                    FROM servicios s
+                    WHERE s.id_servicio NOT IN (
+                        SELECT so.id_servicio 
+                        FROM servicio_ofrecido so 
+                        WHERE so.id_usuario_ofrece = ?
+                    )";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param('i', $usuario_id);
+            $stmt->execute();
+            return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+        }
+
+
+
+        public function obtenerSolicitudesConOfertas($usuarioId)
+        {
+
+            $sql = "SELECT 
                     s.id_servicio, 
                     s.nombre_servicio, 
                     s.descripcion, 
@@ -103,12 +150,12 @@
             $stmt->bind_param('i', $usuarioId);
             $stmt->execute();
             $result = $stmt->get_result();
-        
+
             $serviciosAgrupados = [];
-        
+
             while ($row = $result->fetch_assoc()) {
                 $id = $row['id_servicio'];
-        
+
                 if (!isset($serviciosAgrupados[$id])) {
                     $serviciosAgrupados[$id] = [
                         'id_servicio' => $row['id_servicio'],
@@ -119,7 +166,7 @@
                         'ofertantes' => [],
                     ];
                 }
-        
+
                 if ($row['id_ofertante']) {
                     $serviciosAgrupados[$id]['ofertantes'][] = [
                         'id' => $row['id_ofertante'],
@@ -128,16 +175,17 @@
                     ];
                 }
             }
-        
+
             return array_values($serviciosAgrupados);
         }
-        
-        public function listarServiciosNoPropios($id_usuario) {
+
+        public function listarServiciosNoPropios($id_usuario)
+        {
             $sql = "SELECT * FROM servicios WHERE id_usuario_solicita != ?";
             $stmt = $this->conn->prepare($sql);
-            
+
             if ($stmt === false) {
-                throw new Exception("Error al preparar la consulta: " . $this->conexion->error);
+                throw new Exception("Error al preparar la consulta: " . $this->conn->error);
             }
 
             $stmt->bind_param('i', $id_usuario);
@@ -159,25 +207,51 @@
             return $servicios;
         }
 
-        public function asignarUsuarioOfrece($idServicio, $usuarioId) {
+        public function asignarUsuarioOfrece($idServicio, $usuarioId)
+        {
             $sql = "UPDATE servicios SET id_usuario_ofrece = ? WHERE id_servicio = ?";
             $stmt = $this->conn->prepare($sql);
-        
+
             if ($stmt === false) {
                 throw new Exception("Error al preparar la consulta: " . $this->conn->error);
             }
-        
+
             $stmt->bind_param('ii', $usuarioId, $idServicio);
-        
+
             if ($stmt->execute()) {
-                return $stmt->affected_rows > 0; 
+                return $stmt->affected_rows > 0;
             } else {
                 throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
             }
         }
+
+        public function cancelarPostulacion($id_usuario, $id_servicio)
+        {
+            $sql = "DELETE FROM servicio_ofrecido WHERE id_usuario_ofrece = ? AND id_servicio = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("ii", $id_usuario, $id_servicio);
+            $resultado = $stmt->execute();
+            $stmt->close();
+            return $resultado;
+        }
+
+        public function eliminarSolicitud($usuario_id, $id_servicio) {
+            $sql = "DELETE FROM servicios WHERE id_usuario_solicita = ? AND id_servicio = ?";
+            $stmt = $this->conn->prepare($sql);
+            
+            if (!$stmt) {
+                die("Error en prepare: " . $this->conn->error);
+            }
+
+            $stmt->bind_param("ii", $usuario_id, $id_servicio);
         
-         
+            if (!$stmt->execute()) {
+                die("Error al ejecutar: " . $stmt->error);
+            }
+        
+            return true;
+        }
+        
+    }
 
- }
-
- ?>
+    ?>
