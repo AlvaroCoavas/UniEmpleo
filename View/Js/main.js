@@ -15,6 +15,12 @@ function mostrarFormularioRegistro() {
 function seleccionarTipo(tipo) {
     if (tipo === 'persona') {
         document.getElementById('formPersona').style.display = 'block';
+        if (pass.length < 8) {
+        errorDiv.style.display = 'block';
+        e.preventDefault();
+    } else {
+        errorDiv.style.display = 'none';
+    }
         document.getElementById('formEmpresa').style.display = 'none';
     } else if (tipo === 'empresa') {
         document.getElementById('formPersona').style.display = 'none';
@@ -479,4 +485,25 @@ window.onclick = function(event) {
         }
     });
 };
+function validarContrasena() {
+    var actual = document.getElementById('contrasena_actual').value;
+    var nueva = document.getElementById('nueva_contrasena').value;
+    var confirmar = document.getElementById('confirmar_contrasena').value;
 
+    if (nueva !== confirmar) {
+        document.getElementById('error_contrasena').innerText = "Las contraseñas nuevas no coinciden.";
+        return false;
+    }
+    if (actual === nueva) {
+        document.getElementById('error_contrasena').innerText = "La nueva contraseña no puede ser igual a la actual.";
+        return false;
+    }
+    document.getElementById('error_contrasena').innerText = "";
+    return true;
+}
+function mostrarModal(id) {
+    document.getElementById(id).style.display = 'block';
+}
+function cerrarModal(id) {
+    document.getElementById(id).style.display = 'none';
+}

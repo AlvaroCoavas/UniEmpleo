@@ -9,11 +9,10 @@ $nombre_usuario = 'Usuario';
 
 if ($usuario_id) {
     $usuarioDAO = new UsuarioDAO();
-    $usuario = $usuarioDAO->obtenerUsuarioPersonaPorId($usuario_id);
-
+    $usuario = $usuarioDAO->obtenerUsuarioPorId($usuario_id);
     if ($usuario) {
         $mostrarBienvenida = true;
-        $nombre_usuario = $usuario['nombre'];
+        $nombre_usuario = $usuario->getNombre();
     }
 }
 ?>

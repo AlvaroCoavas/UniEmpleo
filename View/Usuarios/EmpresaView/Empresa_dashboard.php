@@ -8,12 +8,12 @@ $nombre_usuario = 'Usuario';
 
 if ($usuario_id) {
     $usuarioDAO = new UsuarioDAO();
-    $usuario = $usuarioDAO->obtenerUsuarioEmpresaPorId($usuario_id);
+    $usuario = $usuarioDAO->obtenerUsuarioPorId($usuario_id);
 
     if ($usuario) {
         $mostrarBienvenida = true;
-        $nombre_usuario = $usuario['nombre_empresa']; // Asegúrate de que el campo 'nombre' exista en la tabla
-    }
+        $nombre_usuario = $usuario->getNombreEmpresa();
+}
 }
 ?>
 

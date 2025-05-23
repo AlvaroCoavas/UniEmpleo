@@ -85,6 +85,7 @@ class PersonaDAO {
                 $data['profesion_u_oficio'],
                 $data['resumen_profesional'],
                 $data['servicios_completados']
+                
             );
         }
 
@@ -96,49 +97,67 @@ class PersonaDAO {
         $sqlUsuario = "UPDATE usuarios SET correo = ?, contrasena = ? WHERE id_usuario = ?";
         $stmtUsuario = $this->conn->prepare($sqlUsuario);
 
-        if ($stmtUsuario === false) {
-            throw new Exception("Error al preparar la consulta de usuarios: " . $this->conn->error);
-        }
+    if ($stmtUsuario === false) {
+        throw new Exception("Error al preparar la consulta de usuarios: " . $this->conn->error);
+    }
 
-        $stmtUsuario->bind_param(
-            'ssi',
-            $persona->getCorreo(),
-            $persona->getContrasena(),
-            $persona->getIdUsuario()
-        );
+    // Asigna a variables antes de bind_param
+    $correo = $persona->getCorreo();
+    $contrasena = $persona->getContrasena();
+    $idUsuario = $persona->getIdUsuario();
 
-        if (!$stmtUsuario->execute()) {
-            throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
-        }
+    $stmtUsuario->bind_param(
+        'ssi',
+        $correo,
+        $contrasena,
+        $idUsuario
+    );
 
+    if (!$stmtUsuario->execute()) {
+        throw new Exception("Error al ejecutar la consulta de usuarios: " . $stmtUsuario->error);
+    }
+
+        // Actualizar los datos específicos de la persona
         $sqlPersona = "UPDATE personas 
                        SET nombre = ?, apellido = ?, fecha_nacimiento = ?, cedula = ?, telefono = ?, lugar_residencia = ?, profesion_u_oficio = ?, resumen_profesional = ?, servicios_completados = ? 
                        WHERE id_usuario = ?";
         $stmtPersona = $this->conn->prepare($sqlPersona);
 
-        if ($stmtPersona === false) {
-            throw new Exception("Error al preparar la consulta de personas: " . $this->conn->error);
-        }
+    if ($stmtPersona === false) {
+        throw new Exception("Error al preparar la consulta de personas: " . $this->conn->error);
+    }
 
-        $stmtPersona->bind_param(
-            'sssssssisi',
-            $persona->getNombre(),
-            $persona->getApellido(),
-            $persona->getFechaNacimiento(),
-            $persona->getCedula(),
-            $persona->getTelefono(),
-            $persona->getLugarResidencia(),
-            $persona->getProfesionUOficio(),
-            $persona->getResumenProfesional(),
-            $persona->getServiciosCompletados(),
-            $persona->getIdUsuario()
-        );
+    // Asigna a variables antes de bind_param
+    $nombre = $persona->getNombre();
+    $apellido = $persona->getApellido();
+    $fecha_nacimiento = $persona->getFechaNacimiento();
+    $cedula = $persona->getCedula();
+    $telefono = $persona->getTelefono();
+    $lugar_residencia = $persona->getLugarResidencia();
+    $profesion_u_oficio = $persona->getProfesionUOficio();
+    $resumen_profesional = $persona->getResumenProfesional();
+    $servicios_completados = $persona->getServiciosCompletados();
+    $idUsuario = $persona->getIdUsuario();
 
-        if (!$stmtPersona->execute()) {
-            throw new Exception("Error al ejecutar la consulta de personas: " . $stmtPersona->error);
-        }
+    $stmtPersona->bind_param(
+        'sssssssisi',
+        $nombre,
+        $apellido,
+        $fecha_nacimiento,
+        $cedula,
+        $telefono,
+        $lugar_residencia,
+        $profesion_u_oficio,
+        $resumen_profesional,
+        $servicios_completados,
+        $idUsuario
+    );
 
-        return true; 
+    if (!$stmtPersona->execute()) {
+        throw new Exception("Error al ejecutar la consulta de personas: " . $stmtPersona->error);
+    }
+
+        return true; // Actualización exitosa
     }
 
     public function eliminarPersona($id_usuario) {

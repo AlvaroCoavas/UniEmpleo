@@ -113,8 +113,8 @@ class UsuarioDAO {
     }
     
     public function actualizarUsuario(Usuario $usuario) {
-        $sql = "UPDATE usuarios SET correo = ?, contrasena = ?, tipo_usuario = ? WHERE id_usuario = ?";
-        $stmt = $this->conn->prepare($sql);
+    $sql = "UPDATE usuarios SET correo = ?, contrasena = ?, tipo_usuario = ? WHERE id_usuario = ?";
+    $stmt = $this->conn->prepare($sql);
 
         if ($stmt === false) {
             throw new Exception("Error al preparar la consulta: " . $this->conn->error);
@@ -135,7 +135,9 @@ class UsuarioDAO {
         }
     }
 
+    // Eliminar un usuario
     public function eliminarUsuario($id_usuario) {
+        // Verificar el tipo de usuario antes de eliminar
         $usuario = $this->obtenerUsuarioPorId($id_usuario);
 
         if ($usuario instanceof Persona) {
@@ -146,6 +148,7 @@ class UsuarioDAO {
             $empresaDAO->eliminarEmpresa($id_usuario);
         }
 
+        // Eliminar de la tabla usuarios
         $sql = "DELETE FROM usuarios WHERE id_usuario = ?";
         $stmt = $this->conn->prepare($sql);
 
@@ -162,6 +165,8 @@ class UsuarioDAO {
         }
     }
 
+    // Verificar si un correo ya está registrado
+>>>>>>> f0143ecce224180f5c7056ad702d7878d96326c3
     public function verificarCorreo($correo) {
         $sql = "SELECT * FROM usuarios WHERE correo = ?";
         $stmt = $this->conn->prepare($sql);
