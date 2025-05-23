@@ -72,6 +72,33 @@ class PostulacionDao {
         return $postulaciones;
     }
 
+
+    public function obtenerPostuladosPorVacante($id_vacante)
+{
+    $sql = "SELECT p.id_postulacion, per.nombre, per.apellido, u.correo 
+            FROM postulaciones p
+            JOIN usuarios u ON p.id_usuario_persona = u.id_usuario
+            JOIN personas per ON u.id_usuario = per.id_usuario
+            WHERE p.id_vacante = ?";
+
+    $stmt = $this->conn->prepare($sql);
+    if (!$stmt) {
+        return [];
+    }
+
+    $stmt->bind_param("i", $id_vacante);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $postulados = [];
+    while ($row = $result->fetch_assoc()) {
+        $postulados[] = $row;
+    }
+
+    $stmt->close();
+    return $postulados;
+}
+
     public function eliminarPostulacion($id_postulacion) {
         $sql = "DELETE FROM postulaciones WHERE id_postulacion = ?";
         $stmt = $this->conn->prepare($sql);
@@ -88,5 +115,6 @@ class PostulacionDao {
             throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
         }
     }
+    
 }
 ?>

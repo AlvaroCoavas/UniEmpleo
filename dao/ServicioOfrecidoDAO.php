@@ -20,7 +20,7 @@ class ServicioOfrecidoDAO {
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param('iis', 
             $ofrecido->getIdServicio(), 
-            $ofrecido->getIdUsuario(), 
+            $ofrecido->getIdUsuarioOfrece(), 
             $ofrecido->getFechaOfrecimiento()
         );
         return $stmt->execute();

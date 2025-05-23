@@ -2,15 +2,18 @@
 require_once '../config/database.php';
 require_once '../models/Vacante.php';
 
-class VacanteDAO {
+class VacanteDAO
+{
     private $conn;
 
-    public function __construct() {
-        $this->conn = Database::getConnection(); 
+    public function __construct()
+    {
+        $this->conn = Database::getConnection();
     }
 
-    public function guardarVacante(Vacante $vacante) {
-        
+    public function guardarVacante(Vacante $vacante)
+    {
+
         $id_usuario_empresa = $vacante->getIdUsuarioEmpresa();
         $titulo = $vacante->getTitulo();
         $descripcion = $vacante->getDescripcion();
@@ -21,21 +24,21 @@ class VacanteDAO {
         $tipo = $vacante->getTipo();
         $perfil = $vacante->getPerfil();
 
-   
+
         $sql = "INSERT INTO vacantes (id_usuario_empresa, titulo, descripcion, salario, estado, fecha_publicacion, ciudad, tipo, perfil) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        
+
         if ($this->conn === null) {
             throw new Exception("Error: La conexión a la base de datos no está establecida");
         }
-        
+
         $stmt = $this->conn->prepare($sql);
-    
+
         if ($stmt === false) {
             throw new Exception("Error al preparar la consulta: " . $this->conn->error);
         }
-      
-        
+
+
         $stmt->bind_param(
             'issssssss',
             $id_usuario_empresa,
@@ -48,24 +51,24 @@ class VacanteDAO {
             $tipo,
             $perfil
         );
-    
-        
-            if (!$stmt->execute()) {
-                throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
-            }
-            
-            $idInsertado = $this->conn->insert_id;
-            $stmt->close();
-            
-            return $idInsertado;
-        
-            $stmt->close();
-            throw $e;
-        
+
+
+        if (!$stmt->execute()) {
+            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
+        }
+
+        $idInsertado = $this->conn->insert_id;
+        $stmt->close();
+
+        return $idInsertado;
+
+        $stmt->close();
+        throw $e;
     }
 
- 
-    public function obtenerTodasLasVacantes() {
+
+    public function obtenerTodasLasVacantes()
+    {
         $sql = "SELECT * FROM vacantes";
         $result = $this->conn->query($sql);
 
@@ -92,8 +95,9 @@ class VacanteDAO {
         return $vacantes;
     }
 
-   
-    public function obtenerVacantePorId($id_vacante) {
+
+    public function obtenerVacantePorId($id_vacante)
+    {
         $sql = "SELECT * FROM vacantes WHERE id_vacante = ?";
         $stmt = $this->conn->prepare($sql);
 
@@ -121,11 +125,12 @@ class VacanteDAO {
             );
         }
 
-        return null; 
+        return null;
     }
 
-   
-    public function actualizarVacante(Vacante $vacante) {
+
+    public function actualizarVacante(Vacante $vacante)
+    {
         $sql = "UPDATE vacantes 
                 SET titulo = ?, descripcion = ?, salario = ?, estado = ?, fecha_publicacion = ?, ciudad = ?, tipo = ?, perfil = ? 
                 WHERE id_vacante = ?";
@@ -162,44 +167,87 @@ class VacanteDAO {
             throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
         }
 
-        return true; // Actualización exitosa
-    }
-
-    public function eliminarVacante($id_vacante) {
-        $sql = "DELETE FROM vacantes WHERE id_vacante = ?";
-        $stmt = $this->conn->prepare($sql);
-
-        if ($stmt === false) {
-            throw new Exception("Error al preparar la consulta: " . $this->conn->error);
-        }
-
-        $stmt->bind_param('i', $id_vacante);
-
-        if (!$stmt->execute()) {
-            throw new Exception("Error al ejecutar la consulta: " . $stmt->error);
-        }
-
         return true;
     }
 
-    public function obtenerVacantesNoPostuladasPorUsuario($id_usuario) {
+    public function eliminarVacante($id_vacante)
+    {
+       
+        $sqlPostulaciones = "DELETE FROM postulaciones WHERE id_vacante = ?";
+        $stmtPost = $this->conn->prepare($sqlPostulaciones);
+        $stmtPost->bind_param("i", $id_vacante);
+        $stmtPost->execute();
+        $stmtPost->close();
+        
+        $sql = "DELETE FROM vacantes WHERE id_vacante = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id_vacante);
+        $resultado = $stmt->execute();
+        $stmt->close();
+
+        return $resultado;
+    }
+
+
+    public function obtenerVacantesPorUsuario($id_usuario)
+    {
+        $sql = "SELECT * FROM vacantes WHERE id_usuario_empresa = ?";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $vacantes = [];
+        while ($row = $result->fetch_assoc()) {
+            $vacantes[] = $row;
+        }
+
+        $stmt->close();
+        return $vacantes;
+    }
+
+    public function obtenerPostuladosPorVacante($id_vacante)
+    {
+        $sql = "SELECT per.nombre, per.apellido, u.correo
+                FROM postulaciones p
+                JOIN usuarios u ON p.id_usuario_persona = u.id_usuario
+                JOIN personas per ON u.id_usuario = per.id_usuario
+                WHERE p.id_vacante = ?";
+
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bind_param("i", $id_vacante);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        $postulados = [];
+        while ($row = $result->fetch_assoc()) {
+            $postulados[] = $row;
+        }
+
+        $stmt->close();
+        return $postulados;
+    }
+
+
+
+    public function obtenerVacantesNoPostuladasPorUsuario($id_usuario)
+    {
         $sql = "SELECT * FROM vacantes
                 WHERE id_vacante NOT IN (
                   SELECT id_vacante FROM postulaciones WHERE id_usuario_persona = ?
                 )";
-    
+
         $stmt = $this->conn->prepare($sql);
         $stmt->bind_param("i", $id_usuario);
         $stmt->execute();
-    
+
         $result = $stmt->get_result();
         $vacantes = [];
-    
+
         while ($row = $result->fetch_assoc()) {
             $vacantes[] = $row;
         }
-    
+
         return $vacantes;
     }
 }
-?>

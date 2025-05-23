@@ -1,41 +1,44 @@
 <?php
-session_start();
+
+    session_start();
+
 require_once '../models/Postulacion.php';
 require_once '../dao/PostulacionDAO.php';
 require_once '../dao/PersonaDAO.php';
 require_once '../dao/VacanteDAO.php';
 require_once '../utils/Utils.php';
 
-class PostulacionController{
+class PostulacionController
+{
 
 
     private $postulacionDAO;
     private $personaDAO;
     private $vacanteDAO;
 
-    public function __construct() {
+    public function __construct()
+    {
         $this->postulacionDAO = new PostulacionDao();
         $this->personaDAO = new PersonaDAO();
         $this->vacanteDAO = new VacanteDAO();
     }
 
-    public function crearPostulacion() {
+    public function crearPostulacion()
+    {
         if (isset($_SESSION['usuario_id'])) {
             $id_usuario_persona = $_SESSION['usuario_id'];
             $id_vacante = isset($_GET['id_vacante']) ? Utils::sanitizarEntrada($_GET['id_vacante']) : null;
             $fecha_postulacion = date('Y-m-d H:i:s');
             $estado = 'pendiente';
 
-            // Crear el objeto Postulacion
             $postulacion = new Postulacion(
-                null, 
+                null,
                 $id_usuario_persona,
                 $id_vacante,
                 $fecha_postulacion,
                 $estado
             );
 
-            // Guardar la postulacion
             if ($this->postulacionDAO->guardarPostulacion($postulacion)) {
                 $_SESSION['mensaje'] = "Postulación realizada exitosamente";
                 $_SESSION['tipo_mensaje'] = "success";
@@ -50,20 +53,18 @@ class PostulacionController{
         } else {
             throw new Exception("Usuario no autenticado");
         }
-
-        
     }
 
-    public function listarPorUsuario() {
+    public function listarPorUsuario()
+    {
         if (isset($_SESSION['usuario_id'])) {
             try {
                 $id_usuario_persona = $_SESSION['usuario_id'];
-                
+
                 $postulaciones = $this->postulacionDAO->listarPostulacionesPorUsuario($id_usuario_persona);
-                
+
                 header('Content-Type: application/json');
-                echo json_encode($postulaciones); 
-                
+                echo json_encode($postulaciones);
             } catch (Exception $e) {
                 http_response_code(500);
                 header('Content-Type: application/json');
@@ -74,10 +75,11 @@ class PostulacionController{
             header('Content-Type: application/json');
             echo json_encode(['error' => 'Usuario no autenticado']);
         }
-        exit; 
+        exit;
     }
 
-    public function eliminarPostulacion() {
+    public function eliminarPostulacion()
+    {
         if (isset($_SESSION['usuario_id'])) {
             $id_postulacion = isset($_GET['id_postulacion']) ? Utils::sanitizarEntrada($_GET['id_postulacion']) : null;
 
@@ -93,7 +95,20 @@ class PostulacionController{
             throw new Exception("Usuario no autenticado");
         }
     }
-    
+
+    public function postulados()
+    {
+        $id_vacante = $_GET['id_vacante'] ?? null;
+        if (!$id_vacante) {
+            echo json_encode([]);
+            exit;
+        }
+
+        $postulados = $this->postulacionDAO->obtenerPostuladosPorVacante($id_vacante);
+
+        header('Content-Type: application/json');
+        echo json_encode($postulados);
+    }
 }
 
 if (isset($_GET['action'])) {
@@ -105,20 +120,19 @@ if (isset($_GET['action'])) {
             $controller->crearPostulacion();
         } elseif ($action === 'listarPorUsuario') {
             $controller->listarPorUsuario();
-        } elseif ($action === 'eliminar') {
+        } elseif ($action === 'postulados') {
+            $controller->postulados();
+        }elseif ($action === 'eliminar') {
             $controller->eliminarPostulacion();
-
-        
         } else {
-            http_response_code(400); 
+            http_response_code(400);
             echo json_encode(["error" => "Acción no válida"]);
         }
     } catch (Exception $e) {
-        http_response_code(500); 
+        http_response_code(500);
         echo json_encode(["error" => $e->getMessage()]);
     }
 } else {
     http_response_code(400);
-    echo json_encode(["error" => "Acción no especificada"]);    
+    echo json_encode(["error" => "Acción no especificada"]);
 }
-?>
