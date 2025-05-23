@@ -2,7 +2,7 @@
 class Database {
     private static $host = "localhost";
     private static $user = "root";
-    private static $password = "";
+    private static $password = "your_password";
     private static $database = "bd_pa_uniempleo";
     private static $conn;
 

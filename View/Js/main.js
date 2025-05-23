@@ -507,3 +507,90 @@ function mostrarModal(id) {
 function cerrarModal(id) {
     document.getElementById(id).style.display = 'none';
 }
+document.getElementById('formPersona').addEventListener('submit', function(e) {
+    const passwordInput = this.contrasena;
+    const mensaje = validarContrasena(passwordInput.value);
+    passwordInput.setCustomValidity(""); // Limpiar mensaje previo
+    if (mensaje !== true) {
+        passwordInput.setCustomValidity(mensaje);
+        passwordInput.reportValidity();
+        e.preventDefault();
+    }
+});
+
+// Validación para el formulario de Empresa
+document.getElementById('formEmpresa').addEventListener('submit', function(e) {
+    const passwordInput = this.contrasena;
+    const mensaje = validarContrasena(passwordInput.value);
+    passwordInput.setCustomValidity(""); // Limpiar mensaje previo
+    if (mensaje !== true) {
+        passwordInput.setCustomValidity(mensaje);
+        passwordInput.reportValidity();
+        e.preventDefault();
+    }
+});
+
+// Limpiar el mensaje personalizado cuando el usuario escribe
+document.querySelectorAll('input[type="password"]').forEach(function(input) {
+    input.addEventListener('input', function() {
+        this.setCustomValidity("");
+    });
+});
+
+function validarContrasena(contrasena) {
+    if (contrasena.length < 8) {
+        return "La contraseña debe tener al menos 8 caracteres.";
+    }
+    if (!/[A-Z]/.test(contrasena)) {
+        return "La contraseña debe contener al menos una letra mayúscula.";
+    }
+    return true;
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Validación para Persona
+    const formPersona = document.getElementById('formPersona');
+    if (formPersona) {
+        formPersona.addEventListener('submit', function(e) {
+            const passwordInput = this.contrasena;
+            const mensaje = validarContrasena(passwordInput.value);
+            passwordInput.setCustomValidity(""); // Limpiar mensaje previo
+            if (mensaje !== true) {
+                passwordInput.setCustomValidity(mensaje);
+                passwordInput.reportValidity();
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Validación para Empresa
+    const formEmpresa = document.getElementById('formEmpresa');
+    if (formEmpresa) {
+        formEmpresa.addEventListener('submit', function(e) {
+            const passwordInput = this.contrasena;
+            const mensaje = validarContrasena(passwordInput.value);
+            passwordInput.setCustomValidity(""); // Limpiar mensaje previo
+            if (mensaje !== true) {
+                passwordInput.setCustomValidity(mensaje);
+                passwordInput.reportValidity();
+                e.preventDefault();
+            }
+        });
+    }
+
+    // Limpiar el mensaje personalizado cuando el usuario escribe
+    document.querySelectorAll('input[type="password"]').forEach(function(input) {
+        input.addEventListener('input', function() {
+            this.setCustomValidity("");
+        });
+    });
+});
+
+function validarContrasena(contrasena) {
+    if (contrasena.length < 8) {
+        return "La contraseña debe tener al menos 8 caracteres.";
+    }
+    if (!/[A-Z]/.test(contrasena)) {
+        return "La contraseña debe contener al menos una letra mayúscula.";
+    }
+    return true;
+}

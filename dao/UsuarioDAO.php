@@ -166,7 +166,7 @@ class UsuarioDAO {
     }
 
     // Verificar si un correo ya está registrado
->>>>>>> f0143ecce224180f5c7056ad702d7878d96326c3
+
     public function verificarCorreo($correo) {
         $sql = "SELECT * FROM usuarios WHERE correo = ?";
         $stmt = $this->conn->prepare($sql);
