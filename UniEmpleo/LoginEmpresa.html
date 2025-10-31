@@ -1,11 +1,34 @@
 <!DOCTYPE html>
 <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <title>Login Empresa</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <title>Login Empresa</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
 <body>
+    <nav class="navbar">
+        <div class="nav-brand"><a href="Index.php">UniEmpleo</a></div>
+        <div class="nav-links">
+            <a href="Index.php">Inicio</a>
+            <div class="dropdown">
+              <a href="#" class="dropbtn">Egresados</a>
+              <div class="dropdown-content">
+                <a href="LoginEgresados.php">Login</a>
+                <a href="RegistroEgresados.html">Registrarse</a>
+              </div>
+            </div>
+            <div class="dropdown">
+              <a href="#" class="dropbtn active">Empresas</a>
+              <div class="dropdown-content">
+                <a href="LoginEmpresa.html">Login</a>
+                <a href="RegistroEmpresa.html">Registrarse</a>
+              </div>
+            </div>
+
+        </div>
+    </nav>
     <header class="header">
         <h1>Acceso Empresas - UniEmpleo</h1>
     </header>
@@ -24,5 +47,21 @@
     <footer class="footer">
         <p>&copy; 2025 UniEmpleo</p>
     </footer>
+
+    <script>
+      (function(){
+        const p = new URLSearchParams(location.search);
+        function alert(icon, title, text){
+          if (!window.Swal) return;
+          Swal.fire({icon, title, text, confirmButtonText: 'Aceptar'});
+        }
+        if (p.has('missing')) alert('warning','Datos incompletos','Completa correo y contraseña');
+        if (p.has('error')) alert('error','Credenciales inválidas','Correo o contraseña incorrectos');
+        if (p.has('notfound')) alert('warning','Empresa no encontrada','Verifica el correo ingresado');
+        if (p.has('expired')) alert('warning','Sesión expirada','Vuelve a iniciar sesión');
+        if (p.has('redirect')) alert('info','Autenticación requerida','Inicia sesión para continuar');
+        if (p.has('server')) alert('error','Error del servidor','Intenta nuevamente más tarde');
+      })();
+    </script>
 </body>
 </html>
