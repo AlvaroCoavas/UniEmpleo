@@ -15,13 +15,13 @@
         <div class="card">
             <h2>Registrar como Egresado</h2>
             <p>Crea tu perfil profesional y postúlate a vacantes</p>
-            <a href="registro_egresado.php" class="btn">Soy Egresado</a>
+            <a href="RegistroEgresados.html" class="btn">Soy Egresado</a>
         </div>
 
         <div class="card">
             <h2>Registrar como Empresa</h2>
             <p>Publica vacantes y encuentra el talento ideal</p>
-            <a href="registro_empresa.php" class="btn">Soy Empresa</a>
+            <a href="LoginEmpresa.html" class="btn">Soy Empresa</a>
         </div>
     </main>
 

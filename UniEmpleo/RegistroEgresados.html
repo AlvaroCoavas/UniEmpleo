@@ -6,41 +6,79 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- navbar eliminado en esta vista para usar el menú lateral -->
     <header class="header">
+        <button class="hamburger" id="menuToggle" aria-label="Abrir menú">
+            <span></span><span></span><span></span>
+        </button>
         <h1>Registro de Egresado - UniEmpleo</h1>
     </header>
+    <div class="backdrop" id="backdrop"></div>
 
-    <form action="guardar_egresado.php" method="post" enctype="multipart/form-data" class="formulario">
-        <h3>Información Personal</h3>
+    <div class="layout">
+        <aside class="sidebar sidebar--drawer">
+            <h3>Egresado</h3>
+            <div class="menu">
+                <a href="InicioEgresado.php">Inicio</a>
+                <a href="BuscarVacantes.php">Buscar Vacantes</a>
+                <a href="Vacantes.php">Ver Vacantes</a>
+                <a href="PerfilEgresado.php">Mi Perfil</a>
+                <a href="RegistroEgresados.html" class="active">Actualizar Perfil</a>
+                <a href="logout.php">Salir</a>
+            </div>
+        </aside>
 
-        <label for="nombre">Nombre completo:</label>
-        <input type="text" name="nombre" required>
+        <div class="content">
+            <form action="GuardarEgresado.php" method="post" enctype="multipart/form-data" class="formulario">
+                <h3>Información Personal</h3>
 
-        <label for="email">Correo electrónico:</label>
-        <input type="email" name="email" required>
+                <label for="nombre">Nombre completo:</label>
+                <input type="text" name="nombre" required>
 
-        <label for="telefono">Número de teléfono:</label>
-        <input type="text" name="telefono" required>
+                <label for="email">Correo electrónico:</label>
+                <input type="email" name="email" required>
 
-        <label for="programa">Programa de formación:</label>
-        <input type="text" name="programa" placeholder="Ej: Tecnología en Desarrollo de Software" required>
+                <label for="telefono">Número de teléfono:</label>
+                <input type="text" name="telefono" required>
 
-        <label for="graduacion">Año de graduación:</label>
-        <input type="number" name="graduacion" min="2000" max="2025" required>
+                <label for="programa">Programa de formación:</label>
+                <input type="text" name="programa" placeholder="Ej: Tecnología en Desarrollo de Software" required>
 
-        <label for="perfil">Perfil profesional:</label>
-        <textarea name="perfil" rows="4" placeholder="Describe brevemente tus habilidades y experiencia" required></textarea>
+                <label for="graduacion">Año de graduación:</label>
+                <input type="number" name="graduacion" min="2000" max="2025" required>
 
-        <h3>Sube tu Hoja de Vida</h3>
+                <label for="perfil">Perfil profesional:</label>
+                <textarea name="perfil" rows="4" placeholder="Describe brevemente tus habilidades y experiencia" required></textarea>
 
-        <label for="cv">CV en PDF:</label>
-        <input type="file" name="cv" accept=".pdf" required>
+                <h3>Seguridad de Cuenta</h3>
+                <label for="contrasena">Contraseña:</label>
+                <input type="password" name="contrasena" required minlength="6">
 
-        <input type="submit" value="Registrar Perfil">
-    </form>
+                <label for="confirmar_contrasena">Confirmar contraseña:</label>
+                <input type="password" name="confirmar_contrasena" required minlength="6">
+
+                <h3>Sube tu Hoja de Vida</h3>
+
+                <label for="cv">CV en PDF:</label>
+                <input type="file" name="cv" accept=".pdf" required>
+
+                <input type="submit" value="Registrar Perfil">
+            </form>
+        </div>
+    </div>
 
     <footer class="footer">
         <p>&copy; 2025 UniEmpleo</p>
     </footer>
+
+    <script>
+      (function(){
+        const toggle = document.getElementById('menuToggle');
+        const backdrop = document.getElementById('backdrop');
+        const body = document.body;
+        if (toggle) toggle.addEventListener('click', () => body.classList.toggle('sidebar-open'));
+        if (backdrop) backdrop.addEventListener('click', () => body.classList.remove('sidebar-open'));
+      })();
+    </script>
 </body>
 </html>
