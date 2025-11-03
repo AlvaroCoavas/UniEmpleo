@@ -11,7 +11,7 @@ $correo = $_POST['em'] ?? '';
 $pass = $_POST['pa'] ?? '';
 
 if ($correo === '' || $pass === '') {
-    echo "<script>alert('Completa correo y contraseña'); window.location='LoginEgresados.php';</script>";
+    echo "<script>alert('Completa correo y contraseña'); window.location='/View/LoginEgresados.php';</script>";
     exit;
 }
 
@@ -36,13 +36,13 @@ if ($stmt->num_rows > 0) {
     if ($ok) {
         session_start();
         $_SESSION['correo'] = $correo;
-        header("Location: Vacantes.php");
+        header("Location: /View/Vacantes.php");
         exit;
     } else {
-        echo "<script>alert('Correo o contraseña incorrectos'); window.location='LoginEgresados.php';</script>";
+        echo "<script>alert('Correo o contraseña incorrectos'); window.location='/View/LoginEgresados.php';</script>";
     }
 } else {
-    echo "<script>alert('Usuario no encontrado'); window.location='LoginEgresados.php';</script>";
+    echo "<script>alert('Usuario no encontrado'); window.location='/View/LoginEgresados.php';</script>";
 }
 
 $stmt->close();

@@ -1,0 +1,43 @@
+# OS
+Thumbs.db
+.DS_Store
+
+# Node / frontend tooling
+node_modules/
+npm-debug.log*
+yarn.lock
+
+# PHP / Composer
+vendor/
+composer.lock
+composer.phar
+
+# Logs and temp
+*.log
+logs/
+cache/
+tmp/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+
+# Env files
+.env
+.env.*
+
+# Local databases
+*.sqlite
+*.db
+
+# Build artefacts
+build/
+dist/
+
+# Project specific: user CVs (privado)
+UniEmpleo/cvs/
+
+# Misc
+*.bak
+*.tmp

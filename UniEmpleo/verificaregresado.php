@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/auth.php';
+require_once __DIR__ . '/Auth/auth.php';
 start_secure_session();
 no_cache();
 
@@ -13,8 +13,7 @@ $correo = $_POST['correo'] ?? '';
 $contrasena = $_POST['contrasena'] ?? '';
 
 if ($correo === '' || $contrasena === '') {
-    header("Location: LoginEgresados.php?missing=1");
-exit;
+    header("Location: /View/LoginEgresados.php?missing=1");
     exit;
 }
 
@@ -38,15 +37,15 @@ if (mysqli_stmt_num_rows($stmt) > 0) {
     if ($ok) {
         $_SESSION['correo'] = $correo;
         safe_login_regenerate();
-        header("Location: Vacantes.php");
+        header("Location: /View/Vacantes.php");
         exit;
     } else {
-        header("Location: LoginEgresados.php?error=1");
-exit;
+        header("Location: /View/LoginEgresados.php?error=1");
+        exit;
     }
 } else {
-    header("Location: LoginEgresados.php?notfound=1");
-exit;
+    header("Location: /View/LoginEgresados.php?notfound=1");
+    exit;
 }
 
 mysqli_stmt_close($stmt);
