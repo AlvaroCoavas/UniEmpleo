@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Inicio de sesión</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-segment [(ngModel)]="modo">
+    <ion-segment-button value="login">Entrar</ion-segment-button>
+    <ion-segment-button value="egresado">Registro egresado</ion-segment-button>
+    <ion-segment-button value="empresa">Registro empresa</ion-segment-button>
+  </ion-segment>
+
+  <div [hidden]="modo !== 'login'">
+    <form [formGroup]="formularioLogin" (ngSubmit)="entrar()">
+      <ion-item>
+        <ion-label position="stacked">Correo</ion-label>
+        <ion-input type="email" formControlName="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input type="password" formControlName="password"></ion-input>
+      </ion-item>
+      <ion-button expand="block" type="submit">Entrar</ion-button>
+    </form>
+  </div>
+
+  <div [hidden]="modo !== 'egresado'">
+    <form [formGroup]="formularioEgresado" (ngSubmit)="registrarEgresado()">
+      <ion-item>
+        <ion-label position="stacked">Nombre</ion-label>
+        <ion-input formControlName="nombre"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Correo</ion-label>
+        <ion-input type="email" formControlName="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input type="password" formControlName="password"></ion-input>
+      </ion-item>
+      <ion-button expand="block" type="submit">Registrarse</ion-button>
+    </form>
+  </div>
+
+  <div [hidden]="modo !== 'empresa'">
+    <form [formGroup]="formularioEmpresa" (ngSubmit)="registrarEmpresa()">
+      <ion-item>
+        <ion-label position="stacked">Razón social</ion-label>
+        <ion-input formControlName="razonSocial"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Correo</ion-label>
+        <ion-input type="email" formControlName="email"></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="stacked">Contraseña</ion-label>
+        <ion-input type="password" formControlName="password"></ion-input>
+      </ion-item>
+      <ion-button expand="block" type="submit">Registrarse</ion-button>
+    </form>
+  </div>
+</ion-content>

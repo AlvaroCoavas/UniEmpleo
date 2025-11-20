@@ -1,0 +1,18 @@
+import { NgModule } from '@angular/core';
+import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+
+const routes: Routes = [
+  { path: '', loadChildren: () => import('./tabs/tabs.module').then(m => m.TabsPageModule) },
+  { path: 'inicio-sesion', loadComponent: () => import('./pages/login/login.page').then(m => m.PaginaLogin) },
+  { path: 'publicar-vacante', loadComponent: () => import('./pages/publicar-vacante/publicar-vacante.page').then(m => m.PaginaPublicarVacante) },
+  { path: 'mis-vacantes', loadComponent: () => import('./pages/mis-vacantes/mis-vacantes.page').then(m => m.PaginaMisVacantes) },
+  { path: 'feed', loadComponent: () => import('./pages/feed/feed.page').then(m => m.PaginaFeed) },
+  { path: 'chat', loadComponent: () => import('./pages/chat/chat.page').then(m => m.PaginaChat) }
+];
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+  ],
+  exports: [RouterModule]
+})
+export class AppRoutingModule {}
