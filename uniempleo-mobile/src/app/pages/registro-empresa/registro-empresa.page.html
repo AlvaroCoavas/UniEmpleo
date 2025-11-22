@@ -1,0 +1,108 @@
+<ion-header>
+  <ion-toolbar color="light">
+    <ion-title>Registro Empresa</ion-title>
+  </ion-toolbar>
+  <ion-toolbar color="light" class="borde-azul"></ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding fondo-claro">
+  <form [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Datos de la empresa</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="full">
+          <ion-label position="stacked">Razón social</ion-label>
+          <ion-input formControlName="razonSocial"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.razonSocial.invalid && formulario.controls.razonSocial.touched">Campo requerido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">NIT</ion-label>
+          <ion-input formControlName="nit" placeholder="solo números"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.nit.invalid && formulario.controls.nit.touched">Formato NIT no válido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Representante legal</ion-label>
+          <ion-input formControlName="representante"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.representante.invalid && formulario.controls.representante.touched">Campo requerido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Correo corporativo</ion-label>
+          <ion-input type="email" formControlName="correoCorporativo"></ion-input>
+          <ion-note color="warning" *ngIf="formulario.controls.correoCorporativo.errors?.['corporativo']">Debe ser correo de dominio corporativo</ion-note>
+          <ion-note color="danger" *ngIf="formulario.controls.correoCorporativo.invalid && formulario.controls.correoCorporativo.touched && !formulario.controls.correoCorporativo.errors?.['corporativo']">Correo no válido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Teléfono</ion-label>
+          <ion-input formControlName="telefono"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.telefono.invalid && formulario.controls.telefono.touched">Teléfono no válido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Ciudad</ion-label>
+          <ion-input formControlName="ciudad"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.ciudad.invalid && formulario.controls.ciudad.touched">Campo requerido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Sector empresarial</ion-label>
+          <ion-select formControlName="sector">
+            <ion-select-option *ngFor="let s of sectores" [value]="s">{{ s }}</ion-select-option>
+          </ion-select>
+          <ion-note color="danger" *ngIf="formulario.controls.sector.invalid && formulario.controls.sector.touched">Selecciona un sector</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Tamaño de la empresa</ion-label>
+          <ion-select formControlName="tamano">
+            <ion-select-option *ngFor="let t of tamanoLista" [value]="t">{{ t }}</ion-select-option>
+          </ion-select>
+          <ion-note color="danger" *ngIf="formulario.controls.tamano.invalid && formulario.controls.tamano.touched">Selecciona tamaño</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Contraseña</ion-label>
+          <ion-input type="password" formControlName="contrasena"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.contrasena.invalid && formulario.controls.contrasena.touched">Mínimo 8 caracteres</ion-note>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Opcionales</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="full">
+          <ion-label position="stacked">Sitio web</ion-label>
+          <ion-input formControlName="sitioWeb" placeholder="https://"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Logo de la empresa</ion-label>
+          <input type="file" (change)="seleccionarLogo($event)" accept="image/*" />
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Documento de verificación</ion-label>
+          <input type="file" (change)="seleccionarDocumento($event)" />
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Descripción corta</ion-label>
+          <ion-textarea formControlName="descripcion"></ion-textarea>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Seguridad</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-checkbox formControlName="aceptaTerminos"></ion-checkbox>
+          <ion-label>Acepto términos y políticas</ion-label>
+          <ion-note color="danger" *ngIf="formulario.controls.aceptaTerminos.invalid && formulario.controls.aceptaTerminos.touched">Debes aceptar</ion-note>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-text color="danger" *ngIf="mensajeError">{{ mensajeError }}</ion-text>
+    <ion-button expand="block" type="submit" [disabled]="estaGuardando || formulario.invalid" class="btn-azul">Registrar empresa</ion-button>
+  </form>
+</ion-content>

@@ -21,6 +21,39 @@
       <ion-label position="stacked">Salario</ion-label>
       <ion-input type="number" formControlName="salario"></ion-input>
     </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Habilidades (separadas por coma)</ion-label>
+      <ion-input
+        formControlName="habilidades"
+        placeholder="ej: Java, Ventas, Excel"
+      ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Disponibilidad</ion-label>
+      <ion-select formControlName="disponibilidad">
+        <ion-select-option value="tiempo_completo"
+          >Tiempo completo</ion-select-option
+        >
+        <ion-select-option value="medio_tiempo">Medio tiempo</ion-select-option>
+        <ion-select-option value="por_horas">Por horas</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Modalidad</ion-label>
+      <ion-select formControlName="modalidad">
+        <ion-select-option value="remoto">Remoto</ion-select-option>
+        <ion-select-option value="hibrido">Híbrido</ion-select-option>
+        <ion-select-option value="presencial">Presencial</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Tarifa</ion-label>
+      <ion-input
+        type="number"
+        formControlName="tarifa"
+        placeholder="ej: 250000"
+      ></ion-input>
+    </ion-item>
     <ion-button expand="block" type="submit">Publicar</ion-button>
   </form>
 </ion-content>

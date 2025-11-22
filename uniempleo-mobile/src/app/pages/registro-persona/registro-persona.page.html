@@ -1,0 +1,135 @@
+<ion-header>
+  <ion-toolbar color="light">
+    <ion-title>Registro Persona natural</ion-title>
+  </ion-toolbar>
+  <ion-toolbar color="light" class="borde-azul"></ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding fondo-claro">
+  <form [formGroup]="formulario" (ngSubmit)="enviar()" novalidate>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Datos personales</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="full">
+          <ion-label position="stacked">Nombre completo</ion-label>
+          <ion-input formControlName="nombreCompleto"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.nombreCompleto.invalid && formulario.controls.nombreCompleto.touched">Escribe tu nombre</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Tipo de documento</ion-label>
+          <ion-select formControlName="tipoDocumento">
+            <ion-select-option value="CC">CC</ion-select-option>
+            <ion-select-option value="CE">CE</ion-select-option>
+            <ion-select-option value="Pasaporte">Pasaporte</ion-select-option>
+          </ion-select>
+          <ion-note color="danger" *ngIf="formulario.controls.tipoDocumento.invalid && formulario.controls.tipoDocumento.touched">Selecciona un tipo</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Número de documento</ion-label>
+          <ion-input formControlName="numeroDocumento"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.numeroDocumento.invalid && formulario.controls.numeroDocumento.touched">Formato no válido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Correo electrónico</ion-label>
+          <ion-input type="email" formControlName="correo"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.correo.invalid && formulario.controls.correo.touched">Correo no válido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Contraseña</ion-label>
+          <ion-input type="password" formControlName="contrasena" placeholder="mínimo 8 caracteres"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.contrasena.invalid && formulario.controls.contrasena.touched">Mínimo 8 caracteres</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Teléfono</ion-label>
+          <ion-input formControlName="telefono" placeholder="ej: +573001234567"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.telefono.invalid && formulario.controls.telefono.touched">Teléfono no válido</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Ciudad</ion-label>
+          <ion-input formControlName="ciudad"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.ciudad.invalid && formulario.controls.ciudad.touched">Ciudad requerida</ion-note>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Datos profesionales</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="full">
+          <ion-label position="stacked">Rol o profesión principal</ion-label>
+          <ion-input formControlName="rolPrincipal" placeholder="ej: Desarrollador"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.rolPrincipal.invalid && formulario.controls.rolPrincipal.touched">Escribe tu rol</ion-note>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Años de experiencia</ion-label>
+          <ion-input type="number" formControlName="experienciaAnios"></ion-input>
+          <ion-note color="danger" *ngIf="formulario.controls.experienciaAnios.invalid && formulario.controls.experienciaAnios.touched">Valor entre 0 y 60</ion-note>
+        </ion-item>
+
+        <ion-list>
+          <ion-item>
+            <ion-label>Habilidades principales</ion-label>
+          </ion-item>
+          <ion-item *ngFor="let h of habilidadesSugeridasTemporales" (click)="toggleHabilidad(h)" button>
+            <ion-label>{{ h }}</ion-label>
+            <ion-checkbox [checked]="(formulario.value.habilidades || []).includes(h)" slot="end"></ion-checkbox>
+          </ion-item>
+          <ion-item>
+            <ion-input formControlName="nuevaHabilidad" placeholder="Escribe habilidad nueva"></ion-input>
+            <ion-button size="small" (click)="agregarHabilidad()">Agregar</ion-button>
+          </ion-item>
+        </ion-list>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Hoja de vida (PDF)</ion-label>
+          <input type="file" (change)="seleccionarHojaVida($event)" accept="application/pdf" />
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Foto profesional (opcional)</ion-label>
+          <input type="file" (change)="seleccionarFoto($event)" accept="image/*" />
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Pretensión salarial (opcional)</ion-label>
+          <ion-input type="number" formControlName="pretension"></ion-input>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Disponibilidad</ion-label>
+          <ion-select formControlName="disponibilidad">
+            <ion-select-option value="inmediata">Inmediata</ion-select-option>
+            <ion-select-option value="medio_tiempo">Medio tiempo</ion-select-option>
+            <ion-select-option value="remoto">Remoto</ion-select-option>
+            <ion-select-option value="hibrido">Híbrido</ion-select-option>
+          </ion-select>
+        </ion-item>
+
+        <ion-item lines="full">
+          <ion-label position="stacked">Resumen profesional</ion-label>
+          <ion-textarea formControlName="resumen"></ion-textarea>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Seguridad</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-checkbox formControlName="aceptaTerminos"></ion-checkbox>
+          <ion-label>Acepto términos y políticas</ion-label>
+          <ion-note color="danger" *ngIf="formulario.controls.aceptaTerminos.invalid && formulario.controls.aceptaTerminos.touched">Debes aceptar los términos</ion-note>
+        </ion-item>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-text color="danger" *ngIf="mensajeError">{{ mensajeError }}</ion-text>
+    <ion-button expand="block" type="submit" [disabled]="estaGuardando || formulario.invalid" class="btn-azul">Registrarme</ion-button>
+  </form>
+</ion-content>
