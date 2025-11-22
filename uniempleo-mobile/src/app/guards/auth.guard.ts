@@ -1,13 +1,16 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { AngularFireAuth } from '@angular/fire/compat/auth';
+import { ServicioDatosSupabase } from '../services/supabase.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProtectorSesion implements CanActivate {
-  constructor(private afAuth: AngularFireAuth, private router: Router) {}
+  constructor(
+    private router: Router,
+    private supabase: ServicioDatosSupabase
+  ) {}
   async canActivate() {
-    const user = await this.afAuth.currentUser;
-    if (user?.uid) return true;
+    const sesion = await this.supabase.sesionActual();
+    if (sesion.data.session?.user?.id) return true;
     this.router.navigateByUrl('/inicio-sesion');
     return false;
   }

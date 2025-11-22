@@ -6,6 +6,10 @@ export interface Vacante {
   requisitos?: string;
   ubicacion?: string;
   salario?: number;
+  habilidades?: string[];
+  disponibilidad?: string;
+  modalidad?: 'remoto' | 'hibrido' | 'presencial';
+  tarifa?: number;
   estado?: 'activa' | 'cerrada';
   createdAt?: number;
 }
