@@ -1,18 +1,19 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore } from '@angular/fire/compat/firestore';
+import { ServicioDatosSupabase } from './supabase.service';
 
 @Injectable({ providedIn: 'root' })
 export class ServicioTrazabilidad {
-  constructor(private afs: AngularFirestore) {}
+  constructor(private supa: ServicioDatosSupabase) {}
 
   guardarAuditoria(quienId: string, accion: string, referencia: string, detalle?: any) {
-    const data = {
-      quienId,
-      accion,
-      referencia,
-      detalle: detalle || null,
-      cuando: Date.now()
-    };
-    return this.afs.collection('auditorias').add(data);
+    return this.supa.cliente
+      .from('auditoria_eventos')
+      .insert({
+        quien: quienId,
+        accion,
+        entidad: 'vacante',
+        entidad_id: referencia,
+        detalles: detalle || null,
+      });
   }
 }

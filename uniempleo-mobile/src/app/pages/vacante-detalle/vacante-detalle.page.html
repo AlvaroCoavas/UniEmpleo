@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Detalle vacante</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-card *ngIf="vacante">
+    <ion-card-header>
+      <ion-card-title>{{ vacante.titulo }}</ion-card-title>
+      <ion-card-subtitle>{{ vacante.ubicacion }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ vacante.descripcion }}</p>
+      <p *ngIf="vacante.salario">Salario: {{ vacante.salario }}</p>
+      <ion-chip *ngFor="let h of vacante.habilidades">{{ h }}</ion-chip>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card *ngIf="empresa">
+    <ion-card-header>
+      <ion-card-title>Empresa</ion-card-title>
+      <ion-card-subtitle>{{ empresa.razon_social }}</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <p>{{ empresa.descripcion }}</p>
+      <ion-button [routerLink]="['/empresa', vacante.empresaId]" expand="block">Ver perfil de la empresa</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

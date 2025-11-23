@@ -1,47 +1,6 @@
-ion-content {
-  display: block;
-}
-:host {
-  --color-azul: #2e64fe;
-}
-
-.fondo-claro {
-  --background: #303030;
-  color: #eaeaea;
-}
-
-.borde-azul {
-  border-top: 3px solid var(--color-azul);
-}
-
-.item-moderno {
-  --background: #3a3a3a;
-  --color: #f5f5f5;
-  border-radius: 10px;
-  margin-bottom: 12px;
-}
-
-.item-moderno ion-label {
-  color: #e0e0e0;
-}
-
-.item-moderno ion-input,
-.item-moderno input {
-  color: #f5f5f5;
-}
-
-.item-moderno input::placeholder {
-  color: #b0b0b0;
-}
-
-.btn-azul {
-  --background: var(--color-azul);
-}
-
-.links-login {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: flex-start;
-  margin-top: 8px;
-}
+ion-content { display: block; }
+:host { --color-azul: #2e64fe; }
+.btn-azul { --background: var(--color-azul); }
+.links-login { display: flex; gap: 8px; align-items: center; justify-content: flex-start; margin-top: 8px; }
+.avatar { width: 48px; height: 48px; border-radius: 50%; background: #2e64fe; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+.usuario { font-weight: 600; }

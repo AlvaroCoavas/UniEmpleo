@@ -25,6 +25,12 @@ const routes: Routes = [
         data: { role: 'empresa' }
       },
       {
+        path: 'perfil',
+        loadComponent: () => import('../pages/perfil-egresado/perfil-egresado.page').then(m => m.PaginaPerfilEgresado),
+        canActivate: [ProtectorSesion, ProtectorRol],
+        data: { role: 'egresado' }
+      },
+      {
         path: '',
         redirectTo: '/pestanas/tab1',
         pathMatch: 'full'

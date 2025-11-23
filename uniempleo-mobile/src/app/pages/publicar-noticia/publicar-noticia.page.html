@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Publicar noticia</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <form [formGroup]="formulario" (ngSubmit)="enviar()">
+    <ion-item>
+      <ion-label position="stacked">Título</ion-label>
+      <ion-input formControlName="titulo"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Resumen</ion-label>
+      <ion-textarea formControlName="resumen"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Contenido</ion-label>
+      <ion-textarea formControlName="contenido"></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Video (opcional)</ion-label>
+      <input type="file" (change)="seleccionarVideo($event)" accept="video/*" />
+    </ion-item>
+    <ion-button expand="block" type="submit" [disabled]="formulario.invalid">Publicar</ion-button>
+  </form>
+</ion-content>

@@ -50,6 +50,41 @@ const routes: Routes = [
     loadComponent: () =>
       import('./pages/chat/chat.page').then((m) => m.PaginaChat),
   },
+  {
+    path: 'perfil-empresa',
+    loadComponent: () =>
+      import('./pages/perfil-empresa/perfil-empresa.page').then(
+        (m) => m.PaginaPerfilEmpresa
+      ),
+  },
+  {
+    path: 'publicar-noticia',
+    loadComponent: () =>
+      import('./pages/publicar-noticia/publicar-noticia.page').then(
+        (m) => m.PaginaPublicarNoticia
+      ),
+  },
+  {
+    path: 'vacante/:id',
+    loadComponent: () =>
+      import('./pages/vacante-detalle/vacante-detalle.page').then(
+        (m) => m.PaginaVacanteDetalle
+      ),
+  },
+  {
+    path: 'empresa/:id',
+    loadComponent: () =>
+      import('./pages/empresa-detalle/empresa-detalle.page').then(
+        (m) => m.PaginaEmpresaDetalle
+      ),
+  },
+  {
+    path: 'perfil-egresado',
+    loadComponent: () =>
+      import('./pages/perfil-egresado/perfil-egresado.page').then(
+        (m) => m.PaginaPerfilEgresado
+      ),
+  },
 ];
 @NgModule({
   imports: [

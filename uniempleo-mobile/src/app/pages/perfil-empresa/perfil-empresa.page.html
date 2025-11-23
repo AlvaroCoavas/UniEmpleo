@@ -1,0 +1,74 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mi empresa</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding" *ngIf="empresa; else sinEmpresa">
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>{{ correo }}</ion-card-title>
+        <ion-card-subtitle>Editar empresa</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="full">
+          <ion-label position="stacked">Razón social</ion-label>
+          <ion-input formControlName="razon_social"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Ciudad</ion-label>
+          <ion-input formControlName="ciudad"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Sector</ion-label>
+          <ion-input formControlName="sector"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Tamaño</ion-label>
+          <ion-input formControlName="tamano"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Teléfono</ion-label>
+          <ion-input formControlName="telefono"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Sitio web</ion-label>
+          <ion-input formControlName="sitio_web" placeholder="https://"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Descripción</ion-label>
+          <ion-textarea formControlName="descripcion"></ion-textarea>
+        </ion-item>
+        <ion-text color="danger" *ngIf="mensajeError">{{ mensajeError }}</ion-text>
+        <ion-button expand="block" type="submit" [disabled]="guardando || formulario.invalid || !formulario.dirty" class="btn-azul">Guardar</ion-button>
+        <ion-button fill="clear" size="small" (click)="cambiarContrasena()">Cambiar contraseña</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </form>
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Mis noticias</ion-card-title>
+      <ion-card-subtitle>Publicadas por la empresa</ion-card-subtitle>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list>
+        <ion-item *ngFor="let n of noticias">
+          <ion-label>
+            <h2>{{ n.titulo }}</h2>
+            <p>{{ n.resumen }}</p>
+          </ion-label>
+          <ion-button fill="clear" size="small" (click)="editarNoticia(n)">Editar</ion-button>
+          <ion-button fill="clear" color="danger" size="small" (click)="eliminarNoticia(n.id)">Eliminar</ion-button>
+        </ion-item>
+        <ion-item *ngIf="noticias.length === 0">
+          <ion-label>No tienes noticias publicadas</ion-label>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+</ion-content>
+<ng-template #sinEmpresa>
+  <ion-content class="ion-padding">
+    <ion-text color="medium">No encontramos tu empresa. Asegúrate de registrar la empresa y que tu usuario tenga `auth_user_id` en la tabla `empresas`.</ion-text>
+  </ion-content>
+</ng-template>

@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import {
   FormBuilder,
+  FormGroup,
   Validators,
   FormsModule,
   ReactiveFormsModule,
@@ -18,10 +19,7 @@ import { ServicioDatosSupabase } from '../../services/supabase.service';
   imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule],
 })
 export class PaginaLogin {
-  formularioLogin = this.fb.group({
-    correo: ['', [Validators.required, Validators.email]],
-    contrasena: ['', [Validators.required, Validators.minLength(8)]],
-  });
+  formularioLogin!: FormGroup;
   mensajeError: string | null = null;
   intentosLogin: number = 0;
   bloqueadoHasta: number = 0;
@@ -31,7 +29,12 @@ export class PaginaLogin {
     private supabase: ServicioDatosSupabase,
     private router: Router,
     private alertas: AlertController
-  ) {}
+  ) {
+    this.formularioLogin = this.fb.group({
+      correo: ['', [Validators.required, Validators.email]],
+      contrasena: ['', [Validators.required, Validators.minLength(8)]],
+    });
+  }
 
   ngOnInit() {
     const datoIntentos = localStorage.getItem('intentosLogin');
@@ -58,7 +61,14 @@ export class PaginaLogin {
       if (res.error) throw res.error;
       this.intentosLogin = 0;
       localStorage.setItem('intentosLogin', String(this.intentosLogin));
-      this.router.navigateByUrl('/');
+      const rol = await this.supabase.obtenerRolActual();
+      if (rol === 'empresa') {
+        this.router.navigateByUrl('/pestanas/tab3');
+      } else if (rol === 'egresado') {
+        this.router.navigateByUrl('/pestanas/perfil');
+      } else {
+        this.router.navigateByUrl('/pestanas/tab1');
+      }
     } catch (e: any) {
       this.intentosLogin++;
       localStorage.setItem('intentosLogin', String(this.intentosLogin));

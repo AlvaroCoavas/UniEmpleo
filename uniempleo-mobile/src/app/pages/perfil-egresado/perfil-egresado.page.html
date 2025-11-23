@@ -1,0 +1,57 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Mi perfil</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding" *ngIf="persona; else sinDatos">
+  <form [formGroup]="formulario" (ngSubmit)="guardar()" novalidate>
+    <ion-card>
+      <ion-card-header>
+        <ion-avatar class="avatar">
+          <div class="iniciales">{{ (persona.nombre_completo || 'EG')[0] }}</div>
+        </ion-avatar>
+        <ion-card-title>{{ correo }}</ion-card-title>
+        <ion-card-subtitle>Editar perfil</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item lines="full">
+          <ion-label position="stacked">Nombre completo</ion-label>
+          <ion-input formControlName="nombre_completo"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Ciudad</ion-label>
+          <ion-input formControlName="ciudad"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Rol principal</ion-label>
+          <ion-input formControlName="rol_principal"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Experiencia (años)</ion-label>
+          <ion-input type="number" formControlName="anos_experiencia"></ion-input>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Disponibilidad</ion-label>
+          <ion-select formControlName="disponibilidad">
+            <ion-select-option value="inmediata">Inmediata</ion-select-option>
+            <ion-select-option value="medio_tiempo">Medio tiempo</ion-select-option>
+            <ion-select-option value="remoto">Remoto</ion-select-option>
+            <ion-select-option value="hibrido">Híbrido</ion-select-option>
+          </ion-select>
+        </ion-item>
+        <ion-item lines="full">
+          <ion-label position="stacked">Resumen</ion-label>
+          <ion-textarea formControlName="resumen"></ion-textarea>
+        </ion-item>
+        <ion-text color="danger" *ngIf="mensajeError">{{ mensajeError }}</ion-text>
+        <ion-button expand="block" type="submit" [disabled]="guardando || formulario.invalid || !formulario.dirty" class="btn-azul">Guardar</ion-button>
+        <ion-button fill="clear" size="small" (click)="cambiarContrasena()">Cambiar contraseña</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </form>
+</ion-content>
+<ng-template #sinDatos>
+  <ion-content class="ion-padding">
+    <ion-text color="medium">No encontramos tus datos de egresado. Si te registraste como empresa, usa el tab Empresa. Si eres egresado, completa tu registro primero.</ion-text>
+  </ion-content>
+</ng-template>

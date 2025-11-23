@@ -42,3 +42,4 @@ export class ServicioEmparejamiento {
     return lista.sort((a, b) => b.puntaje - a.puntaje);
   }
 }
+

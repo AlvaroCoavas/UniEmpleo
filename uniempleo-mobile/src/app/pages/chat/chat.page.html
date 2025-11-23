@@ -7,6 +7,30 @@
   <ion-grid>
     <ion-row>
       <ion-col size="5">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>Contactos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-segment [(ngModel)]="tipoListado" (ionChange)="cargarCuentas()">
+              <ion-segment-button value="personas"><ion-label>Personas</ion-label></ion-segment-button>
+              <ion-segment-button value="empresas"><ion-label>Empresas</ion-label></ion-segment-button>
+            </ion-segment>
+            <ion-list>
+              <ion-item button (click)="iniciarChatCon(u.id)" *ngFor="let u of cuentas">
+                <ion-label>
+                  <h2>{{ u.nombre_completo || u.razon_social }}</h2>
+                  <p>{{ u.correo || u.correo_corporativo }} • {{ u.ciudad || u.sector }}</p>
+                </ion-label>
+              </ion-item>
+              <ion-item *ngIf="cuentas.length === 0">
+                <ion-label>
+                  <p>No hay contactos para mostrar</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
         <ion-list>
           <ion-item button *ngFor="let c of conversaciones" (click)="abrir(c.id)">
             <ion-label>

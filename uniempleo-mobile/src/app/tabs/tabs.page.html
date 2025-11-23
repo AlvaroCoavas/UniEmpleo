@@ -2,6 +2,9 @@
   <ion-toolbar>
     <ion-title>Uniempleo</ion-title>
     <ion-buttons slot="end">
+      <ion-button *ngIf="rol === 'egresado'" href="/pestanas/perfil">Perfil</ion-button>
+      <ion-button *ngIf="rol === 'empresa'" href="/pestanas/tab3">Vacantes</ion-button>
+      <ion-button *ngIf="rol === 'empresa'" href="/perfil-empresa">Mi empresa</ion-button>
       <ion-button (click)="logout()">Salir</ion-button>
     </ion-buttons>
   </ion-toolbar>
@@ -16,9 +19,13 @@
       <ion-icon aria-hidden="true" name="chatbubbles"></ion-icon>
       <ion-label>Chat</ion-label>
     </ion-tab-button>
-    <ion-tab-button tab="tab3" href="/pestanas/tab3">
+    <ion-tab-button *ngIf="rol === 'empresa'" tab="tab3" href="/pestanas/tab3">
       <ion-icon aria-hidden="true" name="briefcase"></ion-icon>
       <ion-label>Empresa</ion-label>
+    </ion-tab-button>
+    <ion-tab-button *ngIf="rol === 'egresado'" tab="perfil" href="/perfil-egresado">
+      <ion-icon aria-hidden="true" name="person-circle"></ion-icon>
+      <ion-label>Perfil</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>
