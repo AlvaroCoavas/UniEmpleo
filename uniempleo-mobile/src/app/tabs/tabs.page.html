@@ -5,6 +5,10 @@
       <ion-button *ngIf="rol === 'egresado'" href="/pestanas/perfil">Perfil</ion-button>
       <ion-button *ngIf="rol === 'empresa'" href="/pestanas/tab3">Vacantes</ion-button>
       <ion-button *ngIf="rol === 'empresa'" href="/perfil-empresa">Mi empresa</ion-button>
+      <ion-button *ngIf="rol === 'empresa'" href="/solicitudes">
+        <ion-label>Solicitudes</ion-label>
+        <ion-badge color="danger" *ngIf="solicitudesCount > 0">{{ solicitudesCount }}</ion-badge>
+      </ion-button>
       <ion-button (click)="logout()">Salir</ion-button>
     </ion-buttons>
   </ion-toolbar>

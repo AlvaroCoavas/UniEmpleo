@@ -1,0 +1,62 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pestanas/tab2"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mensajes</ion-title>
+  </ion-toolbar>
+  <ion-toolbar class="contacto-toolbar" *ngIf="contacto">
+    <div class="avatar">
+      <img
+        *ngIf="contacto.foto_url || contacto.logo_url"
+        [src]="contacto.foto_url || contacto.logo_url"
+        alt="avatar"
+      />
+      <div *ngIf="!(contacto.foto_url || contacto.logo_url)" class="inicial">
+        {{ inicial(contacto) }}
+      </div>
+    </div>
+    <div class="info">
+      <h2>{{ contacto.nombre_completo || contacto.razon_social }}</h2>
+      <p>
+        {{ contacto.correo || contacto.correo_corporativo }}
+        <span *ngIf="contacto.ciudad || contacto.sector">
+          • {{ contacto.ciudad || contacto.sector }}
+        </span>
+      </p>
+    </div>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div id="mensajesLista" class="mensajes-contenedor">
+    <div
+      class="mensaje"
+      [class.propio]="m.senderId === currentUserId"
+      *ngFor="let m of mensajes"
+    >
+      <div class="burbuja">
+        <p>{{ m.text }}</p>
+        <small>{{ m.createdAt | date: 'shortTime' }}</small>
+      </div>
+    </div>
+    <ion-text color="medium" *ngIf="!mensajes.length && !cargando">
+      No hay mensajes aún. Inicia la conversación.
+    </ion-text>
+  </div>
+</ion-content>
+
+<ion-footer>
+  <ion-toolbar>
+    <ion-input
+      [(ngModel)]="texto"
+      placeholder="Escribe un mensaje..."
+      (keyup.enter)="enviar()"
+      [disabled]="!convId"
+    ></ion-input>
+    <ion-buttons slot="end">
+      <ion-button (click)="enviar()" [disabled]="!texto.trim()">Enviar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-footer>
+

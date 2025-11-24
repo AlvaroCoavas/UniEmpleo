@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { ProtectorSesion } from './guards/auth.guard';
 
 const routes: Routes = [
   {
@@ -51,6 +52,12 @@ const routes: Routes = [
       import('./pages/chat/chat.page').then((m) => m.PaginaChat),
   },
   {
+    path: 'mensajes/:destId',
+    loadComponent: () =>
+      import('./pages/mensajes/mensajes.page').then((m) => m.PaginaMensajes),
+    canActivate: [ProtectorSesion],
+  },
+  {
     path: 'perfil-empresa',
     loadComponent: () =>
       import('./pages/perfil-empresa/perfil-empresa.page').then(
@@ -83,6 +90,13 @@ const routes: Routes = [
     loadComponent: () =>
       import('./pages/perfil-egresado/perfil-egresado.page').then(
         (m) => m.PaginaPerfilEgresado
+      ),
+  },
+  {
+    path: 'solicitudes',
+    loadComponent: () =>
+      import('./pages/solicitudes/solicitudes.page').then(
+        (m) => m.PaginaSolicitudes
       ),
   },
 ];

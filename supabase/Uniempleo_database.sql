@@ -1,4 +1,5 @@
-
+-- WARNING: This schema is for context only and is not meant to be run.
+-- Table order and constraints may not be valid for execution.
 
 CREATE TABLE public.auditoria_eventos (
   id uuid NOT NULL DEFAULT gen_random_uuid(),
@@ -102,7 +103,7 @@ CREATE TABLE public.postulaciones (
   estado text NOT NULL CHECK (estado = ANY (ARRAY['creada'::text, 'revision'::text, 'entrevista'::text, 'oferta'::text, 'rechazada'::text, 'contratada'::text])),
   puntaje numeric,
   creada_en timestamp with time zone NOT NULL DEFAULT now(),
-  actualizada_en timestamp with time zone NOT NULL DEFAULT now(),
+  actualizado_en timestamp with time zone NOT NULL DEFAULT now(),
   CONSTRAINT postulaciones_pkey PRIMARY KEY (id),
   CONSTRAINT postulaciones_vacante_id_fkey FOREIGN KEY (vacante_id) REFERENCES public.vacantes(id),
   CONSTRAINT postulaciones_persona_id_fkey FOREIGN KEY (persona_id) REFERENCES public.personas(id)

@@ -1,0 +1,39 @@
+ion-content {
+  display: block;
+}
+
+.acciones-perfil {
+  margin-top: 12px;
+  display: flex;
+  gap: 8px;
+}
+
+.avatar-perfil {
+  width: 96px;
+  height: 96px;
+}
+
+.iniciales {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  background: var(--ion-color-medium);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.avatar { width: 48px; height: 48px; }
+.iniciales { width: 48px; height: 48px; border-radius: 50%; background: #2e64fe; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+.nombre-usuario { margin: 0; }
+.encabezado { display: flex; align-items: center; gap: 12px; }
+.vacante { color: var(--ion-color-medium); }
+.acciones { margin-top: 8px; display: flex; gap: 8px; flex-wrap: wrap; }

@@ -62,4 +62,36 @@ export class ServicioChat {
     const rows = res.data || [];
     return rows.map((r: any) => ({ id: r.id, senderId: r.remitente, text: r.texto, createdAt: r.creado_en ? new Date(r.creado_en).getTime() : Date.now() } as Mensaje));
   }
+
+  async suscribirMensajes(
+    conversacionId: string,
+    onInsert: (mensaje: Mensaje) => void
+  ) {
+    const channel = this.supabase.cliente
+      .channel(`mensajes_${conversacionId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'mensajes',
+          filter: `conversacion_id=eq.${conversacionId}`,
+        },
+        (payload) => {
+          const nuevo = payload.new as any;
+          if (!nuevo) return;
+          const mensaje: Mensaje = {
+            id: nuevo.id,
+            senderId: nuevo.remitente,
+            text: nuevo.texto,
+            createdAt: nuevo.creado_en
+              ? new Date(nuevo.creado_en).getTime()
+              : Date.now(),
+          };
+          onInsert(mensaje);
+        }
+      );
+    await channel.subscribe();
+    return channel;
+  }
 }

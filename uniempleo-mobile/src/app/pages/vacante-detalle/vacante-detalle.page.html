@@ -13,6 +13,14 @@
       <p>{{ vacante.descripcion }}</p>
       <p *ngIf="vacante.salario">Salario: {{ vacante.salario }}</p>
       <ion-chip *ngFor="let h of vacante.habilidades">{{ h }}</ion-chip>
+      <ion-button
+        color="success"
+        expand="block"
+        (click)="postularme()"
+        [disabled]="estaPostulando || yaPostulado"
+        >¡postularme!</ion-button
+      >
+      <ion-text color="medium" *ngIf="yaPostulado">Ya te postulaste</ion-text>
     </ion-card-content>
   </ion-card>
 
@@ -23,7 +31,9 @@
     </ion-card-header>
     <ion-card-content>
       <p>{{ empresa.descripcion }}</p>
-      <ion-button [routerLink]="['/empresa', vacante.empresaId]" expand="block">Ver perfil de la empresa</ion-button>
+      <ion-button [routerLink]="['/empresa', vacante.empresaId]" expand="block"
+        >Ver perfil de la empresa</ion-button
+      >
     </ion-card-content>
   </ion-card>
 </ion-content>
