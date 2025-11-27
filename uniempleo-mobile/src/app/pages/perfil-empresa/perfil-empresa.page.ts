@@ -97,7 +97,6 @@ export class PaginaPerfilEmpresa implements OnInit {
         { name: 'titulo', type: 'text', value: n.titulo, placeholder: 'Título' },
         { name: 'resumen', type: 'text', value: n.resumen, placeholder: 'Resumen' },
         { name: 'contenido', type: 'textarea', value: n.contenido, placeholder: 'Contenido' },
-        { name: 'video_url', type: 'text', value: n.video_url || '', placeholder: 'URL de video (opcional)' },
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
@@ -108,7 +107,7 @@ export class PaginaPerfilEmpresa implements OnInit {
     const r = await alerta.onDidDismiss();
     if (r.role === 'confirm') {
       const d = r.data?.values || {};
-      await this.noticiasService.actualizarNoticia(n.id, { titulo: d.titulo, resumen: d.resumen, contenido: d.contenido, video_url: d.video_url || null });
+      await this.noticiasService.actualizarNoticia(n.id, { titulo: d.titulo, resumen: d.resumen, contenido: d.contenido });
       const uid = (await this.supabase.cliente.auth.getUser()).data.user?.id as string;
       this.noticias = await this.noticiasService.listarNoticiasPorEmpresa(uid);
     }

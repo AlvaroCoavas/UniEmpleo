@@ -18,11 +18,7 @@
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Contenido</ion-label>
-      <ion-textarea formControlName="contenido"></ion-textarea>
-    </ion-item>
-    <ion-item>
-      <ion-label position="stacked">Video (opcional)</ion-label>
-      <input type="file" (change)="seleccionarVideo($event)" accept="video/*" />
+      <ion-textarea formControlName="contenido" rows="6"></ion-textarea>
     </ion-item>
     <ion-button expand="block" type="submit" [disabled]="formulario.invalid">Publicar</ion-button>
   </form>

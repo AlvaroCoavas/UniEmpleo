@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { ProtectorAdmin } from './guards/admin.guard';
 
 const routes: Routes = [
   {
@@ -112,6 +113,21 @@ const routes: Routes = [
       import('./pages/solicitudes-persona/solicitudes-persona.page').then(
         (m) => m.PaginaSolicitudesPersona
       ),
+  },
+  {
+    path: 'historial-postulaciones',
+    loadComponent: () =>
+      import('./pages/historial-postulaciones/historial-postulaciones.page').then(
+        (m) => m.PaginaHistorialPostulaciones
+      ),
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./pages/admin-dashboard/admin-dashboard.page').then(
+        (m) => m.PaginaAdminDashboard
+      ),
+    canActivate: [ProtectorAdmin],
   },
 ];
 @NgModule({

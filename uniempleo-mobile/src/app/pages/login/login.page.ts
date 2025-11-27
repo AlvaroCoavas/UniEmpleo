@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { ServicioDatosSupabase } from '../../services/supabase.service';
+import { ServicioAdmin } from '../../services/admin.service';
 
 @Component({
   selector: 'app-inicio-sesion',
@@ -28,7 +29,8 @@ export class PaginaLogin {
     private fb: FormBuilder,
     private supabase: ServicioDatosSupabase,
     private router: Router,
-    private alertas: AlertController
+    private alertas: AlertController,
+    private admin: ServicioAdmin
   ) {
     this.formularioLogin = this.fb.group({
       correo: ['', [Validators.required, Validators.email]],
@@ -67,6 +69,13 @@ export class PaginaLogin {
       
       // Esperar un momento para que la sesión se establezca
       await new Promise(resolve => setTimeout(resolve, 500));
+      
+      // Verificar si es administrador primero
+      const esAdmin = await this.admin.esAdministrador();
+      if (esAdmin) {
+        await this.router.navigateByUrl('/admin');
+        return;
+      }
       
       const rol = await this.supabase.obtenerRolActual();
       console.log('Rol obtenido:', rol);

@@ -4,13 +4,6 @@
   </ion-toolbar>
 </ion-header>
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size="12" class="ion-text-right">
-        <ion-button size="small" fill="clear" href="/pestanas/perfil">Ver mi perfil</ion-button>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
   <ion-list>
     <ion-list-header>
       <ion-label>Vacantes</ion-label>
@@ -21,27 +14,17 @@
         <p>{{ v.descripcion }}</p>
       </ion-label>
     </ion-item>
-    <ion-list-header>
-      <ion-label>Noticias</ion-label>
-    </ion-list-header>
-    <ion-item *ngFor="let it of listaNoticias">
-      <ion-label>
-        <h2>{{ it.title }}</h2>
-        <p>{{ it.summary }}</p>
-      </ion-label>
-    </ion-item>
-    <ion-list-header>
-      <ion-label>Noticias de empresas</ion-label>
-    </ion-list-header>
-    <ion-item *ngFor="let n of listaNoticiasEmpresas">
-      <ion-label>
-        <h2>{{ n.titulo }}</h2>
-        <p>{{ n.resumen }}</p>
-      </ion-label>
-      <ion-button fill="clear" slot="end" [routerLink]="['/empresa', n.empresaId]">Ver empresa</ion-button>
-      <div *ngIf="n.video_url" style="width: 100%; margin-top: 8px;">
-        <video [src]="n.video_url" controls style="max-width: 100%;"></video>
-      </div>
-    </ion-item>
   </ion-list>
+  
+  <div class="seccion-noticias">
+    <h3 class="titulo-seccion">Noticias</h3>
+    <div *ngFor="let n of listaNoticiasEmpresas" class="noticia-card">
+      <div class="noticia-header">
+        <h2 class="titulo-noticia">{{ n.titulo }}</h2>
+        <ion-button fill="clear" size="small" [routerLink]="getEmpresaRoute(n)">Ver empresa</ion-button>
+      </div>
+      <p *ngIf="n.resumen && n.resumen.trim()" class="resumen-noticia">{{ n.resumen }}</p>
+      <p *ngIf="n.contenido && n.contenido.trim() && n.contenido !== n.resumen" class="contenido-noticia">{{ n.contenido }}</p>
+    </div>
+  </div>
 </ion-content>

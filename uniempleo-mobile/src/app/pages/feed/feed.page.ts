@@ -14,16 +14,23 @@ import { IonicModule } from '@ionic/angular';
   imports: [CommonModule, IonicModule, RouterModule]
 })
 export class PaginaFeed implements OnInit {
-  listaNoticias: any[] = [];
   listaNoticiasEmpresas: any[] = [];
   listaVacantes: any[] = [];
   constructor(private feed: ServicioFeed, private vacantesService: ServicioVacantes, private noticiasService: ServicioNoticias) {}
   async ngOnInit() {
     try {
       this.listaVacantes = await this.vacantesService.listVacantes();
-      const data = await this.feed.obtenerFeed().catch(() => ({ items: [] }));
-      this.listaNoticias = data.items || [];
       this.listaNoticiasEmpresas = await this.noticiasService.listarNoticias();
     } catch {}
+  }
+
+
+  obtenerEmpresaId(noticia: any): string {
+    return (noticia as any).empresaIdReal || noticia.empresaId;
+  }
+
+  getEmpresaRoute(noticia: any): string[] {
+    const empresaId = this.obtenerEmpresaId(noticia);
+    return ['/empresa', empresaId];
   }
 }
