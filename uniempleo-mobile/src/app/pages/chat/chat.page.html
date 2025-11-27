@@ -43,8 +43,11 @@
               <ion-item
                 button
                 (click)="abrirMensajes(u)"
-                *ngFor="let u of cuentas"
+                *ngFor="let u of cuentasFiltradas"
               >
+                <ion-avatar slot="start" *ngIf="u.foto_url || u.logo_url">
+                  <img [src]="u.foto_url || u.logo_url" alt="Avatar" />
+                </ion-avatar>
                 <ion-label>
                   <h2>{{ u.nombre_completo || u.razon_social }}</h2>
                   <p>
@@ -52,8 +55,15 @@
                     u.sector }}
                   </p>
                 </ion-label>
+                <ion-badge 
+                  slot="end" 
+                  color="danger" 
+                  *ngIf="u.mensajesNoLeidos && u.mensajesNoLeidos > 0"
+                >
+                  {{ u.mensajesNoLeidos > 99 ? '99+' : u.mensajesNoLeidos }}
+                </ion-badge>
               </ion-item>
-              <ion-item *ngIf="cuentas.length === 0">
+              <ion-item *ngIf="cuentasFiltradas.length === 0">
                 <ion-label>
                   <p>No hay contactos para mostrar</p>
                 </ion-label>

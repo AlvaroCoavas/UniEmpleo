@@ -1,6 +1,7 @@
 export interface Vacante {
   id?: string;
-  empresaId: string;
+  empresaId?: string;
+  personaId?: string;
   titulo: string;
   descripcion: string;
   requisitos?: string;

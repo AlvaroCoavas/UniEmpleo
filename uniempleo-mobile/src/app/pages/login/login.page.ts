@@ -58,18 +58,29 @@ export class PaginaLogin {
     if (!correo || !contrasena) return;
     try {
       const res = await this.supabase.iniciarSesion(correo!, contrasena!);
-      if (res.error) throw res.error;
+      if (res.error) {
+        console.error('Error de autenticación:', res.error);
+        throw res.error;
+      }
       this.intentosLogin = 0;
       localStorage.setItem('intentosLogin', String(this.intentosLogin));
+      
+      // Esperar un momento para que la sesión se establezca
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       const rol = await this.supabase.obtenerRolActual();
+      console.log('Rol obtenido:', rol);
+      
       if (rol === 'empresa') {
-        this.router.navigateByUrl('/pestanas/tab3');
+        await this.router.navigateByUrl('/pestanas/tab3');
       } else if (rol === 'egresado') {
-        this.router.navigateByUrl('/pestanas/perfil');
+        await this.router.navigateByUrl('/pestanas/servicios');
       } else {
-        this.router.navigateByUrl('/pestanas/tab1');
+        console.warn('Rol no reconocido, redirigiendo a feed');
+        await this.router.navigateByUrl('/pestanas/tab1');
       }
     } catch (e: any) {
+      console.error('Error en login:', e);
       this.intentosLogin++;
       localStorage.setItem('intentosLogin', String(this.intentosLogin));
       if (this.intentosLogin >= 5) {
@@ -77,7 +88,7 @@ export class PaginaLogin {
         this.bloqueadoHasta = Date.now() + dosMin;
         localStorage.setItem('bloqueadoHasta', String(this.bloqueadoHasta));
       }
-      this.mensajeError = 'Correo o contraseña incorrectos.';
+      this.mensajeError = e?.message || 'Correo o contraseña incorrectos.';
     }
   }
 

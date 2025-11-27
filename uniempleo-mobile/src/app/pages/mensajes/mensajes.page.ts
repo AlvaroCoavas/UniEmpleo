@@ -1,153 +1,316 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { ServicioDatosSupabase } from '../../services/supabase.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ServicioChat } from '../../services/chat.service';
+import { ServicioDatosSupabase } from '../../services/supabase.service';
 import { Mensaje } from '../../models/mensaje';
 
 @Component({
   selector: 'app-mensajes',
-  standalone: true,
-  imports: [
-    CommonModule,
-    IonicModule,
-    FormsModule,
-    RouterModule,
-  ],
   templateUrl: './mensajes.page.html',
   styleUrls: ['./mensajes.page.scss'],
+  standalone: true,
+  imports: [CommonModule, IonicModule, FormsModule],
 })
 export class PaginaMensajes implements OnInit, OnDestroy {
-  contacto?: any;
   mensajes: Mensaje[] = [];
   texto = '';
-  convId?: string;
-  rol?: 'empresa' | 'egresado';
-  currentUserId?: string;
-  cargando = true;
-  private channel: any;
-  private destinoId?: string;
+  conversacionId?: string;
+  contactoId?: string;
+  contacto: any = null;
+  usuarioId?: string;
+  modalAbierto: boolean = false;
+  perfilCompleto: any = null;
+  habilidades: any[] = [];
+  private mensajesChannel: any;
+  private scrollContainer: any;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private supabase: ServicioDatosSupabase,
-    private chat: ServicioChat
+    private chat: ServicioChat,
+    private supabase: ServicioDatosSupabase
   ) {}
 
   async ngOnInit() {
-    this.destinoId = this.route.snapshot.paramMap.get('destId') || undefined;
-    if (!this.destinoId) {
-      this.router.navigateByUrl('/pestanas/tab2');
+    // Obtener datos del contacto desde el state o parámetros
+    const navigation = this.router.getCurrentNavigation();
+    const state = navigation?.extras?.state || this.route.snapshot.data;
+    
+    if (state && state['contacto']) {
+      this.contacto = state['contacto'];
+    }
+
+    // Obtener contactoId de la ruta
+    this.contactoId = this.route.snapshot.paramMap.get('id') || undefined;
+    
+    if (!this.contactoId && this.contacto) {
+      this.contactoId = this.contacto.auth_user_id || this.contacto.id;
+    }
+
+    if (!this.contactoId) {
+      console.error('No se pudo obtener el ID del contacto');
+      this.router.navigate(['/chat']);
       return;
     }
-    this.rol = (await this.supabase.obtenerRolActual()) as any;
-    const navState = this.router.getCurrentNavigation()?.extras
-      ?.state as any;
-    if (navState?.contacto) {
-      this.contacto = navState.contacto;
-    }
-    try {
-      await this.cargarContacto(this.destinoId);
-      await this.prepararConversacion(this.destinoId);
-    } catch (error) {
-      console.error('No se pudo cargar el chat:', error);
-      this.router.navigateByUrl('/pestanas/tab2');
-      return;
-    } finally {
-      this.cargando = false;
-    }
-  }
 
-  private async cargarContacto(destinoAuthId: string) {
-    if (this.contacto?.auth_user_id === destinoAuthId) return;
-    if (this.rol === 'empresa') {
-      const res = await this.supabase.cliente
-        .from('personas')
-        .select(
-          'id,auth_user_id,nombre_completo,correo,ciudad,telefono,rol_principal,foto_url'
-        )
-        .eq('auth_user_id', destinoAuthId)
-        .maybeSingle();
-      if (res.error || !res.data) {
-        throw res.error || new Error('No se encontró al postulante');
-      }
-      this.contacto = {
-        ...res.data,
-        tipo: 'persona',
-      };
-    } else {
-      const res = await this.supabase.cliente
-        .from('empresas')
-        .select(
-          'id,auth_user_id,razon_social,correo_corporativo,ciudad,sector,logo_url'
-        )
-        .eq('auth_user_id', destinoAuthId)
-        .maybeSingle();
-      if (res.error || !res.data) {
-        throw res.error || new Error('No se encontró la empresa');
-      }
-      this.contacto = {
-        ...res.data,
-        tipo: 'empresa',
-      };
-    }
-  }
-
-  private async prepararConversacion(destinoAuthId: string) {
+    // Obtener usuario actual
     const usuario = await this.supabase.cliente.auth.getUser();
-    const uid = usuario.data.user?.id;
-    if (!uid) throw new Error('Usuario no autenticado');
-    this.currentUserId = uid;
-    const convId = await this.chat.crearConversacion(uid, destinoAuthId);
-    this.convId = convId;
+    this.usuarioId = usuario.data.user?.id;
+
+    if (!this.usuarioId) {
+      this.router.navigate(['/chat']);
+      return;
+    }
+
+    // Cargar o crear conversación
+    this.conversacionId = await this.chat.crearConversacion(
+      this.usuarioId,
+      this.contactoId
+    );
+
+    if (!this.conversacionId) {
+      console.error('No se pudo crear/obtener la conversación');
+      return;
+    }
+
+    // Cargar mensajes existentes
     await this.cargarMensajes();
-    this.channel = await this.chat.suscribirMensajes(convId, (mensaje) => {
-      this.mensajes = [...this.mensajes, mensaje];
-      this.scrollAlFinal();
-    });
+
+    // Marcar mensajes como leídos al abrir la conversación
+    if (this.conversacionId && this.usuarioId) {
+      const ultimoMensaje = this.mensajes[this.mensajes.length - 1];
+      // Marcar como leído inmediatamente sin esperar
+      this.chat.marcarMensajesComoLeidos(
+        this.usuarioId,
+        this.conversacionId,
+        ultimoMensaje?.id
+      ).catch(err => console.error('Error al marcar como leído:', err));
+    }
+
+    // Suscribirse a nuevos mensajes en tiempo real
+    this.mensajesChannel = this.chat.suscribirMensajes(
+      this.conversacionId,
+      (nuevoMensaje) => {
+        // Evitar duplicados
+        if (!this.mensajes.find((m) => m.id === nuevoMensaje.id)) {
+          this.mensajes.push(nuevoMensaje);
+          this.scrollToBottom();
+          
+          // Si el mensaje es del otro usuario, marcarlo como leído automáticamente
+          if (nuevoMensaje.senderId !== this.usuarioId && this.conversacionId && this.usuarioId) {
+            this.chat.marcarMensajesComoLeidos(
+              this.usuarioId,
+              this.conversacionId,
+              nuevoMensaje.id
+            );
+          }
+        }
+      }
+    );
+
+    // Si no tenemos datos del contacto, cargarlos
+    if (!this.contacto && this.contactoId) {
+      await this.cargarDatosContacto();
+    }
   }
 
-  private async cargarMensajes() {
-    if (!this.convId) return;
-    this.mensajes = await this.chat.listarMensajes(this.convId);
-    this.scrollAlFinal();
+  async cargarDatosContacto() {
+    try {
+      // Intentar obtener como persona
+      const personaRes = await this.supabase.cliente
+        .from('personas')
+        .select('id,auth_user_id,nombre_completo,correo,foto_url')
+        .eq('auth_user_id', this.contactoId)
+        .maybeSingle();
+
+      if (personaRes.data) {
+        this.contacto = {
+          ...personaRes.data,
+          tipo: 'persona',
+          nombre: personaRes.data.nombre_completo,
+        };
+        return;
+      }
+
+      // Intentar obtener como empresa
+      const empresaRes = await this.supabase.cliente
+        .from('empresas')
+        .select('id,auth_user_id,razon_social,correo_corporativo,logo_url')
+        .eq('auth_user_id', this.contactoId)
+        .maybeSingle();
+
+      if (empresaRes.data) {
+        this.contacto = {
+          ...empresaRes.data,
+          tipo: 'empresa',
+          nombre: empresaRes.data.razon_social,
+        };
+        return;
+      }
+    } catch (error) {
+      console.error('Error al cargar datos del contacto:', error);
+    }
   }
 
-  async enviar() {
-    if (!this.texto.trim() || !this.convId || !this.currentUserId) return;
-    const contenido = this.texto.trim();
-    this.texto = '';
-    await this.chat.enviarMensaje(this.convId, {
-      senderId: this.currentUserId,
-      text: contenido,
+  async cargarMensajes() {
+    if (!this.conversacionId) return;
+    try {
+      this.mensajes = await this.chat.listarMensajes(this.conversacionId);
+      setTimeout(() => this.scrollToBottom(), 100);
+    } catch (error) {
+      console.error('Error al cargar mensajes:', error);
+    }
+  }
+
+  async enviarMensaje() {
+    if (!this.texto.trim() || !this.conversacionId || !this.usuarioId) return;
+
+    const mensaje: Omit<Mensaje, 'id'> = {
+      senderId: this.usuarioId,
+      text: this.texto.trim(),
       createdAt: Date.now(),
-    });
+    };
+
+    try {
+      await this.chat.enviarMensaje(this.conversacionId, mensaje);
+      this.texto = '';
+      // El mensaje se agregará automáticamente vía la suscripción en tiempo real
+      setTimeout(() => this.scrollToBottom(), 100);
+    } catch (error) {
+      console.error('Error al enviar mensaje:', error);
+    }
   }
 
-  inicial(contacto: any) {
-    const texto =
-      contacto?.nombre_completo ||
-      contacto?.razon_social ||
-      contacto?.correo ||
-      contacto?.correo_corporativo ||
-      '';
-    return texto ? texto.trim()[0].toUpperCase() : 'U';
+  esMio(mensaje: Mensaje): boolean {
+    return mensaje.senderId === this.usuarioId;
   }
 
-  private scrollAlFinal() {
+  formatearFecha(timestamp: number): string {
+    const fecha = new Date(timestamp);
+    const ahora = new Date();
+    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
+    const fechaMsg = new Date(
+      fecha.getFullYear(),
+      fecha.getMonth(),
+      fecha.getDate()
+    );
+
+    if (fechaMsg.getTime() === hoy.getTime()) {
+      return fecha.toLocaleTimeString('es-ES', {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } else {
+      return fecha.toLocaleDateString('es-ES', {
+        day: '2-digit',
+        month: '2-digit',
+        year: fecha.getFullYear() !== ahora.getFullYear() ? 'numeric' : undefined,
+      });
+    }
+  }
+
+  scrollToBottom() {
     setTimeout(() => {
-      const cont = document.getElementById('mensajesLista');
-      cont?.lastElementChild?.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }, 80);
+      const content = document.querySelector('ion-content');
+      if (content) {
+        content.scrollToBottom(300);
+      }
+    }, 100);
+  }
+
+  async abrirPerfil() {
+    if (!this.contactoId) return;
+    
+    this.modalAbierto = true;
+    
+    try {
+      // Intentar usar la función de base de datos primero (evita problemas de RLS)
+      try {
+        const funcionResult = await this.supabase.cliente.rpc('obtener_perfil_completo_por_auth_user_id', {
+          p_auth_user_id: this.contactoId
+        });
+        
+        if (!funcionResult.error && funcionResult.data) {
+          this.perfilCompleto = funcionResult.data;
+          
+          // Si es persona, cargar habilidades
+          if (this.perfilCompleto.tipo === 'persona' && this.perfilCompleto.id) {
+            const habilidadesRes = await this.supabase.cliente
+              .from('personas_habilidades')
+              .select('nivel, habilidad:habilidad_id(id,nombre)')
+              .eq('persona_id', this.perfilCompleto.id);
+            this.habilidades = (habilidadesRes.data || []) as any[];
+          } else {
+            this.habilidades = [];
+          }
+          return;
+        }
+      } catch (funcionError: any) {
+        console.warn('Error al usar función de base de datos, usando método directo:', funcionError);
+      }
+      
+      // Fallback: método directo (puede tener problemas de RLS)
+      // Intentar cargar como persona
+      const personaRes = await this.supabase.cliente
+        .from('personas')
+        .select('id,auth_user_id,nombre_completo,tipo_documento,numero_documento,correo,telefono,ciudad,rol_principal,anos_experiencia,pretension_salarial,disponibilidad,resumen,hoja_vida_url,foto_url,verificado')
+        .eq('auth_user_id', this.contactoId)
+        .maybeSingle();
+
+      if (personaRes.data) {
+        this.perfilCompleto = personaRes.data;
+        this.perfilCompleto.tipo = 'persona';
+        
+        // Cargar habilidades
+        const habilidadesRes = await this.supabase.cliente
+          .from('personas_habilidades')
+          .select('nivel, habilidad:habilidad_id(id,nombre)')
+          .eq('persona_id', personaRes.data.id);
+        this.habilidades = (habilidadesRes.data || []) as any[];
+        return;
+      }
+
+      // Intentar cargar como empresa
+      const empresaRes = await this.supabase.cliente
+        .from('empresas')
+        .select('id,auth_user_id,razon_social,nit,representante_legal,correo_corporativo,telefono,ciudad,sector,tamano,sitio_web,logo_url,documento_verificacion_url,descripcion,verificado')
+        .eq('auth_user_id', this.contactoId)
+        .maybeSingle();
+
+      if (empresaRes.data) {
+        this.perfilCompleto = empresaRes.data;
+        this.perfilCompleto.tipo = 'empresa';
+        this.habilidades = [];
+        return;
+      }
+
+      // Si no se encuentra, usar los datos básicos del contacto
+      this.perfilCompleto = this.contacto;
+      this.habilidades = [];
+    } catch (error) {
+      console.error('Error al cargar perfil completo:', error);
+      this.perfilCompleto = this.contacto;
+      this.habilidades = [];
+    }
+  }
+
+  cerrarPerfil() {
+    this.modalAbierto = false;
+    this.perfilCompleto = null;
+    this.habilidades = [];
   }
 
   ngOnDestroy() {
     try {
-      this.channel?.unsubscribe();
-    } catch {}
+      if (this.mensajesChannel) {
+        this.mensajesChannel.unsubscribe();
+      }
+    } catch (error) {
+      console.error('Error al desuscribirse:', error);
+    }
   }
 }
 

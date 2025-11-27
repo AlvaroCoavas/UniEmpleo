@@ -1,5 +1,8 @@
 <ion-header>
   <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pestanas/tab1"></ion-back-button>
+    </ion-buttons>
     <ion-title>Detalle vacante</ion-title>
   </ion-toolbar>
 </ion-header>
@@ -14,6 +17,7 @@
       <p *ngIf="vacante.salario">Salario: {{ vacante.salario }}</p>
       <ion-chip *ngFor="let h of vacante.habilidades">{{ h }}</ion-chip>
       <ion-button
+        *ngIf="!esMiVacante && !esMiServicio"
         color="success"
         expand="block"
         (click)="postularme()"
@@ -21,6 +25,9 @@
         >¡postularme!</ion-button
       >
       <ion-text color="medium" *ngIf="yaPostulado">Ya te postulaste</ion-text>
+      <ion-text color="warning" *ngIf="esMiVacante || esMiServicio">
+        Esta es tu {{ esMiVacante ? 'vacante' : 'servicio' }}. No puedes postularte a ella.
+      </ion-text>
     </ion-card-content>
   </ion-card>
 

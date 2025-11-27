@@ -1,0 +1,188 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pestanas/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Solicitudes</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-list>
+    <ion-item *ngIf="cargando">
+      <ion-label>Cargando...</ion-label>
+    </ion-item>
+    <ion-item *ngFor="let s of solicitudes">
+      <ion-avatar slot="start" class="avatar">
+        <img *ngIf="s.empresa?.logo_url" [src]="s.empresa.logo_url" />
+        <img *ngIf="!s.empresa && s.persona?.foto_url" [src]="s.persona.foto_url" />
+        <div *ngIf="!s.empresa?.logo_url && !s.persona?.foto_url" class="iniciales">{{ inicial(s) }}</div>
+      </ion-avatar>
+      <ion-label>
+        <div class="encabezado">
+          <h2 class="nombre-usuario">
+            <strong>{{ nombrePostulante(s) }}</strong>
+          </h2>
+          <small class="vacante">{{ s.vacante?.titulo }}</small>
+          <small *ngIf="s.empresa" class="tipo-postulante" style="color: #666; font-size: 0.8em;">Empresa</small>
+          <small *ngIf="s.persona" class="tipo-postulante" style="color: #666; font-size: 0.8em;">Persona</small>
+        </div>
+        <div class="acciones">
+          <ion-button fill="outline" (click)="verPerfil(s)">Ver perfil</ion-button>
+          <ion-button color="success" (click)="aceptar(s)">Aceptar</ion-button>
+          <ion-button color="medium" (click)="renegar(s)">Rechazar</ion-button>
+        </div>
+      </ion-label>
+    </ion-item>
+    <ion-item *ngIf="!cargando && solicitudes.length === 0">
+      <ion-label>No hay solicitudes pendientes</ion-label>
+    </ion-item>
+  </ion-list>
+
+  <ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarPerfil()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Perfil postulante</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarPerfil()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-card *ngIf="perfilSeleccionado">
+          <ion-card-header>
+            <ion-card-title>{{ perfilSeleccionado?.razon_social || perfilSeleccionado?.nombre_completo }}</ion-card-title>
+            <ion-card-subtitle>{{ perfilSeleccionado?.sector || perfilSeleccionado?.rol_principal }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid>
+              <ion-row>
+                <ion-col size="12" sizeMd="4">
+                  <ion-avatar class="avatar-perfil">
+                    <img *ngIf="perfilSeleccionado?.logo_url" [src]="perfilSeleccionado?.logo_url" />
+                    <img *ngIf="perfilSeleccionado?.foto_url" [src]="perfilSeleccionado?.foto_url" />
+                    <div *ngIf="!perfilSeleccionado?.logo_url && !perfilSeleccionado?.foto_url" class="iniciales">
+                      {{ (perfilSeleccionado?.razon_social || perfilSeleccionado?.nombre_completo)?.[0] | uppercase }}
+                    </div>
+                  </ion-avatar>
+                </ion-col>
+                <ion-col size="12" sizeMd="8">
+                  <!-- Datos de Empresa -->
+                  <ng-container *ngIf="perfilSeleccionado?.razon_social">
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Correo Corporativo</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.correo_corporativo }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Teléfono</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.telefono }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Ciudad</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.ciudad }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">NIT</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.nit }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Representante Legal</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.representante_legal }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Tamaño</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.tamano }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full" *ngIf="perfilSeleccionado?.sitio_web">
+                      <ion-label position="stacked">Sitio Web</ion-label>
+                      <ion-text>
+                        <a [href]="perfilSeleccionado?.sitio_web" target="_blank">
+                          {{ perfilSeleccionado?.sitio_web }}
+                        </a>
+                      </ion-text>
+                    </ion-item>
+                    <ion-item lines="full" *ngIf="perfilSeleccionado?.descripcion">
+                      <ion-label position="stacked">Descripción</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.descripcion }}</ion-text>
+                    </ion-item>
+                  </ng-container>
+                  
+                  <!-- Datos de Persona -->
+                  <ng-container *ngIf="perfilSeleccionado?.nombre_completo">
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Correo</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.correo }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Teléfono</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.telefono }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Ciudad</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.ciudad }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Documento</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.tipo_documento }} {{ perfilSeleccionado?.numero_documento }}</ion-text>
+                    </ion-item>
+                    <ion-row>
+                      <ion-col size="12" sizeMd="6">
+                        <ion-item lines="full">
+                          <ion-label position="stacked">Años de experiencia</ion-label>
+                          <ion-text>{{ perfilSeleccionado?.anos_experiencia }}</ion-text>
+                        </ion-item>
+                      </ion-col>
+                      <ion-col size="12" sizeMd="6">
+                        <ion-item lines="full">
+                          <ion-label position="stacked">Pretensión salarial</ion-label>
+                          <ion-text>{{ perfilSeleccionado?.pretension_salarial }}</ion-text>
+                        </ion-item>
+                      </ion-col>
+                    </ion-row>
+                    <ion-row>
+                      <ion-col size="12" sizeMd="6">
+                        <ion-item lines="full">
+                          <ion-label position="stacked">Disponibilidad</ion-label>
+                          <ion-text>{{ perfilSeleccionado?.disponibilidad }}</ion-text>
+                        </ion-item>
+                      </ion-col>
+                      <ion-col size="12" sizeMd="6">
+                        <ion-item lines="full">
+                          <ion-label position="stacked">Verificado</ion-label>
+                          <ion-text>{{ perfilSeleccionado?.verificado ? 'Sí' : 'No' }}</ion-text>
+                        </ion-item>
+                      </ion-col>
+                    </ion-row>
+                    <ion-item lines="full">
+                      <ion-label position="stacked">Resumen profesional</ion-label>
+                      <ion-text>{{ perfilSeleccionado?.resumen }}</ion-text>
+                    </ion-item>
+                    <ion-item lines="full" *ngIf="habilidadesSeleccionadas.length > 0">
+                      <ion-label>Habilidades</ion-label>
+                      <div class="chips">
+                        <ion-chip *ngFor="let h of habilidadesSeleccionadas">
+                          {{ h?.habilidad?.nombre }}
+                          <ion-badge color="medium" *ngIf="h?.nivel">{{ h.nivel }}</ion-badge>
+                        </ion-chip>
+                      </div>
+                    </ion-item>
+                    <div class="acciones-perfil">
+                      <ion-button
+                        fill="outline"
+                        [disabled]="!perfilSeleccionado?.hoja_vida_url"
+                        [href]="perfilSeleccionado?.hoja_vida_url"
+                        target="_blank"
+                        >Ver hoja de vida</ion-button
+                      >
+                    </div>
+                  </ng-container>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+</ion-content>
+

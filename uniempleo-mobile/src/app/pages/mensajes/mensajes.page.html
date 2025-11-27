@@ -1,62 +1,209 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button defaultHref="/pestanas/tab2"></ion-back-button>
+      <ion-back-button defaultHref="/chat"></ion-back-button>
     </ion-buttons>
-    <ion-title>Mensajes</ion-title>
-  </ion-toolbar>
-  <ion-toolbar class="contacto-toolbar" *ngIf="contacto">
-    <div class="avatar">
-      <img
-        *ngIf="contacto.foto_url || contacto.logo_url"
-        [src]="contacto.foto_url || contacto.logo_url"
-        alt="avatar"
-      />
-      <div *ngIf="!(contacto.foto_url || contacto.logo_url)" class="inicial">
-        {{ inicial(contacto) }}
+    <ion-title>
+      <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;" (click)="abrirPerfil()">
+        <ion-avatar *ngIf="contacto?.foto_url || contacto?.logo_url" style="width: 32px; height: 32px; cursor: pointer;">
+          <img [src]="contacto?.foto_url || contacto?.logo_url" alt="Avatar" />
+        </ion-avatar>
+        <ion-avatar *ngIf="!contacto?.foto_url && !contacto?.logo_url" style="width: 32px; height: 32px; cursor: pointer; background: #005c4b; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">
+          {{ (contacto?.nombre_completo || contacto?.razon_social || contacto?.nombre || 'U')[0] | uppercase }}
+        </ion-avatar>
+        <span style="text-decoration: underline; user-select: none;">{{ contacto?.nombre_completo || contacto?.razon_social || contacto?.nombre || 'Contacto' }}</span>
       </div>
-    </div>
-    <div class="info">
-      <h2>{{ contacto.nombre_completo || contacto.razon_social }}</h2>
-      <p>
-        {{ contacto.correo || contacto.correo_corporativo }}
-        <span *ngIf="contacto.ciudad || contacto.sector">
-          • {{ contacto.ciudad || contacto.sector }}
-        </span>
-      </p>
-    </div>
+    </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div id="mensajesLista" class="mensajes-contenedor">
+<ion-content #content [scrollEvents]="true">
+  <div class="mensajes-container">
     <div
-      class="mensaje"
-      [class.propio]="m.senderId === currentUserId"
-      *ngFor="let m of mensajes"
+      *ngFor="let mensaje of mensajes"
+      class="mensaje-wrapper"
+      [class.mensaje-propio]="esMio(mensaje)"
+      [class.mensaje-recibido]="!esMio(mensaje)"
     >
-      <div class="burbuja">
-        <p>{{ m.text }}</p>
-        <small>{{ m.createdAt | date: 'shortTime' }}</small>
+      <div class="mensaje-burbuja">
+        <p class="mensaje-texto">{{ mensaje.text }}</p>
+        <span class="mensaje-hora">{{ formatearFecha(mensaje.createdAt) }}</span>
       </div>
     </div>
-    <ion-text color="medium" *ngIf="!mensajes.length && !cargando">
-      No hay mensajes aún. Inicia la conversación.
-    </ion-text>
   </div>
 </ion-content>
 
 <ion-footer>
   <ion-toolbar>
-    <ion-input
-      [(ngModel)]="texto"
-      placeholder="Escribe un mensaje..."
-      (keyup.enter)="enviar()"
-      [disabled]="!convId"
-    ></ion-input>
-    <ion-buttons slot="end">
-      <ion-button (click)="enviar()" [disabled]="!texto.trim()">Enviar</ion-button>
-    </ion-buttons>
+    <div class="input-container">
+      <ion-input
+        [(ngModel)]="texto"
+        placeholder="Escribe un mensaje..."
+        (keyup.enter)="enviarMensaje()"
+        class="mensaje-input"
+      ></ion-input>
+      <ion-button
+        (click)="enviarMensaje()"
+        [disabled]="!texto.trim()"
+        fill="clear"
+        class="enviar-boton"
+      >
+        <ion-icon name="send" slot="icon-only"></ion-icon>
+      </ion-button>
+    </div>
   </ion-toolbar>
 </ion-footer>
+
+<!-- Modal de Perfil -->
+<ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarPerfil()">
+  <ng-template>
+    <ion-header>
+      <ion-toolbar>
+        <ion-title>{{ perfilCompleto?.tipo === 'empresa' ? 'Perfil de Empresa' : 'Perfil' }}</ion-title>
+        <ion-buttons slot="end">
+          <ion-button (click)="cerrarPerfil()">Cerrar</ion-button>
+        </ion-buttons>
+      </ion-toolbar>
+    </ion-header>
+    <ion-content class="ion-padding" [style.--background]="'#1e2329'">
+      <ion-card *ngIf="perfilCompleto" [style.--background]="'#2a3942'">
+        <ion-card-header>
+          <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+            <ion-avatar style="width: 80px; height: 80px;">
+              <img *ngIf="perfilCompleto?.foto_url || perfilCompleto?.logo_url" 
+                   [src]="perfilCompleto?.foto_url || perfilCompleto?.logo_url" 
+                   alt="Avatar" />
+              <div *ngIf="!perfilCompleto?.foto_url && !perfilCompleto?.logo_url" 
+                   style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: #005c4b; color: white; font-size: 32px; font-weight: bold;">
+                {{ (perfilCompleto?.nombre_completo || perfilCompleto?.razon_social || 'U')[0] | uppercase }}
+              </div>
+            </ion-avatar>
+            <div>
+              <ion-card-title style="color: #e9edef;">
+                {{ perfilCompleto?.nombre_completo || perfilCompleto?.razon_social }}
+              </ion-card-title>
+              <ion-card-subtitle style="color: #8696a0;" *ngIf="perfilCompleto?.tipo === 'persona'">
+                {{ perfilCompleto?.rol_principal }}
+              </ion-card-subtitle>
+              <ion-card-subtitle style="color: #8696a0;" *ngIf="perfilCompleto?.tipo === 'empresa'">
+                {{ perfilCompleto?.sector }}
+              </ion-card-subtitle>
+            </div>
+          </div>
+        </ion-card-header>
+        <ion-card-content style="color: #e9edef;">
+          <!-- Información de Persona -->
+          <div *ngIf="perfilCompleto?.tipo === 'persona'">
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.correo">
+              <ion-label position="stacked" style="color: #8696a0;">Correo</ion-label>
+              <ion-text>{{ perfilCompleto?.correo }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.telefono">
+              <ion-label position="stacked" style="color: #8696a0;">Teléfono</ion-label>
+              <ion-text>{{ perfilCompleto?.telefono }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.ciudad">
+              <ion-label position="stacked" style="color: #8696a0;">Ciudad</ion-label>
+              <ion-text>{{ perfilCompleto?.ciudad }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.tipo_documento && perfilCompleto?.numero_documento">
+              <ion-label position="stacked" style="color: #8696a0;">Documento</ion-label>
+              <ion-text>{{ perfilCompleto?.tipo_documento }} {{ perfilCompleto?.numero_documento }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.anos_experiencia !== null && perfilCompleto?.anos_experiencia !== undefined">
+              <ion-label position="stacked" style="color: #8696a0;">Años de experiencia</ion-label>
+              <ion-text>{{ perfilCompleto?.anos_experiencia }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.pretension_salarial">
+              <ion-label position="stacked" style="color: #8696a0;">Pretensión salarial</ion-label>
+              <ion-text>${{ perfilCompleto?.pretension_salarial | number }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.disponibilidad">
+              <ion-label position="stacked" style="color: #8696a0;">Disponibilidad</ion-label>
+              <ion-text>{{ perfilCompleto?.disponibilidad }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.resumen">
+              <ion-label position="stacked" style="color: #8696a0;">Resumen profesional</ion-label>
+              <ion-text>{{ perfilCompleto?.resumen }}</ion-text>
+            </ion-item>
+            
+            <!-- Habilidades -->
+            <div *ngIf="habilidades.length > 0" style="margin-top: 16px;">
+              <ion-label style="color: #8696a0; font-weight: bold;">Habilidades</ion-label>
+              <div style="display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                <ion-chip *ngFor="let h of habilidades" style="--background: #005c4b; --color: #e9edef;">
+                  {{ h?.habilidad?.nombre }}
+                  <ion-badge color="light" *ngIf="h?.nivel" style="margin-left: 4px;">
+                    {{ h.nivel }}
+                  </ion-badge>
+                </ion-chip>
+              </div>
+            </div>
+
+            <!-- Botón de hoja de vida -->
+            <div style="margin-top: 16px;">
+              <ion-button
+                fill="outline"
+                [disabled]="!perfilCompleto?.hoja_vida_url"
+                [href]="perfilCompleto?.hoja_vida_url"
+                target="_blank"
+                style="--color: #00a884; --border-color: #00a884;"
+              >
+                Ver hoja de vida
+              </ion-button>
+            </div>
+          </div>
+
+          <!-- Información de Empresa -->
+          <div *ngIf="perfilCompleto?.tipo === 'empresa'">
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;">
+              <ion-label position="stacked" style="color: #8696a0;">Razón Social</ion-label>
+              <ion-text>{{ perfilCompleto?.razon_social }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;">
+              <ion-label position="stacked" style="color: #8696a0;">NIT</ion-label>
+              <ion-text>{{ perfilCompleto?.nit }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;">
+              <ion-label position="stacked" style="color: #8696a0;">Representante Legal</ion-label>
+              <ion-text>{{ perfilCompleto?.representante_legal }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;">
+              <ion-label position="stacked" style="color: #8696a0;">Correo Corporativo</ion-label>
+              <ion-text>{{ perfilCompleto?.correo_corporativo }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;">
+              <ion-label position="stacked" style="color: #8696a0;">Teléfono</ion-label>
+              <ion-text>{{ perfilCompleto?.telefono }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;">
+              <ion-label position="stacked" style="color: #8696a0;">Ciudad</ion-label>
+              <ion-text>{{ perfilCompleto?.ciudad }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;">
+              <ion-label position="stacked" style="color: #8696a0;">Sector</ion-label>
+              <ion-text>{{ perfilCompleto?.sector }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;">
+              <ion-label position="stacked" style="color: #8696a0;">Tamaño</ion-label>
+              <ion-text>{{ perfilCompleto?.tamano }}</ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.sitio_web">
+              <ion-label position="stacked" style="color: #8696a0;">Sitio Web</ion-label>
+              <ion-text>
+                <a [href]="perfilCompleto?.sitio_web" target="_blank" style="color: #00a884;">
+                  {{ perfilCompleto?.sitio_web }}
+                </a>
+              </ion-text>
+            </ion-item>
+            <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.descripcion">
+              <ion-label position="stacked" style="color: #8696a0;">Descripción</ion-label>
+              <ion-text>{{ perfilCompleto?.descripcion }}</ion-text>
+            </ion-item>
+          </div>
+        </ion-card-content>
+      </ion-card>
+    </ion-content>
+  </ng-template>
+</ion-modal>
 

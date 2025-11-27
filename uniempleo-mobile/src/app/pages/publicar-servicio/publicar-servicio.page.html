@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pestanas/servicios"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Publicar Servicio</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <form [formGroup]="formulario" (ngSubmit)="enviarFormulario()">
+    <ion-item>
+      <ion-label position="stacked">Título del Servicio</ion-label>
+      <ion-input formControlName="titulo" placeholder="ej: Diseño gráfico profesional"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Descripción</ion-label>
+      <ion-textarea formControlName="descripcion" placeholder="Describe tu servicio en detalle..."></ion-textarea>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Ubicación</ion-label>
+      <ion-input formControlName="ubicacion" placeholder="Ciudad o área de servicio"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Tarifa/Salario</ion-label>
+      <ion-input type="number" formControlName="salario" placeholder="ej: 500000"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Habilidades (separadas por coma)</ion-label>
+      <ion-input
+        formControlName="habilidades"
+        placeholder="ej: Diseño, Photoshop, Ilustración"
+      ></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Disponibilidad</ion-label>
+      <ion-select formControlName="disponibilidad">
+        <ion-select-option value="inmediata">Inmediata</ion-select-option>
+        <ion-select-option value="medio_tiempo">Medio tiempo</ion-select-option>
+        <ion-select-option value="remoto">Remoto</ion-select-option>
+        <ion-select-option value="hibrido">Híbrido</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Modalidad</ion-label>
+      <ion-select formControlName="modalidad">
+        <ion-select-option value="remoto">Remoto</ion-select-option>
+        <ion-select-option value="hibrido">Híbrido</ion-select-option>
+        <ion-select-option value="presencial">Presencial</ion-select-option>
+      </ion-select>
+    </ion-item>
+    <ion-item>
+      <ion-label position="stacked">Tarifa por hora/proyecto</ion-label>
+      <ion-input
+        type="number"
+        formControlName="tarifa"
+        placeholder="ej: 50000"
+      ></ion-input>
+    </ion-item>
+    <ion-button expand="block" type="submit" [disabled]="!formulario.valid">
+      {{ esEdicion ? 'Actualizar' : 'Publicar' }} Servicio
+    </ion-button>
+  </form>
+</ion-content>
+

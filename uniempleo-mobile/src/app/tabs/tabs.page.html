@@ -2,7 +2,12 @@
   <ion-toolbar>
     <ion-title>Uniempleo</ion-title>
     <ion-buttons slot="end">
-      <ion-button *ngIf="rol === 'egresado'" href="/pestanas/perfil">Perfil</ion-button>
+      <ion-button *ngIf="rol === 'egresado'" href="/perfil-egresado">Mi Perfil</ion-button>
+      <ion-button *ngIf="rol === 'egresado'" href="/pestanas/servicios">Servicios</ion-button>
+      <ion-button *ngIf="rol === 'egresado'" href="/solicitudes-persona">
+        <ion-label>Solicitudes</ion-label>
+        <ion-badge color="danger" *ngIf="solicitudesCount > 0">{{ solicitudesCount }}</ion-badge>
+      </ion-button>
       <ion-button *ngIf="rol === 'empresa'" href="/pestanas/tab3">Vacantes</ion-button>
       <ion-button *ngIf="rol === 'empresa'" href="/perfil-empresa">Mi empresa</ion-button>
       <ion-button *ngIf="rol === 'empresa'" href="/solicitudes">
@@ -22,14 +27,15 @@
     <ion-tab-button tab="tab2" href="/pestanas/tab2">
       <ion-icon aria-hidden="true" name="chatbubbles"></ion-icon>
       <ion-label>Chat</ion-label>
+      <ion-badge color="danger" *ngIf="mensajesNoLeidosCount > 0">{{ mensajesNoLeidosCount > 99 ? '99+' : mensajesNoLeidosCount }}</ion-badge>
     </ion-tab-button>
     <ion-tab-button *ngIf="rol === 'empresa'" tab="tab3" href="/pestanas/tab3">
       <ion-icon aria-hidden="true" name="briefcase"></ion-icon>
       <ion-label>Empresa</ion-label>
     </ion-tab-button>
-    <ion-tab-button *ngIf="rol === 'egresado'" tab="perfil" href="/perfil-egresado">
-      <ion-icon aria-hidden="true" name="person-circle"></ion-icon>
-      <ion-label>Perfil</ion-label>
+    <ion-tab-button *ngIf="rol === 'egresado'" tab="servicios" href="/pestanas/servicios">
+      <ion-icon aria-hidden="true" name="briefcase"></ion-icon>
+      <ion-label>Servicios</ion-label>
     </ion-tab-button>
   </ion-tab-bar>
 </ion-tabs>

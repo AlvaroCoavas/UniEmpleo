@@ -25,8 +25,8 @@ const routes: Routes = [
         data: { role: 'empresa' }
       },
       {
-        path: 'perfil',
-        loadComponent: () => import('../pages/perfil-egresado/perfil-egresado.page').then(m => m.PaginaPerfilEgresado),
+        path: 'servicios',
+        loadComponent: () => import('../pages/mis-servicios/mis-servicios.page').then(m => m.PaginaMisServicios),
         canActivate: [ProtectorSesion, ProtectorRol],
         data: { role: 'egresado' }
       },

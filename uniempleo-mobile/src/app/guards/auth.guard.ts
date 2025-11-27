@@ -9,9 +9,18 @@ export class ProtectorSesion implements CanActivate {
     private supabase: ServicioDatosSupabase
   ) {}
   async canActivate() {
-    const sesion = await this.supabase.sesionActual();
-    if (sesion.data.session?.user?.id) return true;
-    this.router.navigateByUrl('/inicio-sesion');
-    return false;
+    try {
+      const sesion = await this.supabase.sesionActual();
+      if (sesion.data.session?.user?.id) {
+        return true;
+      }
+      console.log('No hay sesión activa, redirigiendo a login');
+      await this.router.navigateByUrl('/inicio-sesion');
+      return false;
+    } catch (error) {
+      console.error('Error en guard de autenticación:', error);
+      await this.router.navigateByUrl('/inicio-sesion');
+      return false;
+    }
   }
 }

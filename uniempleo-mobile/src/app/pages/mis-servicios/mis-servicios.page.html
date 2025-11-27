@@ -1,0 +1,54 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pestanas/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Mis Servicios</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/solicitudes-persona">
+        <ion-label>Solicitudes</ion-label>
+        <ion-badge color="danger" *ngIf="solicitudesCount > 0">{{ solicitudesCount }}</ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding">
+  <ion-grid>
+    <ion-row>
+      <ion-col size="12">
+        <ion-button routerLink="/publicar-servicio" color="primary" expand="block">
+          <ion-icon name="add-circle" slot="start"></ion-icon>
+          Publicar Servicio
+        </ion-button>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  <ion-list>
+    <ion-list-header>
+      <ion-label>Servicios publicados</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let s of listaServicios">
+      <ion-label>
+        <h2>{{ s.titulo }}</h2>
+        <p>{{ s.descripcion }}</p>
+        <p *ngIf="s.ubicacion" style="color: #666; font-size: 0.9em;">
+          <ion-icon name="location" style="vertical-align: middle;"></ion-icon>
+          {{ s.ubicacion }}
+        </p>
+        <p *ngIf="s.salario" style="color: #666; font-size: 0.9em;">
+          <ion-icon name="cash" style="vertical-align: middle;"></ion-icon>
+          ${{ s.salario | number }}
+        </p>
+      </ion-label>
+      <ion-button fill="clear" slot="end" (click)="editar(s.id!)">Editar</ion-button>
+      <ion-button fill="clear" color="danger" slot="end" (click)="eliminar(s.id!)">Eliminar</ion-button>
+    </ion-item>
+    <ion-item *ngIf="listaServicios.length === 0">
+      <ion-label>
+        <p>No has publicado ningún servicio aún.</p>
+        <p style="color: #666; font-size: 0.9em;">Publica tu primer servicio para que las empresas puedan contratarte.</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+
