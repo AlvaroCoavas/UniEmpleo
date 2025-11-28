@@ -1,0 +1,123 @@
+.suscripcion-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 40px 20px;
+  gap: 40px;
+}
+
+.titulo-container {
+  text-align: center;
+  width: 100%;
+}
+
+.titulo-principal {
+  color: #e9edef;
+  font-size: 32px;
+  font-weight: bold;
+  margin: 0 0 12px 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.badge-pro {
+  background-color: #2a3942;
+  color: #e9edef;
+  padding: 4px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.tagline {
+  color: #e9edef;
+  font-size: 16px;
+  margin: 0;
+  opacity: 0.9;
+}
+
+.opciones-container {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.opcion-card {
+  border-radius: 12px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+}
+
+.opcion-card.seleccionada {
+  background-color: #e9edef;
+  border-color: #00a884;
+}
+
+.opcion-card.no-seleccionada {
+  background-color: #2a3942;
+  border-color: #2a3942;
+}
+
+.opcion-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.opcion-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.opcion-nombre {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.opcion-card.seleccionada .opcion-nombre {
+  color: #1e2329;
+}
+
+.opcion-card.no-seleccionada .opcion-nombre {
+  color: #8696a0;
+}
+
+.opcion-precio {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.opcion-card.seleccionada .opcion-precio {
+  color: #1e2329;
+}
+
+.opcion-card.no-seleccionada .opcion-precio {
+  color: #8696a0;
+}
+
+.boton-suscripcion {
+  --background: #00a884;
+  --color: #ffffff;
+  --border-radius: 12px;
+  --padding-top: 16px;
+  --padding-bottom: 16px;
+  font-size: 18px;
+  font-weight: 600;
+  margin-top: 20px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.boton-suscripcion:hover {
+  --background: #008f6f;
+}
+

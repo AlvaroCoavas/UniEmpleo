@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar [style.--background]="'#1e2329'">
+    <ion-title style="color: #e9edef;">Pago Exitoso</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [style.--background]="'#1e2329'" class="ion-padding">
+  <div class="pago-exitoso-container">
+    <!-- Icono de éxito -->
+    <div class="icono-exito">
+      <ion-icon name="checkmark-circle" style="font-size: 80px; color: #00a884;"></ion-icon>
+    </div>
+
+    <!-- Mensaje de éxito -->
+    <h1 class="titulo-exito" style="color: #e9edef; text-align: center; margin-top: 20px;">
+      ¡Pago Exitoso!
+    </h1>
+
+    <p class="mensaje-exito" style="color: #8696a0; text-align: center; margin-top: 10px;">
+      Tu compra ha sido procesada correctamente.
+    </p>
+
+    <!-- Detalles de la compra -->
+    <ion-card style="--background: #2a3942; margin-top: 30px;">
+      <ion-card-header>
+        <ion-card-title style="color: #e9edef;">Detalles de la compra</ion-card-title>
+      </ion-card-header>
+      <ion-card-content style="color: #e9edef;">
+        <div style="margin-bottom: 15px;">
+          <p style="color: #8696a0; margin: 5px 0;">Producto:</p>
+          <p style="font-weight: bold; margin: 5px 0;">{{ nombreProducto }}</p>
+        </div>
+        
+        <div style="margin-bottom: 15px;" *ngIf="monto">
+          <p style="color: #8696a0; margin: 5px 0;">Monto pagado:</p>
+          <p style="font-weight: bold; font-size: 1.2em; margin: 5px 0; color: #00a884;">
+            ${{ monto | number:'1.2-2' }} USD
+          </p>
+        </div>
+
+        <div style="margin-bottom: 15px;" *ngIf="orderId">
+          <p style="color: #8696a0; margin: 5px 0;">ID de orden:</p>
+          <p style="font-size: 0.9em; margin: 5px 0; word-break: break-all;">{{ orderId }}</p>
+        </div>
+
+        <div *ngIf="tipo === 'mensual'">
+          <p style="color: #00a884; margin-top: 15px; font-weight: bold;">
+            ✓ Tu suscripción está activa por 30 días
+          </p>
+        </div>
+
+        <div *ngIf="tipo === 'uso_inmediato'">
+          <p style="color: #00a884; margin-top: 15px; font-weight: bold;">
+            ✓ Ya puedes publicar tu vacante o servicio
+          </p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Botón para continuar -->
+    <ion-button
+      expand="block"
+      class="boton-continuar"
+      (click)="continuar()"
+      style="margin-top: 30px;"
+    >
+      Continuar
+    </ion-button>
+  </div>
+</ion-content>
+

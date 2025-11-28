@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { PreloadAllModules, RouterModule, Routes } from '@angular/router';
+import { ProtectorAdmin } from './guards/admin.guard';
 
 const routes: Routes = [
   {
@@ -111,6 +112,42 @@ const routes: Routes = [
     loadComponent: () =>
       import('./pages/solicitudes-persona/solicitudes-persona.page').then(
         (m) => m.PaginaSolicitudesPersona
+      ),
+  },
+  {
+    path: 'historial-postulaciones',
+    loadComponent: () =>
+      import('./pages/historial-postulaciones/historial-postulaciones.page').then(
+        (m) => m.PaginaHistorialPostulaciones
+      ),
+  },
+  {
+    path: 'admin',
+    loadComponent: () =>
+      import('./pages/admin-dashboard/admin-dashboard.page').then(
+        (m) => m.PaginaAdminDashboard
+      ),
+    canActivate: [ProtectorAdmin],
+  },
+  {
+    path: 'suscripcion',
+    loadComponent: () =>
+      import('./pages/suscripcion/suscripcion.page').then(
+        (m) => m.PaginaSuscripcion
+      ),
+  },
+  {
+    path: 'pago-exitoso',
+    loadComponent: () =>
+      import('./pages/pago-exitoso/pago-exitoso.page').then(
+        (m) => m.PaginaPagoExitoso
+      ),
+  },
+  {
+    path: 'recuperar-contrasena',
+    loadComponent: () =>
+      import('./pages/recuperar-contrasena/recuperar-contrasena.page').then(
+        (m) => m.PaginaRecuperarContrasena
       ),
   },
 ];

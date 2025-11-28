@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Recuperar Contraseña</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="recuperar-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Nueva Contraseña</ion-card-title>
+        <ion-card-subtitle>Ingresa tu nueva contraseña</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <form [formGroup]="formulario" (ngSubmit)="cambiarContrasena()" novalidate>
+          <ion-item lines="full">
+            <ion-label position="stacked">Nueva Contraseña</ion-label>
+            <ion-input 
+              type="password" 
+              formControlName="nuevaContrasena"
+              placeholder="Mínimo 8 caracteres">
+            </ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="formulario.controls['nuevaContrasena'].invalid && formulario.controls['nuevaContrasena'].touched">
+            La contraseña debe tener al menos 8 caracteres
+          </ion-note>
+
+          <ion-item lines="full" style="margin-top: 16px;">
+            <ion-label position="stacked">Confirmar Contraseña</ion-label>
+            <ion-input 
+              type="password" 
+              formControlName="confirmarContrasena"
+              placeholder="Confirma tu contraseña">
+            </ion-input>
+          </ion-item>
+          <ion-note color="danger" *ngIf="formulario.hasError('noCoinciden') && formulario.controls['confirmarContrasena'].touched">
+            Las contraseñas no coinciden
+          </ion-note>
+
+          <ion-text color="danger" *ngIf="mensajeError" style="display: block; margin-top: 16px;">
+            {{ mensajeError }}
+          </ion-text>
+
+          <ion-button 
+            expand="block" 
+            type="submit" 
+            [disabled]="formulario.invalid || cargando"
+            style="margin-top: 24px;">
+            <ion-spinner *ngIf="cargando" name="crescent"></ion-spinner>
+            <span *ngIf="!cargando">Cambiar Contraseña</span>
+          </ion-button>
+
+          <ion-button 
+            expand="block" 
+            fill="clear" 
+            routerLink="/inicio-sesion"
+            style="margin-top: 8px;">
+            Volver al inicio de sesión
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>
+

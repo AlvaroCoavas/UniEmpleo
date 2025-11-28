@@ -79,10 +79,33 @@ export class PaginaPerfilEmpresa implements OnInit {
 
   async cambiarContrasena() {
     if (!this.correo) return;
-    await this.supabase.enviarCorreoRecuperacion(this.correo);
-    const alerta = await this.alertas.create({ header: 'Recuperación', message: 'Te enviamos un correo para cambiar la contraseña', buttons: ['OK'] });
-    await alerta.present();
+    try {
+      await this.supabase.enviarCorreoRecuperacion(this.correo);
+      const alerta = await this.alertas.create({ 
+        header: 'Correo enviado', 
+        message: 'Te enviamos un correo para cambiar la contraseña. Revisa tu bandeja de entrada (incluye la carpeta de spam).', 
+        buttons: ['OK'] 
+      });
+      await alerta.present();
+    } catch (error: any) {
+      console.error('Error al enviar correo de recuperación:', error);
+      let mensajeError = 'No se pudo enviar el correo de recuperación.';
+      
+      if (error?.message?.includes('535') || error?.message?.includes('BadCredentials')) {
+        mensajeError = 'Error de configuración SMTP. Contacta al administrador.';
+      } else {
+        mensajeError = error?.message || mensajeError;
+      }
+      
+      const alerta = await this.alertas.create({
+        header: 'Error',
+        message: mensajeError,
+        buttons: ['OK'],
+      });
+      await alerta.present();
+    }
   }
+
 
   async eliminarNoticia(id: string) {
     await this.noticiasService.eliminarNoticia(id);
@@ -97,7 +120,6 @@ export class PaginaPerfilEmpresa implements OnInit {
         { name: 'titulo', type: 'text', value: n.titulo, placeholder: 'Título' },
         { name: 'resumen', type: 'text', value: n.resumen, placeholder: 'Resumen' },
         { name: 'contenido', type: 'textarea', value: n.contenido, placeholder: 'Contenido' },
-        { name: 'video_url', type: 'text', value: n.video_url || '', placeholder: 'URL de video (opcional)' },
       ],
       buttons: [
         { text: 'Cancelar', role: 'cancel' },
@@ -108,7 +130,7 @@ export class PaginaPerfilEmpresa implements OnInit {
     const r = await alerta.onDidDismiss();
     if (r.role === 'confirm') {
       const d = r.data?.values || {};
-      await this.noticiasService.actualizarNoticia(n.id, { titulo: d.titulo, resumen: d.resumen, contenido: d.contenido, video_url: d.video_url || null });
+      await this.noticiasService.actualizarNoticia(n.id, { titulo: d.titulo, resumen: d.resumen, contenido: d.contenido });
       const uid = (await this.supabase.cliente.auth.getUser()).data.user?.id as string;
       this.noticias = await this.noticiasService.listarNoticiasPorEmpresa(uid);
     }

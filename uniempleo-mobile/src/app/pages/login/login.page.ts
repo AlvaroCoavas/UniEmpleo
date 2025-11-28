@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
 import { ServicioDatosSupabase } from '../../services/supabase.service';
+import { ServicioAdmin } from '../../services/admin.service';
 
 @Component({
   selector: 'app-inicio-sesion',
@@ -28,7 +29,8 @@ export class PaginaLogin {
     private fb: FormBuilder,
     private supabase: ServicioDatosSupabase,
     private router: Router,
-    private alertas: AlertController
+    private alertas: AlertController,
+    private admin: ServicioAdmin
   ) {
     this.formularioLogin = this.fb.group({
       correo: ['', [Validators.required, Validators.email]],
@@ -68,6 +70,13 @@ export class PaginaLogin {
       // Esperar un momento para que la sesión se establezca
       await new Promise(resolve => setTimeout(resolve, 500));
       
+      // Verificar si es administrador primero
+      const esAdmin = await this.admin.esAdministrador();
+      if (esAdmin) {
+        await this.router.navigateByUrl('/admin');
+        return;
+      }
+      
       const rol = await this.supabase.obtenerRolActual();
       console.log('Rol obtenido:', rol);
       
@@ -103,13 +112,59 @@ export class PaginaLogin {
       await alerta.present();
       return;
     }
-    await this.supabase.enviarCorreoRecuperacion(correo!);
-    const alerta = await this.alertas.create({
-      header: 'Recuperación',
-      message: 'Te enviamos un correo para recuperar tu contraseña',
-      buttons: ['OK'],
-    });
-    await alerta.present();
+    
+    try {
+      // Obtener la URL base de la aplicación
+      const siteUrl = window.location.origin;
+      const redirectUrl = `${siteUrl}/recuperar-contrasena`;
+      
+      const { error } = await this.supabase.cliente.auth.resetPasswordForEmail(correo!, {
+        redirectTo: redirectUrl,
+      });
+      
+      if (error) {
+        // Si el error es de SMTP, mostrar mensaje más claro
+        if (error.message?.includes('Error sending recovery email') || error.message?.includes('535') || error.message?.includes('BadCredentials')) {
+          const alerta = await this.alertas.create({
+            header: 'Error de Configuración',
+            message: 'El servicio de correo electrónico no está configurado correctamente en el servidor. Por favor, contacta al administrador del sistema para que configure el servicio SMTP. El correo no se pudo enviar debido a un problema de configuración del servidor.',
+            buttons: ['OK'],
+          });
+          await alerta.present();
+          return;
+        }
+        throw error;
+      }
+      
+      const alerta = await this.alertas.create({
+        header: 'Correo enviado',
+        message: 'Te enviamos un correo para recuperar tu contraseña. Revisa tu bandeja de entrada (incluye la carpeta de spam).',
+        buttons: ['OK'],
+      });
+      await alerta.present();
+    } catch (error: any) {
+      console.error('Error al enviar correo de recuperación:', error);
+      let mensajeError = 'No se pudo enviar el correo de recuperación.';
+      let tituloError = 'Error';
+      
+      // Mensajes más específicos según el error
+      if (error?.message?.includes('535') || error?.message?.includes('BadCredentials') || error?.message?.includes('Error sending recovery email')) {
+        tituloError = 'Error de Configuración SMTP';
+        mensajeError = 'El servidor de correo no está configurado correctamente. Por favor, contacta al administrador del sistema para que configure el servicio de correo electrónico.';
+      } else if (error?.message?.includes('email') || error?.message?.includes('not found') || error?.message?.includes('no existe')) {
+        tituloError = 'Correo no encontrado';
+        mensajeError = 'El correo ingresado no está registrado en el sistema. Verifica que hayas escrito correctamente tu correo electrónico.';
+      } else if (error?.message) {
+        mensajeError = error.message;
+      }
+      
+      const alerta = await this.alertas.create({
+        header: tituloError,
+        message: mensajeError,
+        buttons: ['OK'],
+      });
+      await alerta.present();
+    }
   }
 
   irRegistroPersona() {

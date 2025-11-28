@@ -1,9 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { MenuController } from '@ionic/angular';
 import { ServicioAutenticacion } from '../services/auth.service';
 import { ServicioDatosSupabase } from '../services/supabase.service';
 import { ServicioVacantes } from '../services/vacantes.service';
 import { ServicioChat } from '../services/chat.service';
+import { ServicioAdmin } from '../services/admin.service';
 
 @Component({
   selector: 'app-tabs',
@@ -15,6 +17,7 @@ export class PaginaPestanas implements OnInit, OnDestroy {
   rol?: 'empresa' | 'egresado';
   solicitudesCount: number = 0;
   mensajesNoLeidosCount: number = 0;
+  esAdmin: boolean = false;
   private ch: any;
   private mensajesCh: any;
   private intervaloMensajes: any;
@@ -23,14 +26,21 @@ export class PaginaPestanas implements OnInit, OnDestroy {
     private router: Router,
     private supabase: ServicioDatosSupabase,
     private vacantes: ServicioVacantes,
-    private chat: ServicioChat
+    private chat: ServicioChat,
+    private admin: ServicioAdmin,
+    private menu: MenuController
   ) {}
   async logout() {
     await this.auth.cerrarSesion();
     this.router.navigateByUrl('/inicio-sesion');
   }
+
+  async cerrarMenu() {
+    await this.menu.close('menuPrincipal');
+  }
   async ngOnInit() {
     this.rol = (await this.supabase.obtenerRolActual()) as any;
+    this.esAdmin = await this.admin.esAdministrador();
     if (this.rol === 'empresa') {
       try {
         this.solicitudesCount =

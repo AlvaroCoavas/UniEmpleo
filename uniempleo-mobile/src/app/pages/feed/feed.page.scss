@@ -1,3 +1,52 @@
 ion-content {
-  display: block;
+  --background: var(--ion-background-color);
+}
+
+.search-container {
+  padding: var(--spacing-md);
+  padding-bottom: var(--spacing-sm);
+  background: var(--ion-background-color);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: var(--border-width-thin) solid var(--border-color-light);
+
+  ion-searchbar {
+    --border-radius: var(--border-radius-md);
+    --box-shadow: none;
+    --background: var(--ion-item-background);
+    padding: 0;
+  }
+}
+
+.content-section {
+  padding: var(--spacing-md);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-md);
+
+  h2 {
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-semibold);
+    color: var(--ion-text-color);
+    margin: 0;
+  }
+}
+
+.vacantes-list {
+  margin-bottom: var(--spacing-xl);
+}
+
+.noticias-section {
+  margin-top: var(--spacing-xl);
+  padding-top: var(--spacing-xl);
+  border-top: var(--border-width-thin) solid var(--border-color-light);
+}
+
+.empty-container {
+  padding: var(--spacing-3xl);
 }

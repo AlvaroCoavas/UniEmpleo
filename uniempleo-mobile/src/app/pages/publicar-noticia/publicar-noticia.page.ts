@@ -18,10 +18,8 @@ export class PaginaPublicarNoticia {
   formulario = this.fb.group({
     titulo: ['', Validators.required],
     resumen: [''],
-    contenido: [''],
-    video: [null]
+    contenido: ['']
   });
-  archivoVideo: File | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -32,11 +30,6 @@ export class PaginaPublicarNoticia {
   ) {
     const id = this.route.snapshot.queryParamMap.get('id');
     if (id) this.cargar(id);
-  }
-
-  seleccionarVideo(event: any) {
-    const f = event.target.files?.[0];
-    if (f) this.archivoVideo = f;
   }
 
   async cargar(id: string) {
@@ -52,28 +45,19 @@ export class PaginaPublicarNoticia {
     const uid = sesion.data.session?.user?.id;
     if (!uid) return;
     const v = this.formulario.value;
-    let videoUrl: string | null = null;
-    try {
-      if (this.archivoVideo) {
-        const ruta = `videos/${Date.now()}_${this.archivoVideo.name}`;
-        const sub = await this.supabase.subirArchivo('videos', ruta, this.archivoVideo);
-        videoUrl = sub.data?.path || null;
-      }
-    } catch {}
     const existenteId = this.route.snapshot.queryParamMap.get('id');
     const payload = {
       empresaId: uid,
       titulo: v.titulo!,
       resumen: v.resumen || '',
       contenido: v.contenido || '',
-    } as any;
-    if (videoUrl) payload.video_url = videoUrl;
+    };
     if (existenteId) {
       await this.noticias.actualizarNoticia(existenteId, payload);
       await this.trazas.guardarAuditoria(uid, 'editar_noticia', existenteId, { titulo: v.titulo });
     } else {
-      const res = await this.noticias.crearNoticia(payload);
-      await this.trazas.guardarAuditoria(uid, 'publicar_noticia', (res as any).id || '', { titulo: v.titulo });
+      // crearNoticia ya guarda en auditoria_eventos, no necesitamos guardarAuditoria aquí
+      await this.noticias.crearNoticia(payload);
     }
     this.formulario.reset();
   }

@@ -1,0 +1,336 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Panel de Administración</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="cargarDatos()">
+        <ion-icon name="refresh"></ion-icon>
+      </ion-button>
+      <ion-button (click)="cerrarSesion()" fill="clear" color="medium">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar sesión
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+  <ion-loading [isOpen]="cargando" message="Cargando datos..."></ion-loading>
+
+  <!-- Pestañas de navegación -->
+  <ion-segment [(ngModel)]="pestanaActiva" (ionChange)="cambiarPestana($event)">
+    <ion-segment-button value="estadisticas">
+      <ion-label>Estadísticas</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="usuarios">
+      <ion-label>Usuarios</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="vacantes">
+      <ion-label>Vacantes</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="noticias">
+      <ion-label>Noticias</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="postulaciones">
+      <ion-label>Postulaciones</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Pestaña de Estadísticas -->
+  <div *ngIf="pestanaActiva === 'estadisticas' && estadisticas">
+    <ion-grid>
+      <ion-row>
+        <ion-col size="12" size-md="6" size-lg="3">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Total Usuarios</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <h1>{{ estadisticas?.totalUsuarios || 0 }}</h1>
+              <p>Personas: {{ estadisticas?.totalPersonas || 0 }} | Empresas: {{ estadisticas?.totalEmpresas || 0 }}</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="6" size-lg="3">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Vacantes</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <h1>{{ estadisticas?.totalVacantes || 0 }}</h1>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="6" size-lg="3">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Noticias</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <h1>{{ estadisticas?.totalNoticias || 0 }}</h1>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="6" size-lg="3">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Postulaciones</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <h1>{{ estadisticas?.totalPostulaciones || 0 }}</h1>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12" size-md="6">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Conversaciones</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <h1>{{ estadisticas.totalConversaciones || 0 }}</h1>
+              <p>Mensajes totales: {{ estadisticas.totalMensajes || 0 }}</p>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+        <ion-col size="12" size-md="6">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Postulaciones por Estado</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list>
+                <ion-item *ngFor="let item of estadisticas?.postulacionesPorEstado || []">
+                  <ion-label>
+                    <h3>{{ item.estado }}</h3>
+                  </ion-label>
+                  <ion-badge slot="end">{{ item.cantidad }}</ion-badge>
+                </ion-item>
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+      <ion-row>
+        <ion-col size="12">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>Vacantes por Estado</ion-card-title>
+            </ion-card-header>
+            <ion-card-content>
+              <ion-list>
+                <ion-item *ngFor="let item of estadisticas?.vacantesPorEstado || []">
+                  <ion-label>
+                    <h3>{{ item.estado }}</h3>
+                  </ion-label>
+                  <ion-badge slot="end">{{ item.cantidad }}</ion-badge>
+                </ion-item>
+              </ion-list>
+            </ion-card-content>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+
+  <!-- Pestaña de Usuarios -->
+  <div *ngIf="pestanaActiva === 'usuarios'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Personas Registradas ({{ personas.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let persona of personas">
+            <ion-label>
+              <h2>{{ persona.nombre_completo }}</h2>
+              <p>{{ persona.correo }} • {{ persona.ciudad }} • {{ persona.rol_principal }}</p>
+              <p><small>Registrado: {{ formatearFecha(persona.creado_en) }}</small></p>
+            </ion-label>
+            <ion-button slot="end" color="danger" fill="clear" (click)="eliminarPersona(persona)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ion-item *ngIf="personas.length === 0">
+            <ion-label>No hay personas registradas</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Empresas Registradas ({{ empresas.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let empresa of empresas">
+            <ion-label>
+              <h2>{{ empresa.razon_social }}</h2>
+              <p>{{ empresa.correo_corporativo }} • {{ empresa.ciudad }} • {{ empresa.sector }}</p>
+              <p><small>Registrado: {{ formatearFecha(empresa.creado_en) }}</small></p>
+            </ion-label>
+            <ion-button slot="end" color="danger" fill="clear" (click)="eliminarEmpresa(empresa)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ion-item *ngIf="empresas.length === 0">
+            <ion-label>No hay empresas registradas</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Pestaña de Vacantes -->
+  <div *ngIf="pestanaActiva === 'vacantes'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Vacantes Publicadas ({{ vacantes.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let vacante of vacantes">
+            <ion-label>
+              <h2>{{ vacante.titulo }}</h2>
+              <p>Estado: {{ vacante.estado }}</p>
+              <p><small>Publicada: {{ formatearFecha(vacante.creada_en) }}</small></p>
+            </ion-label>
+            <ion-button slot="end" color="danger" fill="clear" (click)="eliminarVacante(vacante)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ion-item *ngIf="vacantes.length === 0">
+            <ion-label>No hay vacantes publicadas</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Pestaña de Noticias -->
+  <div *ngIf="pestanaActiva === 'noticias'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Noticias Publicadas ({{ noticias.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let noticia of noticias">
+            <ion-label>
+              <h2>{{ noticia.titulo }}</h2>
+              <p>{{ noticia.resumen }}</p>
+              <p><small>Publicada: {{ formatearFecha(noticia.fecha) }}</small></p>
+            </ion-label>
+            <ion-button slot="end" color="danger" fill="clear" (click)="eliminarNoticia(noticia)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ion-item *ngIf="noticias.length === 0">
+            <ion-label>No hay noticias publicadas</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+
+  <!-- Pestaña de Postulaciones -->
+  <div *ngIf="pestanaActiva === 'postulaciones'">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Postulaciones ({{ postulaciones.length }})</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let postulacion of postulaciones">
+            <ion-label>
+              <h2>Postulación #{{ postulacion.id.substring(0, 8) }}</h2>
+              
+              <!-- Información del postulante -->
+              <div *ngIf="postulacion.persona" class="mt-8">
+                <p class="text-primary fw-bold">
+                  <ion-icon name="person" style="vertical-align: middle;"></ion-icon>
+                  Postulante: {{ postulacion.persona.nombre_completo }}
+                </p>
+                <p class="ml-20 text-muted small">
+                  {{ postulacion.persona.correo }} • {{ postulacion.persona.ciudad }} • {{ postulacion.persona.rol_principal }}
+                </p>
+              </div>
+              
+              <div *ngIf="postulacion.empresa_postulante" class="mt-8">
+                <p class="text-primary fw-bold">
+                  <ion-icon name="business" style="vertical-align: middle;"></ion-icon>
+                  Empresa Postulante: {{ postulacion.empresa_postulante.razon_social }}
+                </p>
+                <p class="ml-20 text-muted small">
+                  {{ postulacion.empresa_postulante.correo_corporativo }} • {{ postulacion.empresa_postulante.ciudad }} • {{ postulacion.empresa_postulante.sector }}
+                </p>
+              </div>
+
+              <!-- Información de la vacante/servicio -->
+              <div *ngIf="postulacion.vacante" class="mt-12">
+                <p class="text-success fw-bold">
+                  <ion-icon name="briefcase" style="vertical-align: middle;"></ion-icon>
+                  A: {{ postulacion.vacante.titulo }}
+                </p>
+                <p class="ml-20 text-muted small" *ngIf="postulacion.vacante.descripcion">
+                  {{ postulacion.vacante.descripcion.length > 100 ? (postulacion.vacante.descripcion.substring(0, 100) + '...') : postulacion.vacante.descripcion }}
+                </p>
+                
+                <!-- Información de quién publicó la vacante/servicio -->
+                <div class="ml-20 mt-8">
+                  <p *ngIf="postulacion.vacante.empresa" class="text-muted small">
+                    <ion-icon name="business" style="vertical-align: middle;"></ion-icon>
+                    Publicado por empresa: {{ postulacion.vacante.empresa.razon_social }}
+                  </p>
+                  <p *ngIf="postulacion.vacante.persona_servicio" class="text-muted small">
+                    <ion-icon name="person" style="vertical-align: middle;"></ion-icon>
+                    Publicado por: {{ postulacion.vacante.persona_servicio.nombre_completo }}
+                  </p>
+                  
+                  <p class="text-muted small" *ngIf="postulacion.vacante.ubicacion">
+                    <ion-icon name="location" style="vertical-align: middle;"></ion-icon>
+                    {{ postulacion.vacante.ubicacion }}
+                  </p>
+                  <p class="text-muted small" *ngIf="postulacion.vacante.salario">
+                    <ion-icon name="cash" style="vertical-align: middle;"></ion-icon>
+                    {{ postulacion.vacante.salario | currencyFormat }}
+                  </p>
+                  <p class="text-muted small" *ngIf="postulacion.vacante.modalidad">
+                    <ion-icon name="desktop" style="vertical-align: middle;"></ion-icon>
+                    {{ postulacion.vacante.modalidad }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Estado y fechas -->
+              <div class="mt-12 pt-8 border-top">
+                <ion-badge [color]="postulacion.estado === 'aceptada' || postulacion.estado === 'contratada' ? 'success' : postulacion.estado === 'rechazada' ? 'danger' : 'warning'">
+                  {{ postulacion.estado }}
+                </ion-badge>
+                <p class="text-muted small">
+                  <small>Creada: {{ formatearFecha(postulacion.creada_en) }}</small>
+                </p>
+                <p class="text-muted small">
+                  <small>Actualizada: {{ formatearFecha(postulacion.actualizado_en) }}</small>
+                </p>
+                <p *ngIf="postulacion.puntaje" class="text-muted small">
+                  <small>Puntaje: {{ postulacion.puntaje }}</small>
+                </p>
+              </div>
+            </ion-label>
+            <ion-button slot="end" color="danger" fill="clear" (click)="eliminarPostulacion(postulacion)">
+              <ion-icon name="trash"></ion-icon>
+            </ion-button>
+          </ion-item>
+          <ion-item *ngIf="postulaciones.length === 0">
+            <ion-label>No hay postulaciones</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

@@ -13,4 +13,9 @@ export const environment = {
   supabaseUrl: 'https://avhrzvecnrspsvxqlaol.supabase.co',
   supabaseAnonKey:
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF2aHJ6dmVjbnJzcHN2eHFsYW9sIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjM4MjQyMTAsImV4cCI6MjA3OTQwMDIxMH0.dLRG_3hyAbfOfqJEAcevaIo68dDVOejI846FWFrl5FE',
+  paypal: {
+    mode: 'sandbox',
+    clientId: 'Abklqq4bz38hinCfOQGLRaKNrP3kJpOMlxvRS3aMklvkmkHPT1mreR_Sozstn05zykQ1-lS7Mj9FPrg9',
+    clientSecret: 'EHoFxvVtc03o4fpMkANtwCxRB1GM2j3Uod_Y7uaOTuY8u3yCq07mkenkdjgRdZ3_95idVufj4CXvtClb'
+  },
 };

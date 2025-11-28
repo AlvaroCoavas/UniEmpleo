@@ -2,76 +2,57 @@
   <ion-toolbar>
     <ion-title>Chat</ion-title>
     <ion-buttons slot="end" *ngIf="rol === 'empresa'">
-      <ion-button [routerLink]="['/solicitudes']">
+      <ion-button [routerLink]="['/solicitudes']" fill="clear">
         <ion-label>Solicitudes</ion-label>
-        <ion-badge color="danger" *ngIf="solicitudesCount > 0"
-          >{{ solicitudesCount }}</ion-badge
-        >
+        <ion-badge color="danger" *ngIf="solicitudesCount > 0">
+          {{ solicitudesCount }}
+        </ion-badge>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size="12">
-        <ion-card>
-          <ion-card-header>
-            <ion-card-title>Contactos</ion-card-title>
-            <ion-buttons slot="end" *ngIf="rol === 'empresa'">
-              <ion-button [routerLink]="['/solicitudes']">
-                <ion-label>Solicitudes</ion-label>
-                <ion-badge color="danger" *ngIf="solicitudesCount > 0"
-                  >{{ solicitudesCount }}</ion-badge
-                >
-              </ion-button>
-            </ion-buttons>
-          </ion-card-header>
-          <ion-card-content>
-            <ion-segment
-              [(ngModel)]="tipoListado"
-              (ionChange)="cargarCuentas()"
-            >
-              <ion-segment-button value="personas"
-                ><ion-label>Personas</ion-label></ion-segment-button
-              >
-              <ion-segment-button value="empresas"
-                ><ion-label>Empresas</ion-label></ion-segment-button
-              >
-            </ion-segment>
-            <ion-list>
-              <ion-item
-                button
-                (click)="abrirMensajes(u)"
-                *ngFor="let u of cuentasFiltradas"
-              >
-                <ion-avatar slot="start" *ngIf="u.foto_url || u.logo_url">
-                  <img [src]="u.foto_url || u.logo_url" alt="Avatar" />
-                </ion-avatar>
-                <ion-label>
-                  <h2>{{ u.nombre_completo || u.razon_social }}</h2>
-                  <p>
-                    {{ u.correo || u.correo_corporativo }} • {{ u.ciudad ||
-                    u.sector }}
-                  </p>
-                </ion-label>
-                <ion-badge 
-                  slot="end" 
-                  color="danger" 
-                  *ngIf="u.mensajesNoLeidos && u.mensajesNoLeidos > 0"
-                >
-                  {{ u.mensajesNoLeidos > 99 ? '99+' : u.mensajesNoLeidos }}
-                </ion-badge>
-              </ion-item>
-              <ion-item *ngIf="cuentasFiltradas.length === 0">
-                <ion-label>
-                  <p>No hay contactos para mostrar</p>
-                </ion-label>
-              </ion-item>
-            </ion-list>
-          </ion-card-content>
-        </ion-card>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
+  <div class="contacts-container">
+    <div class="contacts-header">
+      <h2>Contactos</h2>
+      <p>Selecciona un contacto para comenzar a chatear</p>
+    </div>
+
+    <div *ngIf="cuentas.length > 0">
+      <ion-list>
+        <ion-item
+          button
+          (click)="abrirMensajes(u)"
+          *ngFor="let u of cuentas"
+          class="contact-item"
+        >
+          <ion-avatar slot="start">
+            <img *ngIf="u.foto_url || u.logo_url" [src]="u.foto_url || u.logo_url" />
+            <div *ngIf="!u.foto_url && !u.logo_url" class="avatar-iniciales">
+              {{ (u.nombre_completo || u.razon_social)?.[0] | uppercase }}
+            </div>
+          </ion-avatar>
+          <ion-label>
+            <h2>{{ u.nombre_completo || u.razon_social }}</h2>
+            <p>
+              <ion-icon name="mail-outline" *ngIf="u.correo || u.correo_corporativo"></ion-icon>
+              <span>{{ u.correo || u.correo_corporativo }}</span>
+              <span *ngIf="(u.correo || u.correo_corporativo) && (u.ciudad || u.sector)"> • </span>
+              <ion-icon name="location-outline" *ngIf="u.ciudad || u.sector"></ion-icon>
+              <span>{{ u.ciudad || u.sector }}</span>
+            </p>
+          </ion-label>
+        </ion-item>
+      </ion-list>
+    </div>
+
+    <div class="empty-state-container" *ngIf="cuentas.length === 0">
+      <app-empty-state
+        icon="chatbubbles-outline"
+        title="No hay contactos"
+        message="Aún no tienes contactos para chatear. Las conversaciones aparecerán aquí cuando comiences a comunicarte con otros usuarios."
+      ></app-empty-state>
+    </div>
+  </div>
 </ion-content>

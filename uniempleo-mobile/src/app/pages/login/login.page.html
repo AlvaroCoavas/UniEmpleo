@@ -2,28 +2,67 @@
   <ion-toolbar>
     <ion-title>Iniciar sesión</ion-title>
   </ion-toolbar>
-  <ion-toolbar color="light" class="borde-azul"></ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <form [formGroup]="formularioLogin" (ngSubmit)="entrar()" novalidate>
-    <ion-item>
-      <ion-label position="stacked">Correo</ion-label>
-      <ion-input type="email" formControlName="correo"></ion-input>
-      <ion-note color="danger" *ngIf="formularioLogin.controls['correo'].invalid && formularioLogin.controls['correo'].touched">Correo no válido</ion-note>
-    </ion-item>
-    <ion-item>
-      <ion-label position="stacked">Contraseña</ion-label>
-      <ion-input type="password" formControlName="contrasena"></ion-input>
-      <ion-note color="danger" *ngIf="formularioLogin.controls['contrasena'].invalid && formularioLogin.controls['contrasena'].touched">Mínimo 8 caracteres</ion-note>
-    </ion-item>
-    <ion-button fill="clear" size="small" (click)="recuperarContrasena()">Recuperar contraseña</ion-button>
-    <ion-text color="danger" *ngIf="mensajeError">{{ mensajeError }}</ion-text>
-    <ion-button expand="block" type="submit" [disabled]="formularioLogin.invalid || estaBloqueado()" class="btn-azul">Entrar</ion-button>
-    <div class="links-login">
-      <ion-text>¿No está registrado?</ion-text>
-      <ion-button fill="clear" size="small" (click)="irRegistroPersona()">Regístrate Persona</ion-button>
-      <ion-button fill="clear" size="small" (click)="irRegistroEmpresa()">Regístrate Empresa</ion-button>
+<ion-content>
+  <div class="login-container">
+    <div class="login-header">
+      <div class="logo">UniEmpleo</div>
+      <h1>Bienvenido</h1>
+      <p>Inicia sesión para continuar</p>
     </div>
-  </form>
+
+    <form [formGroup]="formularioLogin" (ngSubmit)="entrar()" novalidate class="login-form">
+      <div class="input-group">
+        <ion-item>
+          <ion-label position="stacked">Correo electrónico</ion-label>
+          <ion-input type="email" formControlName="correo" placeholder="tu@correo.com"></ion-input>
+        </ion-item>
+        <ion-note color="danger" *ngIf="formularioLogin.controls['correo'].invalid && formularioLogin.controls['correo'].touched">
+          Correo no válido
+        </ion-note>
+      </div>
+
+      <div class="input-group">
+        <ion-item>
+          <ion-label position="stacked">Contraseña</ion-label>
+          <ion-input type="password" formControlName="contrasena" placeholder="••••••••"></ion-input>
+        </ion-item>
+        <ion-note color="danger" *ngIf="formularioLogin.controls['contrasena'].invalid && formularioLogin.controls['contrasena'].touched">
+          Mínimo 8 caracteres
+        </ion-note>
+      </div>
+
+      <div class="forgot-password">
+        <ion-button fill="clear" (click)="recuperarContrasena()">¿Olvidaste tu contraseña?</ion-button>
+      </div>
+
+      <div class="error-message" *ngIf="mensajeError">
+        {{ mensajeError }}
+      </div>
+
+      <div class="login-actions">
+        <ion-button 
+          expand="block" 
+          type="submit" 
+          [disabled]="formularioLogin.invalid || estaBloqueado()"
+          color="primary"
+        >
+          Iniciar sesión
+        </ion-button>
+      </div>
+
+      <div class="login-links">
+        <ion-text>¿No tienes una cuenta?</ion-text>
+        <div class="register-buttons">
+          <ion-button expand="block" fill="outline" (click)="irRegistroPersona()">
+            Registrarse como Persona
+          </ion-button>
+          <ion-button expand="block" fill="outline" (click)="irRegistroEmpresa()">
+            Registrarse como Empresa
+          </ion-button>
+        </div>
+      </div>
+    </form>
+  </div>
 </ion-content>

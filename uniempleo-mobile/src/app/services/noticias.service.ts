@@ -36,7 +36,46 @@ export class ServicioNoticias {
       .select('id,quien,accion,detalles,cuando')
       .eq('accion', 'publicar_noticia')
       .order('cuando', { ascending: false });
-    return (res.data || []).map((r: any) => ({ id: r.id, empresaId: r.quien, titulo: r.detalles?.titulo || '', resumen: r.detalles?.resumen || '', contenido: r.detalles?.contenido || '', video_url: r.detalles?.video_url || null, createdAt: r.cuando ? new Date(r.cuando).getTime() : undefined } as Noticia));
+    
+    const noticiasBase = res.data || [];
+    
+    // Filtrar duplicados por ID (por si acaso existen duplicados en la BD)
+    const noticiasUnicas = Array.from(
+      new Map(noticiasBase.map((r: any) => [r.id, r])).values()
+    );
+    
+    const noticias: any[] = [];
+    
+    // Obtener los IDs reales de las empresas en batch
+    const authUserIds = [...new Set(noticiasUnicas.map((r: any) => r.quien).filter(Boolean))];
+    const empresasRes = await this.supa.cliente
+      .from('empresas')
+      .select('id, auth_user_id')
+      .in('auth_user_id', authUserIds);
+    
+    const empresasMap = new Map<string, string>();
+    (empresasRes.data || []).forEach((e: any) => {
+      if (e.auth_user_id && e.id) {
+        empresasMap.set(e.auth_user_id, e.id);
+      }
+    });
+    
+    // Mapear noticias con el ID real de la empresa
+    for (const r of noticiasUnicas) {
+      const empresaIdReal = empresasMap.get(r.quien) || r.quien;
+      noticias.push({
+        id: r.id,
+        empresaId: r.quien, // auth_user_id original
+        empresaIdReal: empresaIdReal, // id real de la empresa
+        titulo: r.detalles?.titulo || '',
+        resumen: r.detalles?.resumen || '',
+        contenido: r.detalles?.contenido || '',
+        video_url: r.detalles?.video_url || null,
+        createdAt: r.cuando ? new Date(r.cuando).getTime() : undefined
+      });
+    }
+    
+    return noticias as any[];
   }
 
   async listarNoticiasPorEmpresa(empresaId: string) {

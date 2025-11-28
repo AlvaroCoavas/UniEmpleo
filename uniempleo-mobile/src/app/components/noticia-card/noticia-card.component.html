@@ -1,0 +1,27 @@
+<ion-card class="noticia-card">
+  <ion-card-header>
+    <div class="noticia-header">
+      <ion-card-title class="noticia-title">{{ noticia.titulo }}</ion-card-title>
+      <ion-button
+        *ngIf="empresaRoute.length > 0"
+        fill="clear"
+        size="small"
+        [routerLink]="empresaRoute"
+        class="btn-empresa"
+      >
+        Ver empresa
+      </ion-button>
+    </div>
+  </ion-card-header>
+
+  <ion-card-content>
+    <p *ngIf="noticia.resumen && noticia.resumen.trim()" class="noticia-resumen">
+      {{ noticia.resumen }}
+    </p>
+    <p *ngIf="noticia.contenido && noticia.contenido.trim() && noticia.contenido !== noticia.resumen" class="noticia-contenido">
+      {{ noticia.contenido }}
+    </p>
+  </ion-card-content>
+</ion-card>
+
+

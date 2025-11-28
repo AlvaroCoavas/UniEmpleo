@@ -13,10 +13,13 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-grid>
     <ion-row>
       <ion-col size="12">
-        <ion-button routerLink="/publicar-servicio" color="primary" expand="block">
+        <ion-button (click)="publicarServicio()" color="primary" expand="block">
           <ion-icon name="add-circle" slot="start"></ion-icon>
           Publicar Servicio
         </ion-button>
@@ -37,7 +40,7 @@
         </p>
         <p *ngIf="s.salario" style="color: #666; font-size: 0.9em;">
           <ion-icon name="cash" style="vertical-align: middle;"></ion-icon>
-          ${{ s.salario | number }}
+          {{ s.salario | currencyFormat }}
         </p>
       </ion-label>
       <ion-button fill="clear" slot="end" (click)="editar(s.id!)">Editar</ion-button>

@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/pestanas/tab1"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Historial de Postulaciones</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-loading [isOpen]="cargando" message="Cargando historial..."></ion-loading>
+
+  <!-- Filtro por estado -->
+  <ion-segment [(ngModel)]="filtroEstado" (ionChange)="cambiarFiltro($event)">
+    <ion-segment-button value="todos">
+      <ion-label>Todos</ion-label>
+    </ion-segment-button>
+    <ion-segment-button value="creada">
+      <ion-label>Creadas</ion-label>
+    </ion-segment-button>
+  </ion-segment>
+
+  <!-- Lista de postulaciones -->
+  <ion-list *ngIf="!cargando">
+    <ion-item *ngFor="let postulacion of postulacionesFiltradas" [routerLink]="['/vacante', postulacion.vacante_id]">
+      <ion-avatar slot="start" *ngIf="postulacion.empresa?.logo_url">
+        <img [src]="postulacion.empresa!.logo_url" [alt]="postulacion.empresa!.razon_social">
+      </ion-avatar>
+      <ion-icon *ngIf="!postulacion.empresa?.logo_url" slot="start" 
+        [name]="postulacion.tipo === 'vacante' ? 'briefcase' : 'person'"
+        [color]="postulacion.tipo === 'vacante' ? 'primary' : 'tertiary'">
+      </ion-icon>
+      
+      <ion-label>
+        <h2>
+          <ion-badge [color]="postulacion.tipo === 'vacante' ? 'primary' : 'tertiary'" style="margin-right: 8px;">
+            {{ postulacion.tipo === 'vacante' ? 'Vacante' : 'Servicio' }}
+          </ion-badge>
+          {{ postulacion.titulo }}
+        </h2>
+        <p *ngIf="postulacion.empresa">
+          <strong>{{ postulacion.empresa.razon_social }}</strong>
+        </p>
+        <p>
+          <small>Postulada: {{ formatearFecha(postulacion.creada_en) }}</small>
+        </p>
+        <p *ngIf="postulacion.actualizado_en !== postulacion.creada_en">
+          <small>Actualizada: {{ formatearFecha(postulacion.actualizado_en) }}</small>
+        </p>
+      </ion-label>
+      
+      <ion-badge slot="end" [color]="getColorEstado(postulacion.estado)">
+        {{ getTextoEstado(postulacion.estado) }}
+      </ion-badge>
+    </ion-item>
+
+    <ion-item *ngIf="postulacionesFiltradas.length === 0 && !cargando">
+      <ion-label class="ion-text-center">
+        <h3>No hay postulaciones</h3>
+        <p>No se encontraron postulaciones con el filtro seleccionado.</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>
+

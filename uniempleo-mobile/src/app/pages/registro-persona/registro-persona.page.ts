@@ -116,6 +116,8 @@ export class PaginaRegistroPersona implements OnInit, OnDestroy {
         urlFoto: fotoUrl,
         aceptaTerminos: !!v.aceptaTerminos,
       });
+      
+      // Redirigir directamente después del registro
       this.router.navigateByUrl('/pestanas/tab1');
     } catch (e: any) {
       const msg = e?.message || 'Error al registrar, revisa los datos.';

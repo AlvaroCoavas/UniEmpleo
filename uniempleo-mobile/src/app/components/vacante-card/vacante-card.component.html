@@ -1,0 +1,49 @@
+<ion-card [routerLink]="['/vacante', vacante.id]" class="vacante-card">
+  <ion-card-header>
+    <div class="vacante-header">
+      <ion-card-title class="vacante-title">{{ vacante.titulo }}</ion-card-title>
+      <ion-badge *ngIf="vacante.estado === 'activa'" color="success" class="estado-badge">
+        {{ vacante.estado === 'activa' ? 'Activa' : 'Cerrada' }}
+      </ion-badge>
+    </div>
+    <ion-card-subtitle *ngIf="vacante.ubicacion" class="vacante-subtitle">
+      <ion-icon name="location-outline"></ion-icon>
+      {{ vacante.ubicacion }}
+    </ion-card-subtitle>
+  </ion-card-header>
+
+  <ion-card-content>
+    <p class="vacante-descripcion">{{ vacante.descripcion }}</p>
+
+    <div class="vacante-info-row" *ngIf="vacante.salario || vacante.modalidad">
+      <span class="info-item" *ngIf="vacante.salario">
+        <ion-icon name="cash-outline"></ion-icon>
+        {{ vacante.salario | currencyFormat }}
+      </span>
+      <span class="info-item" *ngIf="vacante.modalidad">
+        <ion-icon name="laptop-outline"></ion-icon>
+        <span [ngSwitch]="vacante.modalidad">
+          <span *ngSwitchCase="'remoto'">Remoto</span>
+          <span *ngSwitchCase="'hibrido'">Híbrido</span>
+          <span *ngSwitchCase="'presencial'">Presencial</span>
+        </span>
+      </span>
+    </div>
+
+    <div class="vacante-habilidades" *ngIf="vacante.habilidades && vacante.habilidades.length > 0">
+      <ion-chip *ngFor="let habilidad of vacante.habilidades.slice(0, 3)" size="small">
+        {{ habilidad }}
+      </ion-chip>
+      <ion-chip *ngIf="vacante.habilidades.length > 3" size="small" color="medium">
+        +{{ vacante.habilidades.length - 3 }}
+      </ion-chip>
+    </div>
+
+    <div class="vacante-footer" *ngIf="vacante.createdAt">
+      <ion-text color="medium" class="fecha-publicacion">
+        Publicada el {{ vacante.createdAt | date:'dd/MM/yyyy' }}
+      </ion-text>
+    </div>
+  </ion-card-content>
+</ion-card>
+
