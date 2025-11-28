@@ -1,0 +1,186 @@
+1.1.5 Ingreso al sistema
+
+- Usuarios contemplados: egresados, empresas y administradores.
+- Ruta de acceso: `inicio-sesion`.
+- Credenciales requeridas: correo electrónico y contraseña (mínimo 8 caracteres).
+- Validaciones: formato de correo, longitud de contraseña.
+- Política de intentos: tras 5 intentos fallidos se bloquea el acceso por 2 minutos.
+- Establecimiento de sesión: autenticación con Supabase (`persistSession` y `autoRefreshToken` activados).
+- Redirección por rol tras iniciar sesión:
+  - Administrador: `admin`.
+  - Empresa: `pestanas/tab3` (módulo Empresa/Vacantes).
+  - Egresado: `pestanas/servicios`.
+  - Desconocido: `pestanas/tab1` (Feed).
+- Recuperación de contraseña: opción en `inicio-sesion` que envía correo de restablecimiento y redirige a `recuperar-contrasena`.
+- Cierre de sesión: botón “Salir” en el menú lateral o desde Administración, redirige a `inicio-sesion`.
+- Controles de acceso:
+  - `ProtectorSesion`: exige sesión activa para navegar por `pestanas/*`.
+  - `ProtectorRol`: restringe vistas según rol (`empresa` o `egresado`).
+  - `ProtectorAdmin`: acceso a `admin` solo para administradores verificados.
+- Recomendaciones de seguridad:
+  - No compartir credenciales; cambiar contraseña regularmente.
+  - Cerrar sesión en dispositivos compartidos.
+  - Evitar contraseñas comunes; usar combinación de letras, números y símbolos.
+
+1.1.6 Mapa de navegación
+
+Filosofía de navegación:
+- Interfaz basada en pestañas inferiores (`Feed`, `Chat`, `Empresa`/`Servicios`) y un menú lateral.
+- Navegación guiada por rol: las opciones visibles cambian según sea egresado o empresa.
+- Inicio y cierre de sesión controlados y visibles desde el menú.
+
+Barra de pestañas (parte inferior):
+- Feed
+  - Icono: `newspaper`
+  - Ruta: `/pestanas/tab1`
+  - Función: explorar vacantes y noticias. Incluye búsqueda y actualización.
+- Chat
+  - Icono: `chatbubbles`
+  - Ruta: `/pestanas/tab2`
+  - Función: mensajería y notificaciones de mensajes no leídos.
+- Empresa (solo rol empresa)
+  - Icono: `briefcase`
+  - Ruta: `/pestanas/tab3`
+  - Función: gestión de vacantes propias, publicación y administración.
+- Servicios (solo rol egresado)
+  - Icono: `briefcase`
+  - Ruta: `/pestanas/servicios`
+  - Función: gestión y oferta de servicios del egresado.
+
+Menú lateral (icono hamburguesa):
+- Feed
+  - Icono: `newspaper`
+  - Ruta: `/pestanas/tab1`
+  - Función: listado de vacantes y noticias.
+- Chat
+  - Icono: `chatbubbles`
+  - Ruta: `/pestanas/tab2`
+  - Función: conversaciones; muestra contador de no leídos.
+- Mi Perfil (solo egresado)
+  - Icono: `person`
+  - Ruta: `/perfil-egresado`
+  - Función: editar perfil, experiencia, disponibilidad y resumen.
+- Servicios (solo egresado)
+  - Icono: `briefcase`
+  - Ruta: `/pestanas/servicios`
+  - Función: administración de servicios.
+- Solicitudes (egresado)
+  - Icono: `document-text`
+  - Ruta: `/solicitudes-persona`
+  - Función: ver solicitudes y estado; indicador de pendientes.
+- Historial de Postulaciones (egresado)
+  - Icono: `time`
+  - Ruta: `/historial-postulaciones`
+  - Función: historial de postulaciones realizadas.
+- Vacantes (empresa)
+  - Icono: `briefcase`
+  - Ruta: `/pestanas/tab3`
+  - Función: listar, publicar, editar y eliminar vacantes.
+- Mi Empresa (empresa)
+  - Icono: `business`
+  - Ruta: `/perfil-empresa`
+  - Función: editar información empresarial, contacto, sector y tamaño.
+- Solicitudes (empresa)
+  - Icono: `document-text`
+  - Ruta: `/solicitudes`
+  - Función: revisar postulaciones a vacantes; indicador de pendientes.
+- Administración (solo administradores)
+  - Icono: `shield`
+  - Ruta: `/admin`
+  - Función: dashboard con estadísticas, usuarios, vacantes, noticias y postulaciones.
+- Salir
+  - Icono: `log-out`
+  - Función: cerrar sesión y redirigir a `inicio-sesion`.
+
+Otras pantallas y rutas relevantes:
+- `registro-persona`, `registro-empresa`: formularios de registro por tipo de usuario.
+- `publicar-vacante`, `publicar-servicio`: creación/edición de vacantes o servicios.
+- `vacante/:id`, `empresa/:id`: detalle de vacante y empresa.
+- `publicar-noticia`: publicación de noticias empresariales.
+- `suscripcion`: compra de suscripción (PayPal) con redirecciones posteriores.
+- `pago-exitoso`: confirmación de pago y continuación del flujo.
+- `recuperar-contrasena`: landing para restablecer contraseña.
+
+Recomendaciones de uso:
+- Iniciar sesión antes de acceder a `pestanas/*`.
+- Cerrar sesión al finalizar.
+- Seguir las indicaciones de la interfaz para acciones críticas (publicar, eliminar, pagar).
+
+1.1.7 Descripción de las funciones del sistema
+
+Por perfiles de usuario:
+
+Egresado:
+- Iniciar sesión: ir a `inicio-sesion`, ingresar correo y contraseña; tras la autenticación se redirige a `pestanas/servicios`.
+- Gestionar perfil: `perfil-egresado` permite actualizar nombre, ciudad, rol principal, años de experiencia, disponibilidad y resumen.
+- Cambiar contraseña: desde `perfil-egresado` enviar correo de recuperación; seguir instrucciones del correo.
+- Explorar vacantes: en `Feed` buscar por título, descripción, ubicación o habilidades; refrescar listado con gesto de actualización.
+- Solicitudes y historial: revisar estados en `solicitudes-persona` y el histórico en `historial-postulaciones`.
+- Chat: mantener conversaciones; ver contador de no leídos en pestaña y menú.
+
+Empresa:
+- Iniciar sesión: tras autenticación se redirige a `pestanas/tab3`.
+- Gestionar empresa: `perfil-empresa` edita razón social, ciudad, sector, tamaño, sitio web, teléfono y descripción.
+- Publicar vacante: en `mis-vacantes` pulsar “Publicar”; si no hay suscripción, se redirige a `suscripcion` para adquirir “Uso inmediato” o “Mensual”. Con suscripción activa se accede a `publicar-vacante`.
+- Administrar vacantes: listar, editar y eliminar vacantes propias; refrescar listado.
+- Noticias: listar y administrar noticias propias; editar y eliminar.
+- Solicitudes: revisar postulaciones pendientes en `solicitudes` con indicador.
+- Chat: comunicarse con candidatos.
+
+Administrador:
+- Dashboard: `admin` muestra estadísticas generales (usuarios, vacantes, noticias, postulaciones) y permite listar por módulos.
+- Operaciones:
+  - Eliminar personas, empresas, vacantes, noticias y postulaciones (con confirmación).
+  - Cerrar sesión desde el dashboard.
+
+Ejemplo de flujo de publicación (empresa):
+- Entrar a `mis-vacantes` → “Publicar Vacante”.
+- Si no hay suscripción: redirección a `suscripcion`, elegir tipo, pagar con PayPal.
+- Tras pago mensual: se habilita suscripción y se redirige a `pago-exitoso`, luego a `pestanas/tab1` o a la ruta indicada.
+- Tras “Uso inmediato”: se redirige a `pago-exitoso` y luego a `publicar-vacante`.
+
+1.1.8 Información sobre la mesa de ayuda
+
+- Se contará con una mesa de ayuda de primer nivel atendida por usuarios líderes del proyecto.
+- Casos en los que acudir a la mesa de ayuda:
+  - Asignación de permisos sobre opciones específicas (accesos administrativos o de rol).
+  - Creación, modificación o retiro de usuarios.
+  - Reversar transacciones (por errores de usuario o desistimientos de clientes).
+  - Tareas críticas: cierres/aperturas de periodos, creación de cuentas/productos (cuando aplique), ajustes sobre datos críticos.
+- Herramienta recomendada: GLPI (http://glpi-project.org/) para gestionar casos en lugar de correo.
+- Beneficios esperados con GLPI:
+  - Registro y seguimiento de incidentes, solicitudes y cambios con fechas de solicitud/solución.
+  - Configuración de catálogos de servicio y SLAs.
+  - Visibilidad sobre intervenciones de técnicos y usuarios.
+  - Inventario y gestión de activos, despliegues y alertas de seguridad en ecosistemas más amplios.
+
+1.1.9 Descripción de los mensajes de error
+
+Errores comunes y acción recomendada:
+- “Correo o contraseña incorrectos.”
+  - Acción: verificar credenciales; si olvida la contraseña, usar recuperación.
+- “Demasiados intentos. Intenta más tarde.”
+  - Acción: esperar 2 minutos; luego intentar nuevamente.
+- “No hay sesión activa, redirigiendo a login” (guard de sesión).
+  - Acción: iniciar sesión para acceder a pestañas protegidas.
+- “Rol no reconocido, redirigiendo a feed”
+  - Acción: revisar configuración de usuario; contactar mesa de ayuda si persiste.
+- “Error de Configuración SMTP / Error al enviar correo de recuperación”
+  - Acción: contactar al administrador para configurar el servicio de correo; reintentar luego.
+- “El servidor de correo no está configurado correctamente.”
+  - Acción: mesa de ayuda; verificar que el correo exista en el sistema.
+- “PayPal no se pudo inicializar / Error de PayPal / Error al renderizar botón PayPal”
+  - Acción: recargar la página, verificar conectividad; si persiste, reportar a mesa de ayuda.
+- “El pago no fue completado correctamente / No se pudo procesar el pago”
+  - Acción: revisar medio de pago, reintentar; si se debitó sin reflejarse, reportar con evidencia.
+- “Contenedor [paypal-button-container] no encontrado”
+  - Acción: recargar la vista de suscripción; no modificar el DOM.
+- “Error al cargar datos” (Feed, Dashboard)
+  - Acción: verificar conexión a internet y disponibilidad del servicio; reintentar.
+- “Acceso denegado” (Admin)
+  - Acción: requiere usuario administrador; solicitar permisos desde mesa de ayuda.
+
+Buenas prácticas de manejo de errores:
+- Leer detenidamente el mensaje mostrado y seguir la acción correctiva indicada.
+- Evitar caracteres especiales no permitidos en formularios.
+- Mantener la sesión activa durante operaciones de pago y publicación.
