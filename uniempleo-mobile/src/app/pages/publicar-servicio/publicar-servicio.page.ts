@@ -12,13 +12,14 @@ import { ServicioDatosSupabase } from '../../services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute, Router } from '@angular/router';
+import { CurrencyInputDirective } from '../../directives/currency-input.directive';
 
 @Component({
   selector: 'app-publicar-servicio',
   templateUrl: './publicar-servicio.page.html',
   styleUrls: ['./publicar-servicio.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, CurrencyInputDirective],
 })
 export class PaginaPublicarServicio {
   formulario = this.fb.group({

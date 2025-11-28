@@ -29,132 +29,140 @@ export class ServicioAdmin {
       const usuario = await this.supabase.cliente.auth.getUser();
       const email = usuario.data.user?.email;
       if (!email) {
-        console.log('⚠️ No se pudo obtener el email del usuario');
         return false;
       }
       
       const emailLower = email.toLowerCase();
-      console.log('🔍 Verificando acceso de admin para:', emailLower);
-      console.log('📋 Lista de admins actual:', this.adminEmails);
-      
       
       const bypass = localStorage.getItem('admin_bypass');
       if (bypass === 'true') {
-        console.warn('⚠️ MODO BYPASS ACTIVADO - Acceso temporal permitido');
-        console.log('📧 Tu email es:', emailLower);
-        console.log('📝 Para acceso permanente, agrega este email en admin.service.ts:');
-        console.log(`   '${emailLower}',`);
         return true;
       }
       
-     
       if (this.adminEmails.some(adminEmail => adminEmail.toLowerCase() === emailLower)) {
-        console.log('✅ Acceso de administrador concedido');
         return true;
       }
-      
       
       const metadata = (usuario.data.user as any)?.user_metadata;
       if (metadata?.rol === 'admin' || metadata?.is_admin === true) {
-        console.log('✅ Acceso de administrador concedido (metadata)');
         return true;
       }
-      
       
       const rawAppMeta = (usuario.data.user as any)?.raw_app_meta_data;
       if (rawAppMeta?.rol === 'admin' || rawAppMeta?.is_admin === true) {
-        console.log('✅ Acceso de administrador concedido (raw_app_meta_data)');
         return true;
       }
       
-      console.log('❌ Acceso denegado.');
-      console.log('📧 Tu email es:', emailLower);
-      console.log('📝 Para agregar este email como admin:');
-      console.log('   1. Abre: src/app/services/admin.service.ts');
-      console.log('   2. Agrega en el array adminEmails:');
-      console.log(`      '${emailLower}',`);
-      console.log('   3. O activa el modo bypass temporal ejecutando en la consola:');
-      console.log('      localStorage.setItem("admin_bypass", "true");');
-      console.log('      Luego recarga la página');
       return false;
     } catch (error) {
-      console.error('Error al verificar si es administrador:', error);
       return false;
     }
   }
 
   async obtenerEstadisticas(): Promise<EstadisticasAdmin> {
-    
-    const personas = await this.supabase.cliente
+    // Usar función SQL con SECURITY DEFINER para obtener conteos precisos sin restricciones RLS
+    try {
+      const { data, error } = await this.supabase.cliente.rpc('obtener_estadisticas_admin');
+      
+      if (error) {
+        console.error('Error al obtener estadísticas mediante RPC:', error);
+        // Fallback a método anterior si la función RPC falla
+        return await this.obtenerEstadisticasFallback();
+      }
+      
+      if (data) {
+        // La función retorna un JSONB, parsearlo
+        const stats = typeof data === 'string' ? JSON.parse(data) : data;
+        
+        return {
+          totalUsuarios: stats.totalUsuarios || 0,
+          totalPersonas: stats.totalPersonas || 0,
+          totalEmpresas: stats.totalEmpresas || 0,
+          totalVacantes: stats.totalVacantes || 0,
+          totalNoticias: stats.totalNoticias || 0,
+          totalPostulaciones: stats.totalPostulaciones || 0,
+          totalConversaciones: stats.totalConversaciones || 0,
+          totalMensajes: stats.totalMensajes || 0,
+          postulacionesPorEstado: stats.postulacionesPorEstado || [],
+          vacantesPorEstado: stats.vacantesPorEstado || [],
+        };
+      }
+      
+      // Si no hay datos, usar fallback
+      return await this.obtenerEstadisticasFallback();
+    } catch (error) {
+      console.error('Error al obtener estadísticas:', error);
+      return await this.obtenerEstadisticasFallback();
+    }
+  }
+
+  private async obtenerEstadisticasFallback(): Promise<EstadisticasAdmin> {
+    // Método fallback usando consultas directas
+    const personasRes = await this.supabase.cliente
       .from('personas')
-      .select('id', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: false });
+    const totalPersonas = personasRes.count ?? personasRes.data?.length ?? 0;
     
-   
-    const empresas = await this.supabase.cliente
+    const empresasRes = await this.supabase.cliente
       .from('empresas')
-      .select('id', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: false });
+    const totalEmpresas = empresasRes.count ?? empresasRes.data?.length ?? 0;
     
-    
-    const vacantes = await this.supabase.cliente
+    const vacantesRes = await this.supabase.cliente
       .from('vacantes')
-      .select('id', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: false });
+    const totalVacantes = vacantesRes.count ?? vacantesRes.data?.length ?? 0;
     
-   
-    const noticias = await this.supabase.cliente
+    const noticiasRes = await this.supabase.cliente
       .from('auditoria_eventos')
-      .select('id', { count: 'exact', head: true })
+      .select('*', { count: 'exact', head: false })
       .eq('accion', 'publicar_noticia');
+    const totalNoticias = noticiasRes.count ?? noticiasRes.data?.length ?? 0;
     
-    const postulaciones = await this.supabase.cliente
+    const postulacionesRes = await this.supabase.cliente
       .from('postulaciones')
-      .select('id', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: false });
+    const totalPostulaciones = postulacionesRes.count ?? postulacionesRes.data?.length ?? 0;
     
-   
-    const conversaciones = await this.supabase.cliente
+    const conversacionesRes = await this.supabase.cliente
       .from('conversaciones')
-      .select('id', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: false });
+    const totalConversaciones = conversacionesRes.count ?? conversacionesRes.data?.length ?? 0;
     
-
-    const mensajes = await this.supabase.cliente
+    const mensajesRes = await this.supabase.cliente
       .from('mensajes')
-      .select('id', { count: 'exact', head: true });
+      .select('*', { count: 'exact', head: false });
+    const totalMensajes = mensajesRes.count ?? mensajesRes.data?.length ?? 0;
     
-   
-    const postulacionesPorEstado = await this.supabase.cliente
+    const postulacionesPorEstadoRes = await this.supabase.cliente
       .from('postulaciones')
       .select('estado');
     
-    
-    const vacantesPorEstado = await this.supabase.cliente
+    const vacantesPorEstadoRes = await this.supabase.cliente
       .from('vacantes')
       .select('estado');
 
-    
     const postulacionesEstadoMap = new Map<string, number>();
-    (postulacionesPorEstado.data || []).forEach((p: any) => {
+    (postulacionesPorEstadoRes.data || []).forEach((p: any) => {
       const estado = p.estado || 'sin_estado';
       postulacionesEstadoMap.set(estado, (postulacionesEstadoMap.get(estado) || 0) + 1);
     });
     
-
     const vacantesEstadoMap = new Map<string, number>();
-    (vacantesPorEstado.data || []).forEach((v: any) => {
+    (vacantesPorEstadoRes.data || []).forEach((v: any) => {
       const estado = v.estado || 'sin_estado';
       vacantesEstadoMap.set(estado, (vacantesEstadoMap.get(estado) || 0) + 1);
     });
 
-   
-    const totalUsuarios = (personas.count || 0) + (empresas.count || 0);
-
     return {
-      totalUsuarios,
-      totalPersonas: personas.count || 0,
-      totalEmpresas: empresas.count || 0,
-      totalVacantes: vacantes.count || 0,
-      totalNoticias: noticias.count || 0,
-      totalPostulaciones: postulaciones.count || 0,
-      totalConversaciones: conversaciones.count || 0,
-      totalMensajes: mensajes.count || 0,
+      totalUsuarios: totalPersonas + totalEmpresas,
+      totalPersonas,
+      totalEmpresas,
+      totalVacantes,
+      totalNoticias,
+      totalPostulaciones,
+      totalConversaciones,
+      totalMensajes,
       postulacionesPorEstado: Array.from(postulacionesEstadoMap.entries()).map(([estado, cantidad]) => ({
         estado,
         cantidad,
@@ -167,6 +175,30 @@ export class ServicioAdmin {
   }
 
   async listarPersonas() {
+    try {
+      // Usar función RPC con SECURITY DEFINER para bypass RLS
+      const { data, error } = await this.supabase.cliente.rpc('listar_personas_admin');
+      
+      if (error) {
+        console.error('Error al listar personas mediante RPC:', error);
+        // Fallback a método directo
+        return await this.listarPersonasFallback();
+      }
+      
+      if (data) {
+        // La función retorna un JSONB, parsearlo si es string
+        const personas = typeof data === 'string' ? JSON.parse(data) : data;
+        return Array.isArray(personas) ? personas : [];
+      }
+      
+      return await this.listarPersonasFallback();
+    } catch (error) {
+      console.error('Error al listar personas:', error);
+      return await this.listarPersonasFallback();
+    }
+  }
+
+  private async listarPersonasFallback() {
     const res = await this.supabase.cliente
       .from('personas')
       .select('id,auth_user_id,nombre_completo,correo,ciudad,rol_principal,creado_en,verificado')
@@ -175,6 +207,30 @@ export class ServicioAdmin {
   }
 
   async listarEmpresas() {
+    try {
+      // Usar función RPC con SECURITY DEFINER para bypass RLS
+      const { data, error } = await this.supabase.cliente.rpc('listar_empresas_admin');
+      
+      if (error) {
+        console.error('Error al listar empresas mediante RPC:', error);
+        // Fallback a método directo
+        return await this.listarEmpresasFallback();
+      }
+      
+      if (data) {
+        // La función retorna un JSONB, parsearlo si es string
+        const empresas = typeof data === 'string' ? JSON.parse(data) : data;
+        return Array.isArray(empresas) ? empresas : [];
+      }
+      
+      return await this.listarEmpresasFallback();
+    } catch (error) {
+      console.error('Error al listar empresas:', error);
+      return await this.listarEmpresasFallback();
+    }
+  }
+
+  private async listarEmpresasFallback() {
     const res = await this.supabase.cliente
       .from('empresas')
       .select('id,auth_user_id,razon_social,correo_corporativo,ciudad,sector,creado_en,verificado')
@@ -207,9 +263,33 @@ export class ServicioAdmin {
   }
 
   async listarPostulaciones() {
+    try {
+      // Usar función RPC con SECURITY DEFINER para bypass RLS y obtener información completa
+      const { data, error } = await this.supabase.cliente.rpc('listar_postulaciones_admin');
+      
+      if (error) {
+        console.error('Error al listar postulaciones mediante RPC:', error);
+        // Fallback a método directo
+        return await this.listarPostulacionesFallback();
+      }
+      
+      if (data) {
+        // La función retorna un JSONB, parsearlo si es string
+        const postulaciones = typeof data === 'string' ? JSON.parse(data) : data;
+        return Array.isArray(postulaciones) ? postulaciones : [];
+      }
+      
+      return await this.listarPostulacionesFallback();
+    } catch (error) {
+      console.error('Error al listar postulaciones:', error);
+      return await this.listarPostulacionesFallback();
+    }
+  }
+
+  private async listarPostulacionesFallback() {
     const res = await this.supabase.cliente
       .from('postulaciones')
-      .select('id,persona_id,vacante_id,estado,creada_en,actualizado_en')
+      .select('id,persona_id,empresa_id,vacante_id,estado,creada_en,actualizado_en')
       .order('creada_en', { ascending: false });
     return res.data || [];
   }

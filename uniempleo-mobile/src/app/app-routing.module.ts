@@ -129,6 +129,27 @@ const routes: Routes = [
       ),
     canActivate: [ProtectorAdmin],
   },
+  {
+    path: 'suscripcion',
+    loadComponent: () =>
+      import('./pages/suscripcion/suscripcion.page').then(
+        (m) => m.PaginaSuscripcion
+      ),
+  },
+  {
+    path: 'pago-exitoso',
+    loadComponent: () =>
+      import('./pages/pago-exitoso/pago-exitoso.page').then(
+        (m) => m.PaginaPagoExitoso
+      ),
+  },
+  {
+    path: 'recuperar-contrasena',
+    loadComponent: () =>
+      import('./pages/recuperar-contrasena/recuperar-contrasena.page').then(
+        (m) => m.PaginaRecuperarContrasena
+      ),
+  },
 ];
 @NgModule({
   imports: [

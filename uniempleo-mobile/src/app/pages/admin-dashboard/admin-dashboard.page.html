@@ -5,11 +5,18 @@
       <ion-button (click)="cargarDatos()">
         <ion-icon name="refresh"></ion-icon>
       </ion-button>
+      <ion-button (click)="cerrarSesion()" fill="clear" color="medium">
+        <ion-icon name="log-out-outline" slot="start"></ion-icon>
+        Cerrar sesión
+      </ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
 
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-loading [isOpen]="cargando" message="Cargando datos..."></ion-loading>
 
   <!-- Pestañas de navegación -->
@@ -84,8 +91,8 @@
               <ion-card-title>Conversaciones</ion-card-title>
             </ion-card-header>
             <ion-card-content>
-              <h1>{{ estadisticas?.totalConversaciones || 0 }}</h1>
-              <p>Mensajes totales: {{ estadisticas?.totalMensajes || 0 }}</p>
+              <h1>{{ estadisticas.totalConversaciones || 0 }}</h1>
+              <p>Mensajes totales: {{ estadisticas.totalMensajes || 0 }}</p>
             </ion-card-content>
           </ion-card>
         </ion-col>
@@ -142,7 +149,6 @@
               <h2>{{ persona.nombre_completo }}</h2>
               <p>{{ persona.correo }} • {{ persona.ciudad }} • {{ persona.rol_principal }}</p>
               <p><small>Registrado: {{ formatearFecha(persona.creado_en) }}</small></p>
-              <ion-badge *ngIf="persona.verificado" color="success">Verificado</ion-badge>
             </ion-label>
             <ion-button slot="end" color="danger" fill="clear" (click)="eliminarPersona(persona)">
               <ion-icon name="trash"></ion-icon>
@@ -166,7 +172,6 @@
               <h2>{{ empresa.razon_social }}</h2>
               <p>{{ empresa.correo_corporativo }} • {{ empresa.ciudad }} • {{ empresa.sector }}</p>
               <p><small>Registrado: {{ formatearFecha(empresa.creado_en) }}</small></p>
-              <ion-badge *ngIf="empresa.verificado" color="success">Verificado</ion-badge>
             </ion-label>
             <ion-button slot="end" color="danger" fill="clear" (click)="eliminarEmpresa(empresa)">
               <ion-icon name="trash"></ion-icon>
@@ -243,9 +248,79 @@
           <ion-item *ngFor="let postulacion of postulaciones">
             <ion-label>
               <h2>Postulación #{{ postulacion.id.substring(0, 8) }}</h2>
-              <p>Estado: {{ postulacion.estado }}</p>
-              <p><small>Creada: {{ formatearFecha(postulacion.creada_en) }}</small></p>
-              <p><small>Actualizada: {{ formatearFecha(postulacion.actualizado_en) }}</small></p>
+              
+              <!-- Información del postulante -->
+              <div *ngIf="postulacion.persona" class="mt-8">
+                <p class="text-primary fw-bold">
+                  <ion-icon name="person" style="vertical-align: middle;"></ion-icon>
+                  Postulante: {{ postulacion.persona.nombre_completo }}
+                </p>
+                <p class="ml-20 text-muted small">
+                  {{ postulacion.persona.correo }} • {{ postulacion.persona.ciudad }} • {{ postulacion.persona.rol_principal }}
+                </p>
+              </div>
+              
+              <div *ngIf="postulacion.empresa_postulante" class="mt-8">
+                <p class="text-primary fw-bold">
+                  <ion-icon name="business" style="vertical-align: middle;"></ion-icon>
+                  Empresa Postulante: {{ postulacion.empresa_postulante.razon_social }}
+                </p>
+                <p class="ml-20 text-muted small">
+                  {{ postulacion.empresa_postulante.correo_corporativo }} • {{ postulacion.empresa_postulante.ciudad }} • {{ postulacion.empresa_postulante.sector }}
+                </p>
+              </div>
+
+              <!-- Información de la vacante/servicio -->
+              <div *ngIf="postulacion.vacante" class="mt-12">
+                <p class="text-success fw-bold">
+                  <ion-icon name="briefcase" style="vertical-align: middle;"></ion-icon>
+                  A: {{ postulacion.vacante.titulo }}
+                </p>
+                <p class="ml-20 text-muted small" *ngIf="postulacion.vacante.descripcion">
+                  {{ postulacion.vacante.descripcion.length > 100 ? (postulacion.vacante.descripcion.substring(0, 100) + '...') : postulacion.vacante.descripcion }}
+                </p>
+                
+                <!-- Información de quién publicó la vacante/servicio -->
+                <div class="ml-20 mt-8">
+                  <p *ngIf="postulacion.vacante.empresa" class="text-muted small">
+                    <ion-icon name="business" style="vertical-align: middle;"></ion-icon>
+                    Publicado por empresa: {{ postulacion.vacante.empresa.razon_social }}
+                  </p>
+                  <p *ngIf="postulacion.vacante.persona_servicio" class="text-muted small">
+                    <ion-icon name="person" style="vertical-align: middle;"></ion-icon>
+                    Publicado por: {{ postulacion.vacante.persona_servicio.nombre_completo }}
+                  </p>
+                  
+                  <p class="text-muted small" *ngIf="postulacion.vacante.ubicacion">
+                    <ion-icon name="location" style="vertical-align: middle;"></ion-icon>
+                    {{ postulacion.vacante.ubicacion }}
+                  </p>
+                  <p class="text-muted small" *ngIf="postulacion.vacante.salario">
+                    <ion-icon name="cash" style="vertical-align: middle;"></ion-icon>
+                    {{ postulacion.vacante.salario | currencyFormat }}
+                  </p>
+                  <p class="text-muted small" *ngIf="postulacion.vacante.modalidad">
+                    <ion-icon name="desktop" style="vertical-align: middle;"></ion-icon>
+                    {{ postulacion.vacante.modalidad }}
+                  </p>
+                </div>
+              </div>
+
+              <!-- Estado y fechas -->
+              <div class="mt-12 pt-8 border-top">
+                <ion-badge [color]="postulacion.estado === 'aceptada' || postulacion.estado === 'contratada' ? 'success' : postulacion.estado === 'rechazada' ? 'danger' : 'warning'">
+                  {{ postulacion.estado }}
+                </ion-badge>
+                <p class="text-muted small">
+                  <small>Creada: {{ formatearFecha(postulacion.creada_en) }}</small>
+                </p>
+                <p class="text-muted small">
+                  <small>Actualizada: {{ formatearFecha(postulacion.actualizado_en) }}</small>
+                </p>
+                <p *ngIf="postulacion.puntaje" class="text-muted small">
+                  <small>Puntaje: {{ postulacion.puntaje }}</small>
+                </p>
+              </div>
             </ion-label>
             <ion-button slot="end" color="danger" fill="clear" (click)="eliminarPostulacion(postulacion)">
               <ion-icon name="trash"></ion-icon>
@@ -259,4 +334,3 @@
     </ion-card>
   </div>
 </ion-content>
-

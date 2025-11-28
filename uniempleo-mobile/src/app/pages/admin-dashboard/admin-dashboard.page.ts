@@ -1,17 +1,18 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { IonicModule, AlertController } from '@ionic/angular';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ServicioAdmin, EstadisticasAdmin } from '../../services/admin.service';
 import { ServicioDatosSupabase } from '../../services/supabase.service';
+import { CurrencyFormatPipe } from '../../pipes/currency-format.pipe';
 
 @Component({
   selector: 'app-admin-dashboard',
   templateUrl: './admin-dashboard.page.html',
   styleUrls: ['./admin-dashboard.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, RouterModule, FormsModule],
+  imports: [CommonModule, IonicModule, RouterModule, FormsModule, CurrencyFormatPipe],
 })
 export class PaginaAdminDashboard implements OnInit {
   estadisticas: EstadisticasAdmin | null = null;
@@ -26,7 +27,8 @@ export class PaginaAdminDashboard implements OnInit {
   constructor(
     private admin: ServicioAdmin,
     private supabase: ServicioDatosSupabase,
-    private alertas: AlertController
+    private alertas: AlertController,
+    private router: Router
   ) {}
 
   async ngOnInit() {
@@ -251,5 +253,17 @@ export class PaginaAdminDashboard implements OnInit {
       day: 'numeric',
     });
   }
-}
 
+  async doRefresh(event: any) {
+    await this.cargarDatos();
+    event.target.complete();
+  }
+
+  async cerrarSesion() {
+    try {
+      await this.supabase.cerrarSesion();
+    } finally {
+      this.router.navigate(['/inicio-sesion']);
+    }
+  }
+}

@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "@angular/cli": "21.0.0"
+  },
+  "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "@paypal/paypal-js": "^9.0.1"
   }
 }

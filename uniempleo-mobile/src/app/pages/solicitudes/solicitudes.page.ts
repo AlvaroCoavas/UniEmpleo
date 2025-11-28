@@ -51,6 +51,11 @@ export class PaginaSolicitudes implements OnInit, OnDestroy {
     }
   }
 
+  async doRefresh(event: any) {
+    await this.cargar();
+    event.target.complete();
+  }
+
   async verPerfil(s: any) {
     this.modalAbierto = true;
     const base = s?.persona || null;

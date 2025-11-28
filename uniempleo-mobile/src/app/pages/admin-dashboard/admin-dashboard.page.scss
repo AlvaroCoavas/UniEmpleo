@@ -6,7 +6,7 @@ ion-card-content h1 {
   font-size: 2.5rem;
   font-weight: bold;
   margin: 0;
-  color: var(--ion-color-primary);
+  color: var(--ion-text-color);
 }
 
 ion-segment {
@@ -15,5 +15,44 @@ ion-segment {
 
 ion-badge {
   margin-left: 8px;
+}
+
+.mt-8 { margin-top: 8px; }
+.mt-12 { margin-top: 12px; }
+.ml-20 { margin-left: 20px; }
+.pt-8 { padding-top: 8px; }
+.border-top { border-top: 1px solid var(--ion-border-color); }
+.fw-bold { font-weight: var(--ion-font-weight-semibold); }
+.text-primary { color: var(--ion-color-primary); }
+.text-success { color: var(--ion-color-success); }
+.text-muted { color: var(--ion-color-medium); }
+.small { font-size: 0.85em; }
+
+/* Listas y items con estilo consistente a la toolboard */
+ion-list {
+  background: transparent;
+}
+
+ion-item {
+  --background: rgba(255, 255, 255, 0.05);
+  --border-radius: var(--ion-border-radius-md);
+  --inner-border-width: 0;
+  margin-bottom: var(--ion-spacing-sm);
+  border: 1px solid var(--ion-border-color);
+}
+
+ion-item:last-child {
+  margin-bottom: 0;
+}
+
+ion-item h2 {
+  color: var(--ion-text-color);
+  font-weight: var(--ion-font-weight-semibold);
+  margin: 0 0 4px 0;
+}
+
+ion-item p {
+  color: var(--ion-color-medium);
+  margin: 0;
 }
 

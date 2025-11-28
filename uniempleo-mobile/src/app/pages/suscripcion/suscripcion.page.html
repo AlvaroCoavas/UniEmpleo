@@ -1,0 +1,55 @@
+<ion-header>
+  <ion-toolbar [style.--background]="'#1e2329'">
+    <ion-buttons slot="start">
+      <ion-button (click)="cerrar()" fill="clear" style="--color: #e9edef;">
+        <ion-icon name="close" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [style.--background]="'#1e2329'" class="ion-padding">
+  <div class="suscripcion-container">
+    <!-- Título y Badge PRO -->
+    <div class="titulo-container">
+      <h1 class="titulo-principal">
+        Obten Uniempleo
+        <span class="badge-pro">PRO</span>
+      </h1>
+      <p class="tagline">Adquiere Pro y crea vacantes de forma ilimitada</p>
+    </div>
+
+    <!-- Opciones de suscripción -->
+    <div class="opciones-container">
+      <!-- Opción: Uso inmediato -->
+      <div 
+        class="opcion-card" 
+        [class.seleccionada]="tipoSeleccionado === 'inmediato'"
+        [class.no-seleccionada]="tipoSeleccionado !== 'inmediato'"
+        (click)="tipoSeleccionado = 'inmediato'; cambiarTipo()"
+      >
+        <div class="opcion-content">
+          <span class="opcion-nombre">Uso inmediato</span>
+          <span class="opcion-precio">$5</span>
+        </div>
+      </div>
+
+      <!-- Opción: Mensual -->
+      <div 
+        class="opcion-card" 
+        [class.seleccionada]="tipoSeleccionado === 'mensual'"
+        [class.no-seleccionada]="tipoSeleccionado !== 'mensual'"
+        (click)="tipoSeleccionado = 'mensual'; cambiarTipo()"
+      >
+        <div class="opcion-content">
+          <span class="opcion-nombre">Mensual</span>
+          <span class="opcion-precio">$20 /mes</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contenedor para botón de PayPal -->
+    <div id="paypal-button-container" style="width: 100%; max-width: 350px; margin: 0 auto 20px;"></div>
+  </div>
+</ion-content>
+

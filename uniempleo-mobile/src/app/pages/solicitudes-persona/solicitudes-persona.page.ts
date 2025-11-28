@@ -71,6 +71,11 @@ export class PaginaSolicitudesPersona implements OnInit, OnDestroy {
     }
   }
 
+  async doRefresh(event: any) {
+    await this.cargar();
+    event.target.complete();
+  }
+
   async verPerfil(s: any) {
     this.modalAbierto = true;
     const base = s?.empresa || s?.persona || null;

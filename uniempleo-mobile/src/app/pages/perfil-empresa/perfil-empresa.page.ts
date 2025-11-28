@@ -79,10 +79,33 @@ export class PaginaPerfilEmpresa implements OnInit {
 
   async cambiarContrasena() {
     if (!this.correo) return;
-    await this.supabase.enviarCorreoRecuperacion(this.correo);
-    const alerta = await this.alertas.create({ header: 'Recuperación', message: 'Te enviamos un correo para cambiar la contraseña', buttons: ['OK'] });
-    await alerta.present();
+    try {
+      await this.supabase.enviarCorreoRecuperacion(this.correo);
+      const alerta = await this.alertas.create({ 
+        header: 'Correo enviado', 
+        message: 'Te enviamos un correo para cambiar la contraseña. Revisa tu bandeja de entrada (incluye la carpeta de spam).', 
+        buttons: ['OK'] 
+      });
+      await alerta.present();
+    } catch (error: any) {
+      console.error('Error al enviar correo de recuperación:', error);
+      let mensajeError = 'No se pudo enviar el correo de recuperación.';
+      
+      if (error?.message?.includes('535') || error?.message?.includes('BadCredentials')) {
+        mensajeError = 'Error de configuración SMTP. Contacta al administrador.';
+      } else {
+        mensajeError = error?.message || mensajeError;
+      }
+      
+      const alerta = await this.alertas.create({
+        header: 'Error',
+        message: mensajeError,
+        buttons: ['OK'],
+      });
+      await alerta.present();
+    }
   }
+
 
   async eliminarNoticia(id: string) {
     await this.noticiasService.eliminarNoticia(id);

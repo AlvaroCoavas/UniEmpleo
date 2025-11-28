@@ -8,13 +8,14 @@ import { FormsModule } from '@angular/forms';
 import { ServicioDatosSupabase } from '../../services/supabase.service';
 import { ServicioVacantes } from '../../services/vacantes.service';
 import { Router, RouterModule } from '@angular/router';
+import { EmptyStateComponent } from '../../components/empty-state/empty-state.component';
 
 @Component({
   selector: 'app-chat',
   templateUrl: './chat.page.html',
   styleUrls: ['./chat.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, RouterModule],
+  imports: [CommonModule, IonicModule, FormsModule, RouterModule, EmptyStateComponent],
 })
 export class PaginaChat implements OnInit, OnDestroy {
   conversaciones: any[] = [];
@@ -321,13 +322,13 @@ export class PaginaChat implements OnInit, OnDestroy {
         // Cargar empresas directamente de las postulaciones
         if (empIds.length > 0) {
           console.log('Cargando empresas con IDs:', empIds);
-          const empRes = await this.supabase.cliente
-            .from('empresas')
-            .select(
-              'id,auth_user_id,razon_social,correo_corporativo,ciudad,sector,logo_url'
-            )
-            .in('id', empIds);
-          if (empRes.error) {
+        const empRes = await this.supabase.cliente
+          .from('empresas')
+          .select(
+            'id,auth_user_id,razon_social,correo_corporativo,ciudad,sector,logo_url'
+          )
+          .in('id', empIds);
+        if (empRes.error) {
             console.error('Error al cargar empresas:', empRes.error);
           } else {
             console.log('Empresas cargadas:', empRes.data?.length || 0);
@@ -360,7 +361,7 @@ export class PaginaChat implements OnInit, OnDestroy {
                 auth_user_id: p.auth_user_id,
                 tipo: 'persona',
               })));
-            }
+        }
           }
         }
         
@@ -395,9 +396,9 @@ export class PaginaChat implements OnInit, OnDestroy {
                   .in('id', empresasNuevas);
                 if (!empRes.error && empRes.data) {
                   contactos.push(...empRes.data.map((emp: any) => ({
-                    ...emp,
-                    auth_user_id: emp.auth_user_id,
-                    tipo: 'empresa',
+          ...emp,
+          auth_user_id: emp.auth_user_id,
+          tipo: 'empresa',
                   })));
                 }
               }
@@ -528,6 +529,20 @@ export class PaginaChat implements OnInit, OnDestroy {
       } catch {
         this.solicitudesCount = 0;
       }
+    }
+  }
+
+  async doRefresh(event: any) {
+    try {
+      if (this.usuarioId) {
+        this.conversaciones = await this.chat.listarConversaciones(this.usuarioId);
+      }
+      await this.cargarSolicitudesCount();
+      await this.cargarCuentas();
+    } catch (error) {
+      console.error('Error al refrescar:', error);
+    } finally {
+      event.target.complete();
     }
   }
 

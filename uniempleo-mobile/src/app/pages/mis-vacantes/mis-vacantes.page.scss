@@ -1,3 +1,42 @@
 ion-content {
   display: block;
 }
+
+.noticias-cards-section {
+  margin-top: 16px;
+
+  .section-title {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-semibold);
+    color: var(--ion-text-color);
+    margin: 0 0 12px 0;
+  }
+
+  .vacantes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+  }
+
+  .noticia-card {
+    box-shadow: var(--ion-shadow-sm);
+    border-radius: var(--border-radius-lg);
+
+    ion-card-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-semibold);
+    }
+
+    ion-card-subtitle {
+      color: var(--ion-color-medium);
+    }
+
+    
+  }
+}
+
+ion-button[fill="outline"][color="medium"] {
+  --border-color: var(--ion-color-medium);
+  --color: var(--ion-color-medium);
+  font-weight: var(--font-weight-medium);
+}

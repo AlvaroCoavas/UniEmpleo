@@ -22,7 +22,7 @@
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Tarifa/Salario</ion-label>
-      <ion-input type="number" formControlName="salario" placeholder="ej: 500000"></ion-input>
+      <ion-input appCurrencyInput formControlName="salario" placeholder="ej: 500000"></ion-input>
     </ion-item>
     <ion-item>
       <ion-label position="stacked">Habilidades (separadas por coma)</ion-label>
@@ -51,7 +51,7 @@
     <ion-item>
       <ion-label position="stacked">Tarifa por hora/proyecto</ion-label>
       <ion-input
-        type="number"
+        appCurrencyInput
         formControlName="tarifa"
         placeholder="ej: 50000"
       ></ion-input>

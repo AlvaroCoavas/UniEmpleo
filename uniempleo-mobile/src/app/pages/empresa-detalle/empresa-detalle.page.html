@@ -14,7 +14,6 @@
       </ion-avatar>
       <ion-card-title>{{ empresa.razon_social }}</ion-card-title>
       <ion-card-subtitle>{{ empresa.sector }} • {{ empresa.ciudad }}</ion-card-subtitle>
-      <ion-badge *ngIf="empresa.verificado" color="success" style="margin-top: 8px;">Verificado</ion-badge>
     </ion-card-header>
     <ion-card-content>
       <ion-item lines="none" *ngIf="empresa.nit">
@@ -56,7 +55,7 @@
       <ion-item lines="none" *ngIf="empresa.descripcion">
         <ion-label>
           <h3>Descripción</h3>
-          <p>{{ empresa.descripcion }}</p>
+      <p>{{ empresa.descripcion }}</p>
         </ion-label>
       </ion-item>
     </ion-card-content>

@@ -30,8 +30,13 @@ export class ServicioDatosSupabase {
   }
 
   async enviarCorreoRecuperacion(correo: string) {
-    return this.cliente.auth.resetPasswordForEmail(correo);
+    const siteUrl = window.location.origin;
+    const redirectUrl = `${siteUrl}/recuperar-contrasena`;
+    return this.cliente.auth.resetPasswordForEmail(correo, {
+      redirectTo: redirectUrl,
+    });
   }
+
 
   async registrarPersonaNatural(datos: {
     nombreCompleto: string;
@@ -54,9 +59,13 @@ export class ServicioDatosSupabase {
     const registro = await this.cliente.auth.signUp({
       email: datos.correo,
       password: datos.contrasena,
-      options: { data: { rol: 'persona' } },
+      options: { 
+        data: { rol: 'persona' },
+      },
     });
     if (registro.error) throw new Error(`supabase_signUp_persona: ${registro.error.message}`);
+    
+    // Iniciar sesión automáticamente después del registro
     if (!registro.data.session) {
       const inicio = await this.cliente.auth.signInWithPassword({ email: datos.correo, password: datos.contrasena });
       if (inicio.error) throw new Error(`supabase_signIn_persona: ${inicio.error.message}`);
@@ -121,9 +130,13 @@ export class ServicioDatosSupabase {
     const registro = await this.cliente.auth.signUp({
       email: datos.correoCorporativo,
       password: datos.contrasena,
-      options: { data: { rol: 'empresa' } },
+      options: { 
+        data: { rol: 'empresa' },
+      },
     });
     if (registro.error) throw new Error(`supabase_signUp_empresa: ${registro.error.message}`);
+    
+    // Iniciar sesión automáticamente después del registro
     if (!registro.data.session) {
       const inicio = await this.cliente.auth.signInWithPassword({ email: datos.correoCorporativo, password: datos.contrasena });
       if (inicio.error) throw new Error(`supabase_signIn_empresa: ${inicio.error.message}`);

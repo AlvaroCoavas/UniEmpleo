@@ -6,13 +6,14 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ServicioChat } from '../../services/chat.service';
 import { ServicioDatosSupabase } from '../../services/supabase.service';
 import { Mensaje } from '../../models/mensaje';
+import { CurrencyFormatPipe } from '../../pipes/currency-format.pipe';
 
 @Component({
   selector: 'app-mensajes',
   templateUrl: './mensajes.page.html',
   styleUrls: ['./mensajes.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, CurrencyFormatPipe],
 })
 export class PaginaMensajes implements OnInit, OnDestroy {
   mensajes: Mensaje[] = [];
@@ -190,26 +191,10 @@ export class PaginaMensajes implements OnInit, OnDestroy {
 
   formatearFecha(timestamp: number): string {
     const fecha = new Date(timestamp);
-    const ahora = new Date();
-    const hoy = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate());
-    const fechaMsg = new Date(
-      fecha.getFullYear(),
-      fecha.getMonth(),
-      fecha.getDate()
-    );
-
-    if (fechaMsg.getTime() === hoy.getTime()) {
-      return fecha.toLocaleTimeString('es-ES', {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
-    } else {
-      return fecha.toLocaleDateString('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: fecha.getFullYear() !== ahora.getFullYear() ? 'numeric' : undefined,
-      });
-    }
+    return fecha.toLocaleTimeString('es-ES', {
+      hour: '2-digit',
+      minute: '2-digit',
+    });
   }
 
   scrollToBottom() {
@@ -313,4 +298,3 @@ export class PaginaMensajes implements OnInit, OnDestroy {
     }
   }
 }
-

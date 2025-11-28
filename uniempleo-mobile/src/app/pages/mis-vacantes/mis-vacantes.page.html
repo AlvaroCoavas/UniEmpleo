@@ -5,14 +5,17 @@
     </ion-buttons>
     <ion-title>Mis vacantes</ion-title>
   </ion-toolbar>
-</ion-header>
+  </ion-header>
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-grid>
     <ion-row>
       <ion-col size="12">
-        <ion-button routerLink="/publicar-vacante" color="primary">Publicar vacante</ion-button>
+        <ion-button (click)="publicarVacante()" color="primary">Publicar vacante</ion-button>
         <ion-button routerLink="/publicar-noticia" color="secondary">Publicar noticia</ion-button>
-        <ion-button routerLink="/perfil-empresa" color="tertiary">Ver perfil</ion-button>
+        
       </ion-col>
     </ion-row>
   </ion-grid>
@@ -25,8 +28,24 @@
         <h2>{{ v.titulo }}</h2>
         <p>{{ v.descripcion }}</p>
       </ion-label>
-      <ion-button fill="clear" slot="end" (click)="editar(v.id!)">Editar</ion-button>
+      <ion-button fill="outline" color="medium" slot="end" (click)="editar(v.id!)">Editar</ion-button>
       <ion-button fill="clear" color="danger" slot="end" (click)="eliminar(v.id!)">Eliminar</ion-button>
     </ion-item>
   </ion-list>
+  
+  <div class="noticias-cards-section" *ngIf="noticiasPublicadas && noticiasPublicadas.length > 0">
+    <h2 class="section-title">Noticias publicadas</h2>
+    <div class="vacantes-grid">
+      <ion-card *ngFor="let n of noticiasPublicadas" class="noticia-card">
+        <ion-card-header>
+          <ion-card-title>{{ n.titulo }}</ion-card-title>
+          <ion-card-subtitle *ngIf="n.createdAt">{{ n.createdAt | date:'dd/MM/yyyy' }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          <p *ngIf="n.resumen">{{ n.resumen }}</p>
+          <p *ngIf="!n.resumen && n.contenido">{{ n.contenido }}</p>
+        </ion-card-content>
+      </ion-card>
+    </div>
+  </div>
 </ion-content>

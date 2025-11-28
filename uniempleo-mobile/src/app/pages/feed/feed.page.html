@@ -3,28 +3,67 @@
     <ion-title>Feed</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content>
-  <ion-list>
-    <ion-list-header>
-      <ion-label>Vacantes</ion-label>
-    </ion-list-header>
-    <ion-item *ngFor="let v of listaVacantes" [routerLink]="['/vacante', v.id]">
-      <ion-label>
-        <h2>{{ v.titulo }}</h2>
-        <p>{{ v.descripcion }}</p>
-      </ion-label>
-    </ion-item>
-  </ion-list>
-  
-  <div class="seccion-noticias">
-    <h3 class="titulo-seccion">Noticias</h3>
-    <div *ngFor="let n of listaNoticiasEmpresas" class="noticia-card">
-      <div class="noticia-header">
-        <h2 class="titulo-noticia">{{ n.titulo }}</h2>
-        <ion-button fill="clear" size="small" [routerLink]="getEmpresaRoute(n)">Ver empresa</ion-button>
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="search-container">
+    <ion-searchbar 
+      placeholder="Buscar vacantes..." 
+      (ionInput)="buscarVacantes($event)"
+      debounce="300"
+    ></ion-searchbar>
+  </div>
+
+  <div class="content-section">
+    <!-- Sección de Vacantes -->
+    <div class="vacantes-list" *ngIf="listaVacantesFiltradas.length > 0">
+      <div class="section-header">
+        <h2>Vacantes Disponibles</h2>
+        <ion-text color="medium" class="vacantes-count">
+          {{ listaVacantesFiltradas.length }}
+        </ion-text>
       </div>
-      <p *ngIf="n.resumen && n.resumen.trim()" class="resumen-noticia">{{ n.resumen }}</p>
-      <p *ngIf="n.contenido && n.contenido.trim() && n.contenido !== n.resumen" class="contenido-noticia">{{ n.contenido }}</p>
+      <app-vacante-card 
+        *ngFor="let v of listaVacantesFiltradas" 
+        [vacante]="v"
+      ></app-vacante-card>
+    </div>
+
+    <!-- Estado vacío para vacantes -->
+    <div class="empty-container" *ngIf="listaVacantes.length === 0 && !cargando">
+      <app-empty-state
+        icon="briefcase-outline"
+        title="No hay vacantes disponibles"
+        message="Por el momento no hay vacantes publicadas. Vuelve más tarde."
+      ></app-empty-state>
+    </div>
+
+    <div class="empty-container" *ngIf="listaVacantes.length > 0 && listaVacantesFiltradas.length === 0 && !cargando">
+      <app-empty-state
+        icon="search-outline"
+        title="No se encontraron resultados"
+        message="No hay vacantes que coincidan con tu búsqueda. Intenta con otros términos."
+      ></app-empty-state>
+    </div>
+
+    <!-- Estado de carga -->
+    <div class="empty-container" *ngIf="cargando">
+      <app-loading-state message="Cargando vacantes..."></app-loading-state>
+    </div>
+
+    <!-- Sección de Noticias -->
+    <div class="noticias-section" *ngIf="listaNoticiasEmpresas.length > 0">
+      <div class="section-header">
+        <h2>Noticias</h2>
+      </div>
+      <app-noticia-card 
+        *ngFor="let n of listaNoticiasEmpresas" 
+        [noticia]="n"
+        [empresaRoute]="getEmpresaRoute(n)"
+      ></app-noticia-card>
     </div>
   </div>
 </ion-content>

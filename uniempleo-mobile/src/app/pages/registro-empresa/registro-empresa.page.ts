@@ -94,6 +94,8 @@ export class PaginaRegistroEmpresa {
         descripcion: v.descripcion || null,
         aceptaTerminos: !!v.aceptaTerminos,
       });
+      
+      // Redirigir directamente después del registro
       this.router.navigateByUrl('/pestanas/tab3');
     } catch (e: any) {
       const msg = e?.message || 'Error al registrar empresa, revisa los datos.';

@@ -1,9 +1,18 @@
 .fondo-claro {
-  --background: #f8f9fb;
+  --background: #111827;
 }
 .borde-azul {
   border-top: 3px solid #2e64fe;
 }
 .btn-azul {
-  --background: #2e64fe;
+  --background: #1e2329;
+  --color: #e9edef;
+}
+
+ion-header {
+  ion-toolbar {
+    --background: #0b141a;
+    --color: #e9edef;
+    box-shadow: var(--ion-shadow-sm);
+  }
 }

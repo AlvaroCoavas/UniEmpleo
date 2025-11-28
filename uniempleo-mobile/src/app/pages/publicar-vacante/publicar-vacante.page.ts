@@ -12,13 +12,14 @@ import { ServicioDatosSupabase } from '../../services/supabase.service';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
 import { ActivatedRoute } from '@angular/router';
+import { CurrencyInputDirective } from '../../directives/currency-input.directive';
 
 @Component({
   selector: 'app-publicar-vacante',
   templateUrl: './publicar-vacante.page.html',
   styleUrls: ['./publicar-vacante.page.scss'],
   standalone: true,
-  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, IonicModule, FormsModule, ReactiveFormsModule, CurrencyInputDirective],
 })
 export class PaginaPublicarVacante {
   formulario = this.fb.group({

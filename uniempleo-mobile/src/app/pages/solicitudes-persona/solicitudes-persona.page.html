@@ -7,6 +7,9 @@
   </ion-toolbar>
 </ion-header>
 <ion-content class="ion-padding">
+  <ion-refresher slot="fixed" (ionRefresh)="doRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
   <ion-list>
     <ion-item *ngIf="cargando">
       <ion-label>Cargando...</ion-label>
@@ -148,8 +151,6 @@
                       </ion-col>
                       <ion-col size="12" sizeMd="6">
                         <ion-item lines="full">
-                          <ion-label position="stacked">Verificado</ion-label>
-                          <ion-text>{{ perfilSeleccionado?.verificado ? 'Sí' : 'No' }}</ion-text>
                         </ion-item>
                       </ion-col>
                     </ion-row>

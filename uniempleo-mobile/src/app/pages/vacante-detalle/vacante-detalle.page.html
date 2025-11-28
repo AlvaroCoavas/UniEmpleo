@@ -6,41 +6,325 @@
     <ion-title>Detalle vacante</ion-title>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding">
-  <ion-card *ngIf="vacante">
-    <ion-card-header>
-      <ion-card-title>{{ vacante.titulo }}</ion-card-title>
-      <ion-card-subtitle>{{ vacante.ubicacion }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <p>{{ vacante.descripcion }}</p>
-      <p *ngIf="vacante.salario">Salario: {{ vacante.salario }}</p>
-      <ion-chip *ngFor="let h of vacante.habilidades">{{ h }}</ion-chip>
-      <ion-button
-        *ngIf="!esMiVacante && !esMiServicio"
-        color="success"
-        expand="block"
-        (click)="postularme()"
-        [disabled]="estaPostulando || yaPostulado"
-        >¡postularme!</ion-button
-      >
-      <ion-text color="medium" *ngIf="yaPostulado">Ya te postulaste</ion-text>
-      <ion-text color="warning" *ngIf="esMiVacante || esMiServicio">
-        Esta es tu {{ esMiVacante ? 'vacante' : 'servicio' }}. No puedes postularte a ella.
-      </ion-text>
-    </ion-card-content>
-  </ion-card>
 
-  <ion-card *ngIf="empresa">
-    <ion-card-header>
-      <ion-card-title>Empresa</ion-card-title>
-      <ion-card-subtitle>{{ empresa.razon_social }}</ion-card-subtitle>
-    </ion-card-header>
-    <ion-card-content>
-      <p>{{ empresa.descripcion }}</p>
-      <ion-button [routerLink]="['/empresa', vacante.empresaId]" expand="block"
-        >Ver perfil de la empresa</ion-button
+<ion-content>
+  <!-- Hero Section -->
+  <div class="vacante-hero" *ngIf="vacante">
+    <div class="hero-header">
+      <h1 class="hero-title">{{ vacante.titulo }}</h1>
+      <ion-badge
+        *ngIf="vacante.estado === 'activa'"
+        color="success"
+        class="estado-badge"
       >
-    </ion-card-content>
-  </ion-card>
+        {{ vacante.estado === 'activa' ? 'Activa' : 'Cerrada' }}
+      </ion-badge>
+    </div>
+    <p class="hero-subtitle" *ngIf="vacante.ubicacion">
+      <ion-icon name="location-outline"></ion-icon>
+      {{ vacante.ubicacion }}
+    </p>
+    <div class="hero-meta">
+      <div class="meta-item" *ngIf="vacante.salario">
+        <ion-icon name="cash-outline"></ion-icon>
+        <span>{{ vacante.salario | currencyFormat }}</span>
+      </div>
+      <div class="meta-item" *ngIf="vacante.modalidad">
+        <ion-icon name="laptop-outline"></ion-icon>
+        <span>
+          <ng-container [ngSwitch]="vacante.modalidad">
+            <span *ngSwitchCase="'remoto'">Remoto</span>
+            <span *ngSwitchCase="'hibrido'">Híbrido</span>
+            <span *ngSwitchCase="'presencial'">Presencial</span>
+          </ng-container>
+        </span>
+      </div>
+      <div class="meta-item" *ngIf="vacante.createdAt">
+        <ion-icon name="calendar-outline"></ion-icon>
+        <span>{{ vacante.createdAt | date:'dd/MM/yyyy' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="vacante-content" *ngIf="vacante">
+    <!-- Información rápida -->
+    <div class="vacante-info-grid" *ngIf="vacante.salario || vacante.modalidad">
+      <div class="info-card" *ngIf="vacante.salario">
+        <ion-icon name="cash-outline" class="info-icon"></ion-icon>
+        <div class="info-label">Salario</div>
+        <div class="info-value">{{ vacante.salario | currencyFormat }}</div>
+      </div>
+      <div class="info-card" *ngIf="vacante.modalidad">
+        <ion-icon name="laptop-outline" class="info-icon"></ion-icon>
+        <div class="info-label">Modalidad</div>
+        <div class="info-value">
+          <ng-container [ngSwitch]="vacante.modalidad">
+            <span *ngSwitchCase="'remoto'">Remoto</span>
+            <span *ngSwitchCase="'hibrido'">Híbrido</span>
+            <span *ngSwitchCase="'presencial'">Presencial</span>
+          </ng-container>
+        </div>
+      </div>
+      <div class="info-card" *ngIf="vacante.ubicacion">
+        <ion-icon name="location-outline" class="info-icon"></ion-icon>
+        <div class="info-label">Ubicación</div>
+        <div class="info-value">{{ vacante.ubicacion }}</div>
+      </div>
+    </div>
+
+    <!-- Descripción con Accordion -->
+    <div class="vacante-section" *ngIf="vacante.descripcion">
+      <h2 class="section-title">
+        <ion-icon name="document-text-outline"></ion-icon>
+        Descripción
+      </h2>
+      <ion-accordion-group>
+        <ion-accordion value="descripcion">
+          <ion-item slot="header">
+            <ion-label>Ver descripción completa</ion-label>
+          </ion-item>
+          <div slot="content" class="accordion-content">
+            {{ vacante.descripcion }}
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </div>
+
+    <!-- Requisitos con Accordion -->
+    <div class="vacante-section" *ngIf="vacante.requisitos">
+      <h2 class="section-title">
+        <ion-icon name="checkmark-circle-outline"></ion-icon>
+        Requisitos
+      </h2>
+      <ion-accordion-group>
+        <ion-accordion value="requisitos">
+          <ion-item slot="header">
+            <ion-label>Ver requisitos completos</ion-label>
+          </ion-item>
+          <div slot="content" class="accordion-content">
+            {{ vacante.requisitos }}
+          </div>
+        </ion-accordion>
+      </ion-accordion-group>
+    </div>
+
+    <!-- Habilidades -->
+    <div
+      class="vacante-section"
+      *ngIf="vacante.habilidades && vacante.habilidades.length > 0"
+    >
+      <h2 class="section-title">
+        <ion-icon name="star-outline"></ion-icon>
+        Habilidades requeridas
+      </h2>
+      <div class="habilidades-container">
+        <ion-chip *ngFor="let h of vacante.habilidades"> {{ h }} </ion-chip>
+      </div>
+    </div>
+
+    <!-- Información de la Empresa -->
+    <ion-card class="empresa-card" *ngIf="empresa">
+      <ion-card-header>
+        <div class="empresa-header">
+          <ion-avatar>
+            <img *ngIf="empresa.logo_url" [src]="empresa.logo_url" />
+            <div *ngIf="!empresa.logo_url" class="iniciales">
+              {{ empresa.razon_social?.[0] | uppercase }}
+            </div>
+          </ion-avatar>
+          <div class="empresa-info">
+            <h3>{{ empresa.razon_social }}</h3>
+            <p *ngIf="empresa.sector">{{ empresa.sector }}</p>
+          </div>
+        </div>
+      </ion-card-header>
+      <ion-card-content>
+        <p *ngIf="empresa.descripcion">{{ empresa.descripcion }}</p>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Información del Creador (si es persona) -->
+    <ion-card class="empresa-card" *ngIf="persona">
+      <ion-card-header>
+        <ion-card-title>Publicado por</ion-card-title>
+        <ion-card-subtitle>{{ persona.nombre_completo }}</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <p *ngIf="persona.rol_principal">
+          <strong>Rol:</strong> {{ persona.rol_principal }}
+        </p>
+        <p *ngIf="persona.resumen">{{ persona.resumen }}</p>
+        <ion-button
+          expand="block"
+          fill="outline"
+          (click)="verPerfilPersona()"
+          class="mt-md"
+        >
+          Ver perfil completo
+        </ion-button>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Mensajes informativos -->
+    <div
+      class="message-text warning"
+      *ngIf="rolActual === 'egresado' && !personaRegistrada"
+    >
+      Completa tu perfil de persona para poder postularte.
+    </div>
+    <div class="message-text info" *ngIf="yaPostulado">
+      Ya te postulaste a esta vacante.
+    </div>
+    <div class="message-text warning" *ngIf="esMiVacante">
+      Esta es tu vacante.
+    </div>
+    <div class="message-text warning" *ngIf="esMiServicio">
+      Este es tu servicio. No puedes postularte a él.
+    </div>
+
+    <!-- CTA Section -->
+    <div
+      class="cta-section"
+      *ngIf="rolActual === 'egresado' && personaRegistrada && !esMiVacante && !esMiServicio && !yaPostulado"
+    >
+      <ion-button
+        expand="block"
+        color="success"
+        (click)="postularme()"
+        [disabled]="estaPostulando"
+      >
+        <ion-spinner
+          *ngIf="estaPostulando"
+          name="crescent"
+          slot="start"
+        ></ion-spinner>
+        <span *ngIf="!estaPostulando">¡Postularme!</span>
+        <span *ngIf="estaPostulando">Postulando...</span>
+      </ion-button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="!vacante" class="loading-container">
+    <app-loading-state
+      message="Cargando información de la vacante..."
+    ></app-loading-state>
+  </div>
+
+  <!-- Modal para ver perfil completo de persona -->
+  <ion-modal [isOpen]="modalAbierto" (didDismiss)="cerrarPerfil()">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Perfil</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="cerrarPerfil()">Cerrar</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding modal-content">
+        <ion-card *ngIf="perfilCompleto">
+          <ion-card-header>
+            <ion-avatar class="avatar-perfil">
+              <img
+                *ngIf="perfilCompleto?.foto_url"
+                [src]="perfilCompleto?.foto_url"
+              />
+              <div *ngIf="!perfilCompleto?.foto_url" class="iniciales">
+                {{ perfilCompleto?.nombre_completo?.[0] | uppercase }}
+              </div>
+            </ion-avatar>
+            <ion-card-title
+              >{{ perfilCompleto?.nombre_completo }}</ion-card-title
+            >
+            <ion-card-subtitle
+              >{{ perfilCompleto?.rol_principal }}</ion-card-subtitle
+            >
+          </ion-card-header>
+          <ion-card-content>
+            <ion-grid class="perfil-grid">
+              <ion-row>
+                <ion-col size="12" sizeMd="6" *ngIf="perfilCompleto?.correo">
+                  <ion-item>
+                    <ion-label position="stacked">Correo</ion-label>
+                    <ion-text>{{ perfilCompleto?.correo }}</ion-text>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12" sizeMd="6" *ngIf="perfilCompleto?.telefono">
+                  <ion-item>
+                    <ion-label position="stacked">Teléfono</ion-label>
+                    <ion-text>{{ perfilCompleto?.telefono }}</ion-text>
+                  </ion-item>
+                </ion-col>
+                <ion-col size="12" sizeMd="6" *ngIf="perfilCompleto?.ciudad">
+                  <ion-item>
+                    <ion-label position="stacked">Ciudad</ion-label>
+                    <ion-text>{{ perfilCompleto?.ciudad }}</ion-text>
+                  </ion-item>
+                </ion-col>
+                <ion-col
+                  size="12"
+                  sizeMd="6"
+                  *ngIf="perfilCompleto?.anos_experiencia"
+                >
+                  <ion-item>
+                    <ion-label position="stacked"
+                      >Años de experiencia</ion-label
+                    >
+                    <ion-text>{{ perfilCompleto?.anos_experiencia }}</ion-text>
+                  </ion-item>
+                </ion-col>
+                <ion-col
+                  size="12"
+                  sizeMd="6"
+                  *ngIf="perfilCompleto?.pretension_salarial"
+                >
+                  <ion-item>
+                    <ion-label position="stacked"
+                      >Pretensión salarial</ion-label
+                    >
+                    <ion-text
+                      >{{ perfilCompleto?.pretension_salarial | currencyFormat }}</ion-text
+                    >
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+              <ion-row *ngIf="perfilCompleto?.resumen">
+                <ion-col size="12">
+                  <ion-item>
+                    <ion-label position="stacked"
+                      >Resumen profesional</ion-label
+                    >
+                    <ion-text>{{ perfilCompleto?.resumen }}</ion-text>
+                  </ion-item>
+                </ion-col>
+              </ion-row>
+              <ion-row *ngIf="habilidadesSeleccionadas.length > 0">
+                <ion-col size="12">
+                  <ion-label>Habilidades</ion-label>
+                  <div class="habilidades-container">
+                    <ion-chip *ngFor="let h of habilidadesSeleccionadas">
+                      {{ h?.habilidad?.nombre }}
+                      <ion-badge color="medium" *ngIf="h?.nivel"
+                        >{{ h.nivel }}</ion-badge
+                      >
+                    </ion-chip>
+                  </div>
+                </ion-col>
+              </ion-row>
+            </ion-grid>
+            <div class="acciones-perfil" *ngIf="perfilCompleto?.hoja_vida_url">
+              <ion-button
+                fill="outline"
+                [href]="perfilCompleto?.hoja_vida_url"
+                target="_blank"
+              >
+                Ver hoja de vida
+              </ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
 </ion-content>

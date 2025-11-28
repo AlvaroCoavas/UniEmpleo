@@ -116,7 +116,7 @@
             </ion-item>
             <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.pretension_salarial">
               <ion-label position="stacked" style="color: #8696a0;">Pretensión salarial</ion-label>
-              <ion-text>${{ perfilCompleto?.pretension_salarial | number }}</ion-text>
+              <ion-text>{{ perfilCompleto?.pretension_salarial | currencyFormat }}</ion-text>
             </ion-item>
             <ion-item lines="full" style="--background: transparent; --color: #e9edef;" *ngIf="perfilCompleto?.disponibilidad">
               <ion-label position="stacked" style="color: #8696a0;">Disponibilidad</ion-label>
