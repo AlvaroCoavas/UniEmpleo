@@ -15,3 +15,4 @@ export class NoticiaCardComponent {
   @Input() empresaRoute: string[] = [];
 }
 
+

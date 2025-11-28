@@ -14,3 +14,4 @@ export class LoadingStateComponent {
   @Input() size: 'small' | 'default' = 'default';
 }
 
+
